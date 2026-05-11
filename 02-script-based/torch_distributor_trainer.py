@@ -54,6 +54,16 @@ def train_fn(
     os.environ["DATABRICKS_HOST"] = db_host
     os.environ["DATABRICKS_TOKEN"] = db_token
 
+    # `accelerate launch --num_processes 1`은 simple_launcher 경로라 RANK/WORLD_SIZE 등을
+    # 세팅하지 않는다. TorchDistributor 및 `accelerate launch --multi_gpu`는 이미 세팅된
+    # 값을 그대로 두고, 미설정 시에만 단일 프로세스 기본값을 채워 init_process_group이 환경
+    # rendezvous에서 ValueError를 던지지 않도록 한다.
+    os.environ.setdefault("RANK", "0")
+    os.environ.setdefault("LOCAL_RANK", "0")
+    os.environ.setdefault("WORLD_SIZE", "1")
+    os.environ.setdefault("MASTER_ADDR", "127.0.0.1")
+    os.environ.setdefault("MASTER_PORT", "29500")
+
     dist.init_process_group("nccl")
     local_rank = int(os.environ["LOCAL_RANK"])
     global_rank = int(os.environ["RANK"])

@@ -11,24 +11,36 @@
 | 모듈 | [`lightning_trainer.py`](lightning_trainer.py) | Lightning `LitModule` + `DataModule` + `fit(...)` |
 | 노트북 | [`00-setup.ipynb`](00-setup.ipynb) | 환경 설정 (UC 경로, CONFIG, MLflow experiment, DB_HOST/DB_TOKEN) |
 | 노트북 | [`01-data_prep.ipynb`](01-data_prep.ipynb) | 데이터 준비 (01-row와 동일) |
-| 노트북 | [`02-launch_torch_distributor_single_node.ipynb`](02-launch_torch_distributor_single_node.ipynb) | TorchDistributor 1×1 / 1×N 섹션 |
-| 노트북 | [`03-launch_torch_distributor_multi_node.ipynb`](03-launch_torch_distributor_multi_node.ipynb) | TorchDistributor M×N |
-| 노트북 | [`04-launch_lightning_trainer_single_node.ipynb`](04-launch_lightning_trainer_single_node.ipynb) | Lightning 1×1 / 1×N 섹션 |
-| 노트북 | [`05-launch_lightning_trainer_multi_node.ipynb`](05-launch_lightning_trainer_multi_node.ipynb) | Lightning M×N |
-| 노트북 | [`06-launch_accelerator_single_node.ipynb`](06-launch_accelerator_single_node.ipynb) | `accelerate launch` 1×1 / 1×N (subprocess) |
-| 노트북 | [`07-launch_accelerator_multi_node.ipynb`](07-launch_accelerator_multi_node.ipynb) | Accelerator API M×N (TorchDistributor dispatcher) |
+| 노트북 | [`02-launch_torch_distributor_1x1.ipynb`](02-launch_torch_distributor_1x1.ipynb) | TorchDistributor 1×1 |
+| 노트북 | [`03-launch_torch_distributor_1xN.ipynb`](03-launch_torch_distributor_1xN.ipynb) | TorchDistributor 1×N |
+| 노트북 | [`04-launch_torch_distributor_MxN.ipynb`](04-launch_torch_distributor_MxN.ipynb) | TorchDistributor M×N |
+| 노트북 | [`05-launch_lightning_trainer_1x1.ipynb`](05-launch_lightning_trainer_1x1.ipynb) | Lightning 1×1 (driver 직접 `fit`) |
+| 노트북 | [`06-launch_lightning_trainer_1xN.ipynb`](06-launch_lightning_trainer_1xN.ipynb) | Lightning 1×N (TorchDistributor + `Trainer`) |
+| 노트북 | [`07-launch_lightning_trainer_MxN.ipynb`](07-launch_lightning_trainer_MxN.ipynb) | Lightning M×N |
+| 노트북 | [`08-launch_accelerator_1x1.ipynb`](08-launch_accelerator_1x1.ipynb) | `accelerate launch --num_processes 1` (subprocess) |
+| 노트북 | [`09-launch_accelerator_1xN.ipynb`](09-launch_accelerator_1xN.ipynb) | `accelerate launch --multi_gpu --num_processes N` (subprocess) |
+| 노트북 | [`10-launch_accelerator_MxN.ipynb`](10-launch_accelerator_MxN.ipynb) | Accelerator API M×N (TorchDistributor dispatcher) |
 
 ## 🔌 Import 방식
 
-노트북이 위치한 Workspace 폴더를 `sys.path`에 직접 삽입한 뒤 sibling `.py` 모듈을 import합니다. Multi-node에서는 worker 프로세스가 다른 노드에서 fresh Python으로 시작하므로 **`script_dir`을 child 함수의 인자로 명시 전달**하고, child 함수가 내부에서 `sys.path.insert(0, script_dir)`을 호출합니다.
+노트북이 위치한 Workspace 폴더를 `sys.path`에 직접 삽입한 뒤 sibling `.py` 모듈을 import합니다.
+
+TorchDistributor `.run`에 module-level 함수를 직접 넘기면 cloudpickle이 module reference로 직렬화하고, child 프로세스의 fresh `sys.path`에는 SCRIPT_DIR이 없어 import가 실패합니다. 이를 회피하기 위해 노트북에서 **inline thin wrapper**를 정의해 by-value pickling을 받게 하고, wrapper 내부에서 `sys.path` 보강 후 lazy import합니다.
 
 ```python
 NOTEBOOK_PATH = dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get()
 SCRIPT_DIR = "/Workspace" + os.path.dirname(NOTEBOOK_PATH)
 sys.path.insert(0, SCRIPT_DIR)
-from torch_distributor_trainer import train_fn
 
-TorchDistributor(...).run(train_fn, ..., script_dir=SCRIPT_DIR)
+def td_train_fn(**kwargs):
+    import sys
+    sd = kwargs.get("script_dir")
+    if sd and sd not in sys.path:
+        sys.path.insert(0, sd)
+    from torch_distributor_trainer import train_fn
+    return train_fn(**kwargs)
+
+TorchDistributor(...).run(td_train_fn, ..., script_dir=SCRIPT_DIR)
 ```
 
 > 패키지로 묶어 `%pip install` 하는 형태가 필요하면 [`03-custom-package-script-based/`](../03-custom-package-script-based/).
@@ -39,25 +51,23 @@ TorchDistributor(...).run(train_fn, ..., script_dir=SCRIPT_DIR)
 
 | | TorchDistributor | Lightning | Accelerate |
 |----|---|---|---|
-| **1×1** | 02: `local_mode=True, num_processes=1` | 04: `Trainer(devices=1)` 직접 호출 | 06: `accelerate launch --num_processes 1` |
-| **1×N** | 02: `local_mode=True, num_processes=N` | 04: TorchDistributor + `Trainer(devices=N, strategy='ddp')` | 06: `accelerate launch --multi_gpu --num_processes N` |
-| **M×N** | 03: `local_mode=False, num_processes=M*N` | 05: TorchDistributor + `Trainer(devices=N, num_nodes=M, strategy='ddp')` | 07: TorchDistributor + `Accelerator()` API |
+| **1×1** | 02 | 05 (driver 직접) | 08 |
+| **1×N** | 03 | 06 | 09 |
+| **M×N** | 04 | 07 | 10 |
 
-> 06의 `accelerate launch`는 single-node 전용입니다. native `accelerate launch --multi_gpu --num_machines M --machine_rank R`은 노드별 dispatch를 요구하지만 Databricks에서는 단일 driver 노트북에서 이를 직접 띄울 수 없습니다 — 07이 그 우회 패턴(TorchDistributor를 dispatcher로 사용 + Accelerator API)을 보여줍니다.
+> 한 노트북 세션에서 `TorchDistributor.run`을 연속 호출하면 driver py4j callback channel이 단절되는 현상이 관찰돼 (DBR 17.3 LTS ML, g5.12xlarge), launcher × topology 별로 노트북을 분리했습니다. 토폴로지를 비교할 때는 같은 클러스터에서 노트북을 차례로 detach → 다음 노트북 attach 하여 실행하세요.
+>
+> 10 (Accelerate M×N)은 native `accelerate launch --multi_gpu --num_machines M --machine_rank R`이 노드별 dispatch를 요구하지만 Databricks 단일 driver 노트북에서 직접 띄울 수 없어, TorchDistributor를 dispatcher로 쓰고 child에서 `Accelerator()` API를 사용합니다.
 
 ## 🖥️ 클러스터 세팅
 
-01-row와 동일 매핑. 02·04·06(single-node)은 같은 single-node 클러스터에서 모두 실행 가능. 03·05·07(multi-node)은 multi-node 클러스터에서.
+| 토폴로지 | 노트북 | Single node 토글 | Workers |
+|----------|--------|-----------------|---------|
+| 1×1 | 02, 05, 08 | ON | 0 |
+| 1×N | 03, 06, 09 | ON | 0 |
+| M×N | 04, 07, 10 | OFF | M (예: 1~3) |
 
-| 항목 | Single-node (02, 04, 06) | Multi-node (03, 05, 07) |
-|------|--------------------------|--------------------------|
-| Single node 토글 | **ON** | **OFF** |
-| Driver type | `g5.12xlarge` (4× A10G) | `g5.12xlarge` (4× A10G) |
-| Worker type | — | `g5.12xlarge` (4× A10G) |
-| Workers | 0 | M (예: 1~3) |
-| Autoscaling | off | **off (필수)** |
-
-상세는 [`00-foundations/cluster-recipes.md`](../00-foundations/cluster-recipes.md).
+driver/worker는 모두 `g5.12xlarge` (4× A10G) 권장. Autoscaling 항상 OFF. 1×1은 `g5.2xlarge` (1× A10G)로도 충분. 상세는 [`00-foundations/cluster-recipes.md`](../00-foundations/cluster-recipes.md).
 
 ## ➡️ 다음
 

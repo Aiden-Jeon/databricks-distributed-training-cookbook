@@ -96,14 +96,19 @@ Databricks에서 **추천 모델(Two-Tower MLP)**을 분산학습하는 패턴�
 ├── 01-notebook-based/                              # 행 1: 노트북 only
 │   ├── 00-setup.ipynb
 │   ├── 01-data_prep.ipynb
-│   ├── 02-train_torch_distributor.ipynb            # 섹션 1×1 / 1×N / M×N
-│   └── 03-train_pytorch_lightning.ipynb            # 섹션 1×1 / 1×N / M×N
+│   ├── 02-train_torch_distributor_single_node.ipynb    # 1×1 / 1×N
+│   ├── 03-train_torch_distributor_multi_node.ipynb     # M×N
+│   ├── 04-train_pytorch_lightning_single_node.ipynb    # 1×1 / 1×N
+│   └── 05-train_pytorch_lightning_multi_node.ipynb     # M×N
 ├── 02-script-based/                                # 행 2: .py 모듈 분리
 │   ├── model.py, torch_distributor_trainer.py, lightning_trainer.py
 │   ├── 00-setup.ipynb, 01-data_prep.ipynb
-│   ├── 02-launch_torch_distributor.ipynb
-│   ├── 03-launch_lightning_trainer.ipynb
-│   └── 04-launch_accelerator.ipynb
+│   ├── 02-launch_torch_distributor_single_node.ipynb   # 1×1 / 1×N
+│   ├── 03-launch_torch_distributor_multi_node.ipynb    # M×N
+│   ├── 04-launch_lightning_trainer_single_node.ipynb   # 1×1 / 1×N
+│   ├── 05-launch_lightning_trainer_multi_node.ipynb    # M×N
+│   ├── 06-launch_accelerator_single_node.ipynb         # 1×1 / 1×N (accelerate launch)
+│   └── 07-launch_accelerator_multi_node.ipynb          # M×N (TorchDistributor + Accelerator API)
 ├── 03-custom-package-script-based/                 # 행 3: 설치 가능 패키지
 │   ├── custom_packages/                            # uv build → wheel install
 │   │   ├── pyproject.toml

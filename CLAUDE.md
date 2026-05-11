@@ -117,9 +117,13 @@ Databricks에서 **추천 모델(Two-Tower MLP)**을 분산학습하는 패턴�
 │   │   ├── pyproject.toml
 │   │   └── src/recommender_pkg/
 │   ├── 00-setup.ipynb, 01-data_prep.ipynb
-│   ├── 02-launch_torch_distributor.ipynb
-│   ├── 03-launch_lightning_trainer.ipynb
-│   └── 04-launch_accelerator.ipynb
+│   ├── 02-launch_torch_distributor_1x1.ipynb           # TD 1×1
+│   ├── 03-launch_torch_distributor_1xN.ipynb           # TD 1×N
+│   ├── 04-launch_torch_distributor_MxN.ipynb           # TD M×N
+│   ├── 05-launch_lightning_trainer_1x1.ipynb           # Lightning 1×1 (driver 직접)
+│   ├── 06-launch_lightning_trainer_1xN.ipynb           # Lightning 1×N (TorchDistributor)
+│   ├── 07-launch_lightning_trainer_MxN.ipynb           # Lightning M×N
+│   └── 08-launch_accelerator_MxN.ipynb                 # Accelerator API M×N (TorchDistributor dispatcher)
 ├── 99-references/                                  # 공식 노트북 / 외부 자료 / 이전 프로젝트 snippets
 └── docs/                                           # 부가 문서
 ```

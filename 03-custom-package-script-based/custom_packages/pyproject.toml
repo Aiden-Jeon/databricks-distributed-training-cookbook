@@ -3,9 +3,10 @@ name = "recommender_pkg"
 version = "0.1.0"
 description = "Two-Tower MLP distributed training package for Databricks cookbook"
 requires-python = ">=3.10"
-dependencies = [
-    # TODO: torch, mlflow, pytorch-lightning, accelerate 등 본 쿡북 셀별 최소 의존성
-]
+# 런타임 의존성은 명시하지 않는다. DBR 17.3 LTS ML 런타임이 torch / mlflow / accelerate
+# 등 핵심 패키지를 사전 설치하고, lightning은 00-setup에서 별도 설치한다 (02-script-based와
+# 동일한 정책). wheel을 좁게 유지해 의존성 충돌을 피한다.
+dependencies = []
 
 [build-system]
 requires = ["hatchling"]

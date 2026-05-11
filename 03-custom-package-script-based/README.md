@@ -15,7 +15,7 @@
 | 노트북 | [`05-launch_lightning_trainer_1x1.ipynb`](05-launch_lightning_trainer_1x1.ipynb) | Lightning 1×1 (driver 직접) |
 | 노트북 | [`06-launch_lightning_trainer_1xN.ipynb`](06-launch_lightning_trainer_1xN.ipynb) | Lightning 1×N (TorchDistributor) |
 | 노트북 | [`07-launch_lightning_trainer_MxN.ipynb`](07-launch_lightning_trainer_MxN.ipynb) | Lightning M×N |
-| 노트북 | [`08-launch_accelerator_MxN.ipynb`](08-launch_accelerator_MxN.ipynb) | Accelerator API M×N (TorchDistributor dispatcher) |
+| 노트북 | [`08-launch_accelerator_MxN.ipynb`](08-launch_accelerator_MxN.ipynb) | `accelerate launch -m recommender_pkg.torch_distributor_trainer` (subprocess.Popen, 가시 GPU 자동 감지로 1×1/1×N/M×N 전부 커버) |
 
 토폴로지(1×1 / 1×N / M×N)는 02-script-based와 동일하게 노트북 단위로 분리했습니다. 한 세션에서 `TorchDistributor.run`을 연속 호출하면 py4j callback channel이 단절되는 현상을 피하기 위함입니다.
 
@@ -51,9 +51,9 @@ subprocess.run(["uv", "build"], cwd=f"{NOTEBOOK_DIR}/custom_packages", check=Tru
 |----------|---------|---------|---------|
 | TorchDistributor | `TorchDistributor(num_processes=1, local_mode=True).run(td_train_fn, ...)` | `TorchDistributor(num_processes=N, local_mode=True).run(...)` | `TorchDistributor(num_processes=M*N, local_mode=False).run(...)` |
 | Lightning | `fit(devices=1, num_nodes=1)` 직접 호출 | `TorchDistributor(num_processes=N, local_mode=True).run(td_lit_fit, devices=N, num_nodes=1)` | `TorchDistributor(num_processes=M*N, local_mode=False).run(td_lit_fit, devices=N, num_nodes=M)` |
-| Accelerate | (생략 — TD 1×1로 대체) | (생략 — TD 1×N으로 대체) | `TorchDistributor(num_processes=M*N, local_mode=False).run(train_fn_acc, ...)` (Accelerator API) |
+| Accelerate | 08 (단일 노트북, 자동 감지) | 08 (동일) | 08 (동일) |
 
-> Accelerate 1×1·1×N은 02-script-based와 같은 `accelerate launch ./trainer.py` 패턴이 가능하지만, 패키지 설치 시 `sys.executable -m accelerate.commands.accelerate_cli launch -m recommender_pkg.torch_distributor_trainer` 형태로 호출해야 notebook-scoped Python env의 `recommender_pkg`이 보입니다. 본 행에서는 단순성을 위해 1×1·1×N은 TorchDistributor·Lightning 노트북으로 대체하고, Accelerate는 **M×N(TorchDistributor dispatcher + Accelerator API)** 한 가지만 다룹니다.
+> Accelerate 행은 `sys.executable -m accelerate.commands.accelerate_cli launch -m recommender_pkg.torch_distributor_trainer` 를 `subprocess.Popen` 으로 호출합니다. 시스템 `/databricks/python3/bin/accelerate` 가 wheel 로 설치된 `recommender_pkg` 를 보지 못하므로, notebook-scoped Python(`sys.executable`)에서 모듈 모드로 띄우는 것이 필수입니다. `--num_processes` 는 생략 — 가시 GPU 수가 자동으로 채워져 한 노트북으로 1×1/1×N/M×N 모두 커버합니다.
 
 ## ➡️ 다음
 

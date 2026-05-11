@@ -17,9 +17,7 @@
 | 노트북 | [`05-launch_lightning_trainer_1x1.ipynb`](05-launch_lightning_trainer_1x1.ipynb) | Lightning 1×1 (driver 직접 `fit`) |
 | 노트북 | [`06-launch_lightning_trainer_1xN.ipynb`](06-launch_lightning_trainer_1xN.ipynb) | Lightning 1×N (TorchDistributor + `Trainer`) |
 | 노트북 | [`07-launch_lightning_trainer_MxN.ipynb`](07-launch_lightning_trainer_MxN.ipynb) | Lightning M×N |
-| 노트북 | [`08-launch_accelerator_1x1.ipynb`](08-launch_accelerator_1x1.ipynb) | `accelerate launch --num_processes 1` (subprocess) |
-| 노트북 | [`09-launch_accelerator_1xN.ipynb`](09-launch_accelerator_1xN.ipynb) | `accelerate launch --multi_gpu --num_processes N` (subprocess) |
-| 노트북 | [`10-launch_accelerator_MxN.ipynb`](10-launch_accelerator_MxN.ipynb) | Accelerator API M×N (TorchDistributor dispatcher) |
+| 노트북 | [`08-launch_accelerator_MxN.ipynb`](08-launch_accelerator_MxN.ipynb) | `accelerate launch <script>` (subprocess.Popen, 가시 GPU 자동 감지로 1×1/1×N/M×N 전부 커버) |
 
 ## 🔌 Import 방식
 
@@ -52,20 +50,20 @@ TorchDistributor(...).run(td_train_fn, ..., script_dir=SCRIPT_DIR)
 | | TorchDistributor | Lightning | Accelerate |
 |----|---|---|---|
 | **1×1** | 02 | 05 (driver 직접) | 08 |
-| **1×N** | 03 | 06 | 09 |
-| **M×N** | 04 | 07 | 10 |
+| **1×N** | 03 | 06 | 08 |
+| **M×N** | 04 | 07 | 08 |
 
 > 한 노트북 세션에서 `TorchDistributor.run`을 연속 호출하면 driver py4j callback channel이 단절되는 현상이 관찰돼 (DBR 17.3 LTS ML, g5.12xlarge), launcher × topology 별로 노트북을 분리했습니다. 토폴로지를 비교할 때는 같은 클러스터에서 노트북을 차례로 detach → 다음 노트북 attach 하여 실행하세요.
 >
-> 10 (Accelerate M×N)은 native `accelerate launch --multi_gpu --num_machines M --machine_rank R`이 노드별 dispatch를 요구하지만 Databricks 단일 driver 노트북에서 직접 띄울 수 없어, TorchDistributor를 dispatcher로 쓰고 child에서 `Accelerator()` API를 사용합니다.
+> Accelerate 행은 한 개 노트북(08)으로 1×1/1×N/M×N 을 모두 커버합니다. `accelerate launch` 가 가시 GPU 수를 자동 감지하므로 클러스터 사양을 바꾸기만 하면 동일 노트북이 그대로 동작합니다. 호출은 `subprocess.Popen` + `shlex.split` 패턴 — 자식 프로세스에 `DATABRICKS_HOST/TOKEN` 명시 주입, Py4J keepalive 스레드로 장시간 학습 중 gateway 단절 방지, non-zero return 시 `dbutils.notebook.exit` 로 실패 종료.
 
 ## 🖥️ 클러스터 세팅
 
 | 토폴로지 | 노트북 | Single node 토글 | Workers |
 |----------|--------|-----------------|---------|
 | 1×1 | 02, 05, 08 | ON | 0 |
-| 1×N | 03, 06, 09 | ON | 0 |
-| M×N | 04, 07, 10 | OFF | M (예: 1~3) |
+| 1×N | 03, 06, 08 | ON | 0 |
+| M×N | 04, 07, 08 | OFF | M (예: 1~3) |
 
 driver/worker는 모두 `g5.12xlarge` (4× A10G) 권장. Autoscaling 항상 OFF. 1×1은 `g5.2xlarge` (1× A10G)로도 충분. 상세는 [`00-foundations/cluster-recipes.md`](../00-foundations/cluster-recipes.md).
 

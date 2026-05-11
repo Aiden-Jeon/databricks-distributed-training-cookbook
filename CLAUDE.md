@@ -109,9 +109,7 @@ Databricks에서 **추천 모델(Two-Tower MLP)**을 분산학습하는 패턴�
 │   ├── 05-launch_lightning_trainer_1x1.ipynb           # Lightning 1×1 (driver 직접)
 │   ├── 06-launch_lightning_trainer_1xN.ipynb           # Lightning 1×N (TorchDistributor)
 │   ├── 07-launch_lightning_trainer_MxN.ipynb           # Lightning M×N
-│   ├── 08-launch_accelerator_1x1.ipynb                 # accelerate launch 1×1
-│   ├── 09-launch_accelerator_1xN.ipynb                 # accelerate launch 1×N
-│   └── 10-launch_accelerator_MxN.ipynb                 # Accelerator API M×N (TorchDistributor dispatcher)
+│   └── 08-launch_accelerator_MxN.ipynb                 # accelerate launch (1×1/1×N/M×N 자동 감지, subprocess.Popen)
 ├── 03-custom-package-script-based/                 # 행 3: 설치 가능 패키지
 │   ├── custom_packages/                            # uv build → wheel install
 │   │   ├── pyproject.toml
@@ -123,7 +121,7 @@ Databricks에서 **추천 모델(Two-Tower MLP)**을 분산학습하는 패턴�
 │   ├── 05-launch_lightning_trainer_1x1.ipynb           # Lightning 1×1 (driver 직접)
 │   ├── 06-launch_lightning_trainer_1xN.ipynb           # Lightning 1×N (TorchDistributor)
 │   ├── 07-launch_lightning_trainer_MxN.ipynb           # Lightning M×N
-│   └── 08-launch_accelerator_MxN.ipynb                 # Accelerator API M×N (TorchDistributor dispatcher)
+│   └── 08-launch_accelerator_MxN.ipynb                 # accelerate launch (1×1/1×N/M×N 자동 감지, subprocess.Popen, wheel 모듈 모드)
 ├── 99-references/                                  # 공식 노트북 / 외부 자료 / 이전 프로젝트 snippets
 └── docs/                                           # 부가 문서
 ```
@@ -136,7 +134,7 @@ Databricks에서 **추천 모델(Two-Tower MLP)**을 분산학습하는 패턴�
 |----------|---------|---------|---------|
 | TorchDistributor | `TorchDistributor(num_processes=1, local_mode=True).run(fn, ...)` | `TorchDistributor(num_processes=N, local_mode=True).run(fn, ...)` | `TorchDistributor(num_processes=M*N, local_mode=False).run(fn, ...)` |
 | Lightning | `Trainer(devices=1, num_nodes=1)` | `Trainer(devices=N, num_nodes=1, strategy="ddp")` | `Trainer(devices=N, num_nodes=M, strategy="ddp")` |
-| Accelerate | `accelerate launch --num_processes 1 ...` | `accelerate launch --num_processes N ...` | `accelerate launch --multi_gpu --num_machines M --num_processes M*N ...` |
+| Accelerate | `accelerate launch <script>` (가시 GPU 수 자동 감지, 단일 노트북으로 1×1/1×N/M×N 전부 커버) | 동일 | 동일 |
 
 ## 코딩 컨벤션
 

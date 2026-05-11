@@ -49,7 +49,66 @@
 - 학습률은 effective batch가 커질수록 일반적으로 비례 증가가 필요하다 (linear scaling rule).
 - PyTorch 학습 루프에서는 위 값을 직접 곱해 lr을 조정한다. Lightning `Trainer`나 HF `TrainingArguments`는 인자만 받는다.
 
+## rank 간 metric 합산 (AverageMeter)
+
+DDP에서 검증 loss/accuracy를 측정할 때, 각 rank는 자기 몫의 데이터만 본다. 전체 평균을 구하려면 `dist.all_reduce(SUM)`로 rank별 합과 카운트를 모은 뒤 driver(rank 0)에서 나눠야 한다.
+
+```python
+import torch
+import torch.distributed as dist
+
+
+class AverageMeter:
+    """rank별 누적치를 들고 있다가 all_reduce로 전체 평균을 만든다."""
+
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.loss_sum = 0.0
+        self.correct = 0
+        self.total = 0
+
+    def update(self, loss_sum: float, correct: int, total: int):
+        self.loss_sum = loss_sum
+        self.correct = correct
+        self.total = total
+
+    def all_reduce(self, device) -> tuple[float, float]:
+        """모든 rank의 (loss_sum, correct, total)을 합산하고 평균/정확도를 반환."""
+        t = torch.tensor([self.loss_sum, self.correct, self.total], device=device)
+        dist.all_reduce(t, op=dist.ReduceOp.SUM, async_op=False)
+        loss_sum, correct, total = t.tolist()
+        return loss_sum / total, correct / total
+
+    def reduce(self) -> tuple[float, float]:
+        """non-distributed 컨텍스트용 fallback."""
+        return self.loss_sum / self.total, self.correct / self.total
+```
+
+사용 예 (eval 루프):
+
+```python
+meter = AverageMeter()
+loss_sum, correct, total = 0.0, 0, 0
+for batch in val_loader:
+    # ... forward, loss, prediction ...
+    loss_sum += loss.item() * batch_size
+    correct += (preds == labels).sum().item()
+    total += labels.size(0)
+    meter.update(loss_sum, correct, total)
+
+avg_loss, avg_acc = meter.all_reduce(device)   # rank 간 합산 후 평균
+dist.barrier()                                  # 모든 rank가 다음 단계 전에 대기
+if rank == 0:
+    mlflow.log_metric("val/loss", avg_loss)
+    mlflow.log_metric("val/acc", avg_acc)
+```
+
+> 주의: `all_reduce`는 모든 rank가 같은 시점에 호출해야 한다. rank 0에서만 호출하면 다른 rank가 hang한다.
+
 ## 참고
 
 - PyTorch DDP 가이드: https://pytorch.org/tutorials/intermediate/ddp_tutorial.html
 - Databricks 분산 학습 개요: https://docs.databricks.com/aws/en/machine-learning/train-model/distributed-training/
+- AverageMeter 패턴 출처: [`99-references/snippets/torch_distributed/src/eval.py`](../99-references/snippets/torch_distributed/src/eval.py)

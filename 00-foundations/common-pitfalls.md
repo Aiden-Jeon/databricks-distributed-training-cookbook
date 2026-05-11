@@ -27,6 +27,31 @@
 - 인자는 primitives(str, int, list)만 넘긴다.
 - SparkSession은 함수 내부에서 `SparkSession.builder.getOrCreate()`로 다시 얻는다.
 
+## 2-1. child 프로세스에서 MLflow가 인증 실패
+
+증상: `mlflow.start_run(run_id=...)`이 `401 Unauthorized` 또는 `Could not find experiment`.
+
+원인: TorchDistributor가 띄운 worker 프로세스는 driver의 Databricks 자격증명을 자동 상속하지 않는다.
+
+해결: driver에서 host/token을 명시적으로 읽어 학습 함수의 인자로 넘기고, child 안에서 환경변수에 다시 설정한다.
+
+```python
+# Driver cell
+context = dbutils.notebook.entry_point.getDbutils().notebook().getContext()
+db_host = context.extraContext().apply("api_url")
+db_token = context.apiToken().get()
+
+TorchDistributor(...).run(train_fn, db_host=db_host, db_token=db_token, ...)
+```
+
+```python
+def train_fn(db_host, db_token, run_id, ...):
+    import os
+    os.environ["DATABRICKS_HOST"] = db_host
+    os.environ["DATABRICKS_TOKEN"] = db_token
+    # 이제 mlflow가 자격증명을 찾을 수 있다
+```
+
 ## 3. OOM at first forward
 
 증상: 첫 forward에서 즉시 OOM.

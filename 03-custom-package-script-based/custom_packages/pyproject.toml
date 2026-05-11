@@ -1,0 +1,15 @@
+[project]
+name = "recommender_pkg"
+version = "0.1.0"
+description = "Two-Tower MLP distributed training package for Databricks cookbook"
+requires-python = ">=3.10"
+dependencies = [
+    # TODO: torch, mlflow, pytorch-lightning, accelerate 등 본 쿡북 셀별 최소 의존성
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/recommender_pkg"]

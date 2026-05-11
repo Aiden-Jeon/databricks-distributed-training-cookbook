@@ -1,5 +1,0 @@
-# 03-1 · accelerate_single_gpu.yaml
-compute_environment: LOCAL_MACHINE
-distributed_type: 'NO'
-num_processes: 1
-mixed_precision: bf16

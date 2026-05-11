@@ -1,6 +1,6 @@
 # UC Volumes에 체크포인트 저장
 
-분산 학습에서 체크포인트를 어디에 두느냐는 안정성에 직결된다. 본 쿡북의 모든 셀은 **Unity Catalog Volumes**를 사용한다.
+분산 학습에서 체크포인트를 어디에 두느냐는 안정성에 직결됩니다. 본 쿡북의 모든 셀은 **Unity Catalog Volumes**를 사용합니다.
 
 ## 왜 UC Volume인가
 
@@ -16,7 +16,7 @@
 
 ```python
 local_ckpt = "/local_disk0/ckpt/run-001"
-uc_ckpt = "/Volumes/main/recsys/checkpoints/run-001"
+uc_ckpt = "/Volumes/main/distributed_cookbook/dataset/checkpoints/run-001"
 
 # 학습 루프: rank 0만 주기적으로 local disk에 저장
 if rank == 0 and step % save_steps == 0:
@@ -29,13 +29,13 @@ if rank == 0:
 
 ## 패턴 2: 직접 UC Volume에 저장
 
-체크포인트 경로를 바로 `/Volumes/...`로 지정. 단일 노드·작은 모델에서만 권장. Multi-node에서 모든 rank가 동시에 쓰면 I/O 병목이 생긴다.
+체크포인트 경로를 바로 `/Volumes/...`로 지정. 단일 노드·작은 모델에서만 권장. Multi-node에서 모든 rank가 동시에 쓰면 I/O 병목이 생깁니다.
 
 ## Multi-node 주의
 
-- **모든 노드가 같은 경로를 본다.** `/Volumes/...`는 클러스터 전체에 마운트됨.
+- **모든 노드가 같은 경로를 봅니다.** `/Volumes/...`는 클러스터 전체에 마운트됨.
 - 그러나 동시에 쓰면 contention 발생 → save 주기를 크게 두거나 rank 0만 저장.
-- DDP는 모델이 모든 rank에 동일하게 복제되므로 **rank 0의 state_dict만 저장**하면 충분하다.
+- DDP는 모델이 모든 rank에 동일하게 복제되므로 **rank 0의 state_dict만 저장**하면 충분합니다.
 
 ## 디렉토리 컨벤션 (본 쿡북)
 
@@ -47,7 +47,7 @@ if rank == 0:
 
 ## 헬퍼 함수
 
-각 셀에서 그대로 복사해서 쓰는 헬퍼. UC Volume 경로 끝에 타임스탬프 디렉터리를 만들어 run별 격리를 보장하고, `model.state_dict()`만 저장한다 (DDP-wrapped 모델은 inner module을 꺼낸다).
+각 셀에서 그대로 복사해서 쓰는 헬퍼. UC Volume 경로 끝에 타임스탬프 디렉터리를 만들어 run별 격리를 보장하고, `model.state_dict()`만 저장합니다 (DDP-wrapped 모델은 inner module을 꺼냅니다).
 
 ```python
 import os
@@ -87,5 +87,5 @@ if dist.is_initialized():
 
 ## 참고
 
-- 데이터/체크포인트 디렉토리 구조는 셀별 README의 `00_setup.py`에서 변수로 받게 한다.
+- 데이터/체크포인트 디렉토리 구조는 셀별 README의 `00_setup.py`에서 변수로 받게 합니다.
 - 코드 출처: [`99-references/snippets/torch_distributed/src/utils.py`](../99-references/snippets/torch_distributed/src/utils.py)

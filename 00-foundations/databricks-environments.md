@@ -1,6 +1,6 @@
 # Databricks 실행 환경 비교
 
-Databricks에서 분산 학습을 돌릴 수 있는 환경은 세 가지다. 셀을 선택하기 전 이 표로 환경을 먼저 정한다.
+Databricks에서 분산 학습을 돌릴 수 있는 환경은 세 가지다. 셀을 선택하기 전 이 표로 환경을 먼저 정합니다.
 
 ## 🧱 3가지 환경
 
@@ -17,18 +17,18 @@ Databricks에서 분산 학습을 돌릴 수 있는 환경은 세 가지다. 셀
 ## ⚠️ 환경 선택 규칙
 
 1. **Multi-node가 필요한가?** → 무조건 Classic GPU 클러스터.
-2. **`@distributed` 데코레이터를 쓰는가?** → AI Runtime이 가장 매끄럽다.
-3. **단순 PoC인가?** → Serverless GPU가 가장 빠르게 시작한다.
+2. **`@distributed` 데코레이터를 쓰는가?** → AI Runtime이 가장 매끄럽습니다.
+3. **단순 PoC인가?** → Serverless GPU가 가장 빠르게 시작합니다.
 
 ## DBR 버전
 
-본 쿡북은 다음을 가정한다:
+본 쿡북은 다음을 가정합니다:
 
-- Classic: DBR 15.x ML GPU 이상 (CUDA 12, PyTorch 2.3+)
+- Classic: DBR 17.3 LTS ML (Python 3.12, PyTorch 2.7.0, CUDA 12.6, NCCL 2.26.2, MLflow 3.0.1)
 - AI Runtime: 최신 SGC(Serverless GPU Compute) 이미지
 - Serverless GPU: 워크스페이스 설정에 따라 자동
 
-각 셀 README의 "클러스터 권장 사양" 표에서 다시 명시한다.
+각 셀 README의 "클러스터 권장 사양" 표에서 다시 명시합니다.
 
 ## 참고
 

@@ -2,7 +2,7 @@
 
 이전 진행 프로젝트에서 가져온 **포팅 원본**. 본 쿡북의 12개 셀과 `00-foundations/` 문서로 옮길 때 참고하는 ground truth.
 
-> 이 폴더의 파일은 **원본 그대로**다. 본 쿡북의 도메인(추천)이나 모델(Two-Tower MLP)에 맞춰 수정되지 않았다. 셀 코드를 채울 때는 여기서 패턴만 가져오고 모델·하이퍼파라미터는 셀별 스케일에 맞춘다.
+> 이 폴더의 파일은 **원본 그대로**다. 본 쿡북의 도메인(추천)이나 모델(Two-Tower MLP)에 맞춰 수정되지 않았습니다. 셀 코드를 채울 때는 여기서 패턴만 가져오고 모델·하이퍼파라미터는 셀별 스케일에 맞춥니다.
 
 ## 📂 출처
 
@@ -50,11 +50,11 @@
 
 ## 📜 라이선스 / 출처 표기
 
-두 원본 모두 Databricks Field Engineering 내부 프로젝트. 본 쿡북도 같은 컨텍스트이므로 코드 이동은 자유롭다. 셀 README의 "📚 출처/참고"에는 패턴을 가져온 원본 파일을 명시한다 (예: "DDP 학습 루프는 `fashion_recommendations/mlops/utils/pytorch_utils.py:LSTMTrainerDistributed` 기반").
+두 원본 모두 Databricks Field Engineering 내부 프로젝트. 본 쿡북도 같은 컨텍스트이므로 코드 이동은 자유롭습니다. 셀 README의 "📚 출처/참고"에는 패턴을 가져온 원본 파일을 명시합니다 (예: "DDP 학습 루프는 `fashion_recommendations/mlops/utils/pytorch_utils.py:LSTMTrainerDistributed` 기반").
 
 ## ➡️ 다음 단계
 
-이 snippet들을 다음 순서로 본 쿡북 셀에 포팅한다:
+이 snippet들을 다음 순서로 본 쿡북 셀에 포팅합니다:
 
 1. `00-foundations/`의 utility 모듈 (모델 정의, AverageMeter, checkpoint, MLflow 헬퍼) 정리
 2. **01-1** (1×1 GPU 노트북) — `train_simple_mlp.ipynb` + `train_single_node` 합쳐서 baseline

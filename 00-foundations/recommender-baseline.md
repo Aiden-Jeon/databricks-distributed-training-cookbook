@@ -1,10 +1,30 @@
 # Recommender Baseline (Two-Tower MLP)
 
-본 쿡북의 12개 셀이 공유하는 **기준 모델**. 분산 학습 패턴 자체에 집중하기 위해 모델 정의는 한 곳에 모아두고, 셀별로 **하이퍼파라미터(임베딩 크기, 사용자/아이템 수)만 스케일**한다.
+본 쿡북이 공유하는 **기준 모델**. 분산 학습 패턴 자체에 집중하기 위해 모델 정의는 한 곳에 모아두고, 노트북 셀(1×1 / 1×N / M×N)은 같은 모델·같은 데이터셋을 **launcher 설정만 바꿔** 실행합니다.
+
+## 데이터셋
+
+[MovieLens 25M](https://files.grouplens.org/datasets/movielens/ml-25m.zip) (GroupLens, ~250MB 압축). user-movie rating 25M 행. implicit feedback으로 변환:
+
+- positive: `rating >= 4` (≈ 12M 행)
+- negative: 각 positive마다 해당 user가 아직 보지 않은 movie를 uniform 랜덤 1개 샘플링 (negative ratio 1:1)
+- label ∈ {0, 1}, BCE loss
+
+userId/movieId는 dense index(0-based contiguous)로 remap합니다. embedding lookup 효율 + 모델 vocab 크기 명시화.
+
+| 항목 | 값 |
+|------|-----|
+| 원본 행 수 | 25,000,095 |
+| positive (rating>=4) | ≈ 12,580,000 |
+| 학습 행 수 (pos+neg) | ≈ 25,160,000 |
+| n_users | 162,541 |
+| n_items | 59,047 (실제 등장 movie 수) |
+
+다운로드와 전처리는 [`data-loading.md`](data-loading.md), 그리고 각 행의 `01-data_prep.ipynb`에서 처리합니다.
 
 ## 모델 구조
 
-User ID와 Item ID를 입력받아 클릭 확률(또는 평점)을 예측하는 가장 단순한 dual-encoder 추천 모델.
+User ID와 Item ID를 입력받아 클릭(=긍정 interaction) 확률을 예측하는 dual-encoder.
 
 ```python
 import torch
@@ -40,32 +60,34 @@ class TwoTowerMLP(nn.Module):
         return (u * i).sum(dim=-1)  # logit
 ```
 
-손실: implicit feedback 가정 → `BCEWithLogitsLoss`. 학습 데이터는 `(user_id, item_id, label∈{0,1})` 튜플의 묶음.
+손실: `BCEWithLogitsLoss`. 학습 데이터는 `(user_id, item_id, label∈{0,1})` 튜플.
 
-## 셀별 스케일
+## 단일 config
 
-같은 모델 골격에 **id 수와 embedding dim만** 키운다. 분산 학습이 정당화될 만큼 파라미터 수를 늘리는 게 목적이다.
+scale 매트릭스(small/medium/large) 대신 ML-25M 단일 데이터셋을 기준으로 **고정된 하이퍼파라미터**를 사용합니다. 1×1 / 1×N / M×N 토폴로지 차이는 모델·데이터가 아니라 **launcher 설정과 batch_size에 의해 결정**됩니다.
 
-| 셀 | user 수 | item 수 | emb dim | tower hidden | 학습 파라미터 (대략) | 15분 budget 가정 |
-|----|---------|---------|---------|--------------|--------------------|-----------------|
-| 1×1 | 100K | 50K | 64 | (256, 128) | ~10M | 5~10분 |
-| 1×N | 1M | 500K | 128 | (512, 256) | ~200M | 10분 |
-| M×N | 10M | 5M | 256 | (1024, 512) | ~수 GB | 15분 |
+| 항목 | 값 |
+|------|----|
+| n_users | 162,541 |
+| n_items | 59,047 |
+| emb_dim | 64 |
+| tower_hidden | (256, 128) |
+| 학습 파라미터 (대략) | ~15M (대부분 임베딩 테이블) |
+| 학습 행 수 | ≈ 25M (pos+neg) |
+| 1×1 / 1×N / M×N batch_size | 4096 / 8192 / 16384 (global, 노드·GPU 수에 맞춰 키움) |
 
-> 파라미터의 대부분은 임베딩 테이블에서 온다. M×N 셀에서는 임베딩 테이블이 수 GB가 되어, 단일 GPU에 들어가더라도 **데이터 처리량을 노드 수로 확장**하는 multi-node DDP가 의미를 가진다.
+> 모델은 A10G 24GB 단일 GPU에 충분히 들어갑니다. M×N의 정당화는 **모델 크기가 아니라 데이터 처리량 확장**입니다. 더 큰 임베딩이 필요해지면 GPU 메모리가 더 큰 인스턴스(A100, H100)나 임베딩 샤딩(TorchRec, 본 쿡북 범위 밖)이 필요합니다.
 
-## 손실·옵티마이저 (모든 셀 공통)
+## 손실·옵티마이저 (모든 토폴로지 공통)
 
 ```python
 loss_fn = nn.BCEWithLogitsLoss()
 optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
 ```
 
-학습 epoch 수는 `epochs=1`을 기본으로 한다 (15분 budget 안에 끝내기 위함). 더 큰 셀에서는 step 수를 명시적으로 제한한다.
+학습 epoch 수는 `num_epochs=10` 상한, 실제 종료는 `EarlyStopping(patience=3, min_delta=1e-4)`이 결정. 15분 budget 안에 끝내기 위해 `max_steps_per_epoch=200`으로 epoch당 step을 캡 합니다.
 
 ## 평가 지표
-
-추천 도메인 표준 지표 중 가벼운 것 위주.
 
 | 지표 | 의미 |
 |------|------|
@@ -73,9 +95,10 @@ optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
 | Hit@K | top-K 안에 실제 클릭 아이템이 포함될 확률 |
 | NDCG@K | 순위 가중을 둔 hit 점수 |
 
-본 쿡북 셀의 `eval_and_register` 단계에서는 AUC만 본다. K-기반 지표는 inference 단계 외부 작업으로 둔다.
+본 쿡북에서는 학습 중 **val/loss(BCE)** 를 metric으로 logging합니다. 실제 추천 도메인 metric(AUC, Hit@K, NDCG@K)은 inference 단계 외부 작업으로 둡니다. mock 데이터와 달리 ML-25M에서는 val/loss가 학습 진행에 따라 의미 있게 감소합니다.
 
 ## 참고
 
-- 모델 자체는 단순하지만, 본 쿡북의 목적은 **분산 학습 launcher×topology 매트릭스를 익히는 것**이다.
-- 추천 도메인의 더 큰 모델(SASRec, BERT4Rec, GNN 기반)이 필요해지면 같은 패턴에 모델만 교체한다.
+- 모델 자체는 단순하지만, 본 쿡북의 목적은 **분산 학습 launcher×topology 매트릭스를 익히는 것**입니다.
+- 추천 도메인의 더 큰 모델(SASRec, BERT4Rec, GNN 기반)이 필요해지면 같은 패턴에 모델만 교체합니다.
+- MovieLens 라이선스: 비상업적 연구 목적. https://files.grouplens.org/datasets/movielens/ml-25m-README.html

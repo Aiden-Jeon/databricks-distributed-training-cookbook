@@ -189,4 +189,3 @@ print(f"Registered {uc_model_name} v{registered.version}")
 - MLflow autolog: https://mlflow.org/docs/latest/tracking/autolog.html
 - MLflow 3.0 LoggedModel: https://mlflow.org/docs/latest/model
 - MLflow system metrics: https://mlflow.org/docs/latest/system-metrics
-- 패턴 출처: [`99-references/snippets/fashion_recommendations/train_simple_mlp.ipynb`](../99-references/snippets/fashion_recommendations/train_simple_mlp.ipynb)

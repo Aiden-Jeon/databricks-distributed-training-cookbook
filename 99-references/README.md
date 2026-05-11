@@ -7,7 +7,6 @@
 | 문서 | 내용 |
 |------|------|
 | [official-notebooks-mirror.md](official-notebooks-mirror.md) | Databricks 공식 분산 학습 예제 노트북 (LLM 중심, 본 쿡북 패턴과 비교용) |
-| [snippets/](snippets/) | 이전 프로젝트(`torch_distributed`, `fashion_recommendations`)에서 가져온 포팅 원본 코드 |
 
 > 본 쿡북은 **추천 모델(Two-Tower MLP)** 시나리오로 작성되었지만, Databricks 공식 분산 학습 예제는 대부분 LLM fine-tuning입니다. 공식 예제는 launcher·토폴로지 패턴을 참고하는 용도로 인덱싱합니다.
 

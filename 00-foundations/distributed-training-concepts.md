@@ -172,4 +172,3 @@ if rank == 0:
 
 - PyTorch DDP 가이드: https://pytorch.org/tutorials/intermediate/ddp_tutorial.html
 - Databricks 분산 학습 개요: https://docs.databricks.com/aws/en/machine-learning/train-model/distributed-training/
-- AverageMeter 패턴 출처: [`99-references/snippets/torch_distributed/src/eval.py`](../99-references/snippets/torch_distributed/src/eval.py)

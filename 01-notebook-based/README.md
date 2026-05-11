@@ -58,7 +58,7 @@ H100/A100을 쓰려면 `p4d.24xlarge` 또는 H100 인스턴스로 교체 ([`clus
 
 ## ⚠️ 제약
 
-- HuggingFace Accelerate는 CLI 기반 launcher라 노트북 only 방식에 적합하지 않습니다. [`02-script-based/04-launch_accelerator.ipynb`](../02-script-based/04-launch_accelerator.ipynb) 참고.
+- HuggingFace Accelerate는 CLI 기반 launcher라 노트북 only 방식에 적합하지 않습니다. [`02-script-based/08-launch_accelerator_1x1.ipynb`](../02-script-based/08-launch_accelerator_1x1.ipynb), [`09-launch_accelerator_1xN.ipynb`](../02-script-based/09-launch_accelerator_1xN.ipynb), [`10-launch_accelerator_MxN.ipynb`](../02-script-based/10-launch_accelerator_MxN.ipynb) 참고.
 - 멀티 노드 (03, 05) 노트북에서는 driver→worker로 `db_host`/`db_token`을 명시 전달해야 합니다. [`00-foundations/common-pitfalls.md#2-1`](../00-foundations/common-pitfalls.md)
 - Serverless GPU는 multi-node를 지원하지 않습니다. 03, 05는 반드시 Classic GPU 클러스터에서 실행 ([`databricks-environments.md`](../00-foundations/databricks-environments.md)).
 

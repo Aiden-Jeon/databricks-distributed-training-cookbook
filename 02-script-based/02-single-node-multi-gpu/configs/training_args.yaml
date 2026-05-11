@@ -1,0 +1,13 @@
+# 02-2 · training_args.yaml
+run_name: recommender-2xn-ddp
+n_users: 1000000
+n_items: 500000
+emb_dim: 128
+tower_hidden: [512, 256]
+per_device_batch_size: 4096
+gradient_accumulation_steps: 1
+learning_rate: 1.0e-3
+epochs: 1
+gpus_per_node: 4
+data_path: /Volumes/main/recsys/interactions_medium
+output_dir: /local_disk0/ckpt/recommender_2xn

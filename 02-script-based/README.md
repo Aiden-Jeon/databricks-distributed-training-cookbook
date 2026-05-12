@@ -6,9 +6,9 @@
 
 | 종류 | 파일 | 역할 |
 |------|------|------|
-| 모듈 | [`model.py`](model.py) | `TwoTowerMLP` + `EarlyStopping`. 모든 trainer가 import |
-| 모듈 | [`torch_distributor_trainer.py`](torch_distributor_trainer.py) | TorchDistributor / accelerate launch가 사용하는 `train_fn(...)` (raw `dist.*` DDP). `__main__`은 accelerate launch 진입점 |
-| 모듈 | [`lightning_trainer.py`](lightning_trainer.py) | Lightning `LitModule` + `DataModule` + `fit(...)` |
+| 모듈 | [`model.py`](https://github.com/Aiden-Jeon/databricks-distributed-training/blob/main/02-script-based/model.py) | `TwoTowerMLP` + `EarlyStopping`. 모든 trainer가 import |
+| 모듈 | [`torch_distributor_trainer.py`](https://github.com/Aiden-Jeon/databricks-distributed-training/blob/main/02-script-based/torch_distributor_trainer.py) | TorchDistributor / accelerate launch가 사용하는 `train_fn(...)` (raw `dist.*` DDP). `__main__`은 accelerate launch 진입점 |
+| 모듈 | [`lightning_trainer.py`](https://github.com/Aiden-Jeon/databricks-distributed-training/blob/main/02-script-based/lightning_trainer.py) | Lightning `LitModule` + `DataModule` + `fit(...)` |
 | 노트북 | [`00-setup.ipynb`](00-setup.ipynb) | 환경 설정 (UC 경로, CONFIG, MLflow experiment, DB_HOST/DB_TOKEN) |
 | 노트북 | [`01-data_prep.ipynb`](01-data_prep.ipynb) | 데이터 준비 (01-row와 동일) |
 | 노트북 | [`02-launch_torch_distributor_1x1.ipynb`](02-launch_torch_distributor_1x1.ipynb) | TorchDistributor 1×1 |
@@ -41,7 +41,7 @@ def td_train_fn(**kwargs):
 TorchDistributor(...).run(td_train_fn, ..., script_dir=SCRIPT_DIR)
 ```
 
-> 패키지로 묶어 `%pip install` 하는 형태가 필요하면 [`03-custom-package-script-based/`](../03-custom-package-script-based/).
+> 패키지로 묶어 `%pip install` 하는 형태가 필요하면 [`03-custom-package-script-based/`](../03-custom-package-script-based/README.md).
 
 ## 🔀 매트릭스
 
@@ -69,4 +69,4 @@ driver/worker는 모두 `g5.12xlarge` (4× A10G) 권장. Autoscaling 항상 OFF.
 
 ## ➡️ 다음
 
-설치 가능 wheel로 패키징한 버전: [`03-custom-package-script-based/`](../03-custom-package-script-based/)
+설치 가능 wheel로 패키징한 버전: [`03-custom-package-script-based/`](../03-custom-package-script-based/README.md)

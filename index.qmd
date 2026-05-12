@@ -1,4 +1,6 @@
 ---
+title: "Databricks Distributed Training Cookbook"
+subtitle: "추천 모델(Two-Tower MLP) 분산학습 패턴 매트릭스"
 toc: false
 ---
 

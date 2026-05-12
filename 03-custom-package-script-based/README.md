@@ -6,7 +6,7 @@
 
 | 종류 | 위치 | 역할 |
 |------|------|------|
-| 패키지 | [`custom_packages/`](custom_packages/) | `pyproject.toml` + `src/` 구조. `uv build`로 wheel 생성, `%pip install`로 클러스터에 설치 |
+| 패키지 | [`custom_packages/`](https://github.com/Aiden-Jeon/databricks-distributed-training/tree/main/03-custom-package-script-based/custom_packages) | `pyproject.toml` + `src/` 구조. `uv build`로 wheel 생성, `%pip install`로 클러스터에 설치 |
 | 노트북 | [`00-setup.ipynb`](00-setup.ipynb) | `uv build` + `%pip install dist/*.whl` + CONFIG/경로 정의 |
 | 노트북 | [`01-data_prep.ipynb`](01-data_prep.ipynb) | MovieLens 25M → UC Volume parquet |
 | 노트북 | [`02-launch_torch_distributor_1x1.ipynb`](02-launch_torch_distributor_1x1.ipynb) | TorchDistributor 1×1 |
@@ -57,4 +57,4 @@ subprocess.run(["uv", "build"], cwd=f"{NOTEBOOK_DIR}/custom_packages", check=Tru
 
 ## ➡️ 다음
 
-foundations로 돌아가기: [`../00-foundations/`](../00-foundations/)
+foundations로 돌아가기: [`../00-foundations/`](../00-foundations/README.md)

@@ -22,9 +22,12 @@ project:
 
 website:
   title: "Databricks Distributed Training Cookbook"
+  description: "Databricks에서 Two-Tower MLP 추천 모델을 TorchDistributor / PyTorch Lightning / HF Accelerate로 분산학습하는 패턴을 코드 조직 방식 × launcher × 토폴로지 매트릭스로 정리한 쿡북."
   site-url: https://aiden-jeon.github.io/databricks-distributed-training
   repo-url: https://github.com/Aiden-Jeon/databricks-distributed-training
   repo-actions: [edit, source]
+  open-graph: true
+  twitter-card: true
   page-navigation: true
   search:
     location: navbar
@@ -35,7 +38,7 @@ website:
       - href: index.qmd
         text: Home
       - href: 00-foundations/README.md
-        text: Foundations
+        text: 00 · Foundations
       - text: Cookbooks
         menu:
           - href: 01-notebook-based/README.md
@@ -43,18 +46,18 @@ website:
           - href: 02-script-based/README.md
             text: 02 · Script-based
           - href: 03-custom-package-script-based/README.md
-            text: 03 · Custom package
+            text: 03 · Custom-package Script-based
       - href: docs/README.md
-        text: References
+        text: 참고 자료
   sidebar:
     style: docked
-    collapse-level: 2
+    collapse-level: 3
     contents:
       - text: Home
         href: index.qmd
       - section: "00 · Foundations"
+        href: 00-foundations/README.md
         contents:
-          - 00-foundations/README.md
           - 00-foundations/recommender-baseline.md
           - 00-foundations/distributed-training-concepts.md
           - 00-foundations/databricks-environments.md
@@ -64,8 +67,8 @@ website:
           - 00-foundations/uc-volumes-checkpoints.md
           - 00-foundations/common-pitfalls.md
       - section: "01 · Notebook-based"
+        href: 01-notebook-based/README.md
         contents:
-          - 01-notebook-based/README.md
           - 01-notebook-based/00-setup.ipynb
           - 01-notebook-based/01-data_prep.ipynb
           - 01-notebook-based/02-train_torch_distributor_single_node.ipynb
@@ -73,8 +76,8 @@ website:
           - 01-notebook-based/04-train_pytorch_lightning_single_node.ipynb
           - 01-notebook-based/05-train_pytorch_lightning_multi_node.ipynb
       - section: "02 · Script-based"
+        href: 02-script-based/README.md
         contents:
-          - 02-script-based/README.md
           - 02-script-based/00-setup.ipynb
           - 02-script-based/01-data_prep.ipynb
           - section: "TorchDistributor"
@@ -90,9 +93,9 @@ website:
           - section: "Accelerate"
             contents:
               - 02-script-based/08-launch_accelerator_MxN.ipynb
-      - section: "03 · Custom package"
+      - section: "03 · Custom-package Script-based"
+        href: 03-custom-package-script-based/README.md
         contents:
-          - 03-custom-package-script-based/README.md
           - 03-custom-package-script-based/00-setup.ipynb
           - 03-custom-package-script-based/01-data_prep.ipynb
           - section: "TorchDistributor"
@@ -108,9 +111,9 @@ website:
           - section: "Accelerate"
             contents:
               - 03-custom-package-script-based/08-launch_accelerator_MxN.ipynb
-      - section: "References"
+      - section: "참고 자료"
+        href: docs/README.md
         contents:
-          - docs/README.md
           - docs/llm-wiki.md
           - docs/official-notebooks-mirror.md
 
@@ -122,9 +125,10 @@ format:
     toc: true
     toc-depth: 3
     code-copy: true
-    code-overflow: wrap
+    code-overflow: scroll
     highlight-style: github
     anchor-sections: true
+    description-meta: "Databricks에서 Two-Tower MLP 추천 모델을 TorchDistributor / PyTorch Lightning / HF Accelerate로 분산학습하는 패턴을 코드 조직 방식 × launcher × 토폴로지 매트릭스로 정리한 쿡북."
 
 execute:
   enabled: false

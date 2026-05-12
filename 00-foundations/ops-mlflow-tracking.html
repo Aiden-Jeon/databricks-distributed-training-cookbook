@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Databricks에서 Two-Tower MLP 추천 모델을 TorchDistributor / PyTorch Lightning / HF Accelerate로 분산학습하는 패턴을 코드 조직 방식 × launcher × 토폴로지 매트릭스로 정리한 쿡북.">
+
+<title>ops-mlflow-tracking – Databricks Distributed Training Cookbook</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../00-foundations/ops-resume-training.html" rel="next">
+<link href="../00-foundations/data-uc-volumes-checkpoints.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-14905817b17f4ae99ca9441a94435373.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-14905817b17f4ae99ca9441a94435373.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-14905817b17f4ae99ca9441a94435373.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-5c9e26232be636131dac4ae78f1da9b5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-7b0c055fbedd155daa52816f27b0dc30.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-5c9e26232be636131dac4ae78f1da9b5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "일치 없음",
+    "search-matching-documents-text": "일치된 문서",
+    "search-copy-link-title": "검색 링크 복사",
+    "search-hide-matches-text": "추가 검색 결과 숨기기",
+    "search-more-match-text": "추가 검색결과",
+    "search-more-matches-text": "추가 검색결과",
+    "search-clear-button-title": "제거",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "취소",
+    "search-submit-button-title": "검색",
+    "search-label": "검색"
+  }
+}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+
+
+<meta property="og:title" content="Databricks Distributed Training Cookbook">
+<meta property="og:description" content="Databricks에서 Two-Tower MLP 추천 모델을 TorchDistributor / PyTorch Lightning / HF Accelerate로 분산학습하는 패턴을 코드 조직 방식 × launcher × 토폴로지 매트릭스로 정리한 쿡북.">
+<meta property="og:site_name" content="Databricks Distributed Training Cookbook">
+<meta name="twitter:title" content="Databricks Distributed Training Cookbook">
+<meta name="twitter:description" content="Databricks에서 Two-Tower MLP 추천 모델을 TorchDistributor / PyTorch Lightning / HF Accelerate로 분산학습하는 패턴을 코드 조직 방식 × launcher × 토폴로지 매트릭스로 정리한 쿡북.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Databricks Distributed Training Cookbook</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="검색"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="탐색 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../00-foundations/README.html"> 
+<span class="menu-text">00 · Foundations</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-cookbooks" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Cookbooks</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-cookbooks">    
+        <li>
+    <a class="dropdown-item" href="../01-notebook-based/README.html">
+ <span class="dropdown-text">01 · Notebook-based</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../02-script-based/README.html">
+ <span class="dropdown-text">02 · Script-based</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../03-custom-package-script-based/README.html">
+ <span class="dropdown-text">03 · Custom-package Script-based</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../docs/README.html"> 
+<span class="menu-text">참고 자료</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="다크 모드 전환"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../00-foundations/README.html">00 · Foundations</a></li><li class="breadcrumb-item"><a href="../00-foundations/ops-mlflow-tracking.html">Ops</a></li><li class="breadcrumb-item"><a href="../00-foundations/ops-mlflow-tracking.html">MLflow Tracking</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../00-foundations/README.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">00 · Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Concepts</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00-foundations/concepts-recommender-baseline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Recommender Baseline (Two-Tower MLP)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00-foundations/concepts-distributed-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Distributed Training Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00-foundations/concepts-torchdistributor-internals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TorchDistributor 내부 동작</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Environment</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00-foundations/env-databricks-environments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Databricks 실행 환경</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00-foundations/env-cluster-recipes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cluster Recipes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00-foundations/env-library-management.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">라이브러리 관리</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00-foundations/env-auth.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">인증 (Authentication)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00-foundations/data-pipeline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Loading</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00-foundations/data-uc-volumes-checkpoints.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UC Volumes에 체크포인트 저장</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Ops</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00-foundations/ops-mlflow-tracking.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">MLflow Tracking</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00-foundations/ops-resume-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">학습 재개 (Resume)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Debug</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00-foundations/debug-common-pitfalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">흔한 함정</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../01-notebook-based/README.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">01 · Notebook-based</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01-notebook-based/00-setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">00 · Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01-notebook-based/01-data_prep.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">01 · Data Preparation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01-notebook-based/02-train_torch_distributor_1x1_1xN.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">02 · TorchDistributor — 1×1 / 1×N GPU</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01-notebook-based/03-train_torch_distributor_MxN.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">03 · TorchDistributor — M×N GPU</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01-notebook-based/04-train_pytorch_lightning_1x1_1xN.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">04 · Lightning — 1×1 / 1×N GPU</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01-notebook-based/05-train_pytorch_lightning_MxN.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">05 · Lightning — M×N GPU</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../02-script-based/README.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">02 · Script-based</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02-script-based/00-setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">00 · Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02-script-based/01-data_prep.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">01 · Data Preparation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">TorchDistributor</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02-script-based/02-launch_torch_distributor_1x1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">02 · TorchDistributor — 1×1 GPU</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02-script-based/03-launch_torch_distributor_1xN.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">03 · TorchDistributor — 1×N GPU</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02-script-based/04-launch_torch_distributor_MxN.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">04 · TorchDistributor — M×N GPU</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+ <span class="menu-text">PyTorch Lightning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02-script-based/05-launch_lightning_trainer_1x1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">05 · Lightning — 1×1 GPU</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02-script-based/06-launch_lightning_trainer_1xN.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">06 · Lightning — 1×N GPU</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02-script-based/07-launch_lightning_trainer_MxN.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">07 · Lightning — M×N GPU</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true">
+ <span class="menu-text">Accelerate</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02-script-based/08-launch_accelerator_MxN.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">08 · Accelerate — M×N GPU (subprocess.Popen)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../03-custom-package-script-based/README.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">03 · Custom-package Script-based</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03-custom-package-script-based/00-setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">00 · Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03-custom-package-script-based/01-data_prep.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">01 · Data Preparation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
+ <span class="menu-text">TorchDistributor</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03-custom-package-script-based/02-launch_torch_distributor_1x1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">02 · TorchDistributor — 1×1 GPU</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03-custom-package-script-based/03-launch_torch_distributor_1xN.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">03 · TorchDistributor — 1×N GPU</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03-custom-package-script-based/04-launch_torch_distributor_MxN.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">04 · TorchDistributor — M×N GPU</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true">
+ <span class="menu-text">PyTorch Lightning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03-custom-package-script-based/05-launch_lightning_trainer_1x1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">05 · Lightning — 1×1 GPU</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03-custom-package-script-based/06-launch_lightning_trainer_1xN.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">06 · Lightning — 1×N GPU</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03-custom-package-script-based/07-launch_lightning_trainer_MxN.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">07 · Lightning — M×N GPU</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true">
+ <span class="menu-text">Accelerate</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03-custom-package-script-based/08-launch_accelerator_MxN.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">08 · Accelerate — M×N GPU (subprocess.Popen, wheel 모듈 모드)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../docs/README.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">참고 자료</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/official-notebooks-mirror.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Official Notebooks Mirror</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">목차</h2>
+   
+  <ul>
+  <li><a href="#mlflow-tracking" id="toc-mlflow-tracking" class="nav-link active" data-scroll-target="#mlflow-tracking">MLflow Tracking</a>
+  <ul class="collapse">
+  <li><a href="#기본-원칙" id="toc-기본-원칙" class="nav-link" data-scroll-target="#기본-원칙">기본 원칙</a></li>
+  <li><a href="#pytorch-루프-mlflow-직접-호출-단일-gpu" id="toc-pytorch-루프-mlflow-직접-호출-단일-gpu" class="nav-link" data-scroll-target="#pytorch-루프-mlflow-직접-호출-단일-gpu">PyTorch 루프 + MLflow 직접 호출 (단일 GPU)</a></li>
+  <li><a href="#mlflow-3.0-핵심-기능" id="toc-mlflow-3.0-핵심-기능" class="nav-link" data-scroll-target="#mlflow-3.0-핵심-기능">MLflow 3.0+ 핵심 기능</a>
+  <ul class="collapse">
+  <li><a href="#log_system_metricstrue" id="toc-log_system_metricstrue" class="nav-link" data-scroll-target="#log_system_metricstrue">1. <code>log_system_metrics=True</code></a></li>
+  <li><a href="#에폭별-loggedmodel-mlflow.pytorch.log_model...-step..." id="toc-에폭별-loggedmodel-mlflow.pytorch.log_model...-step..." class="nav-link" data-scroll-target="#에폭별-loggedmodel-mlflow.pytorch.log_model...-step...">2. 에폭별 <code>LoggedModel</code> (<code>mlflow.pytorch.log_model(..., step=...)</code>)</a></li>
+  <li><a href="#dataset-linking-mlflow.data.from_pandas" id="toc-dataset-linking-mlflow.data.from_pandas" class="nav-link" data-scroll-target="#dataset-linking-mlflow.data.from_pandas">3. Dataset linking (<code>mlflow.data.from_pandas</code>)</a></li>
+  </ul></li>
+  <li><a href="#torchdistributor-distributed-사용-시" id="toc-torchdistributor-distributed-사용-시" class="nav-link" data-scroll-target="#torchdistributor-distributed-사용-시">TorchDistributor / <code>@distributed</code> 사용 시</a></li>
+  <li><a href="#lightning-mlflow" id="toc-lightning-mlflow" class="nav-link" data-scroll-target="#lightning-mlflow">Lightning + MLflow</a></li>
+  <li><a href="#unity-catalog-모델-등록" id="toc-unity-catalog-모델-등록" class="nav-link" data-scroll-target="#unity-catalog-모델-등록">Unity Catalog 모델 등록</a></li>
+  <li><a href="#databricks-환경에서의-특수성" id="toc-databricks-환경에서의-특수성" class="nav-link" data-scroll-target="#databricks-환경에서의-특수성">Databricks 환경에서의 특수성</a>
+  <ul class="collapse">
+  <li><a href="#tracking_uridatabricks가-자동인-이유" id="toc-tracking_uridatabricks가-자동인-이유" class="nav-link" data-scroll-target="#tracking_uridatabricks가-자동인-이유"><code>tracking_uri="databricks"</code>가 자동인 이유</a></li>
+  <li><a href="#driver의-with-block이-빠지면-어떻게-attach가-가능한가" id="toc-driver의-with-block이-빠지면-어떻게-attach가-가능한가" class="nav-link" data-scroll-target="#driver의-with-block이-빠지면-어떻게-attach가-가능한가">Driver의 with-block이 빠지면 어떻게 attach가 가능한가</a></li>
+  <li><a href="#unity-catalog-model-registry-권한" id="toc-unity-catalog-model-registry-권한" class="nav-link" data-scroll-target="#unity-catalog-model-registry-권한">Unity Catalog Model Registry 권한</a></li>
+  <li><a href="#experiment-경로-사용자-vs-sp" id="toc-experiment-경로-사용자-vs-sp" class="nav-link" data-scroll-target="#experiment-경로-사용자-vs-sp">Experiment 경로 — 사용자 vs SP</a></li>
+  </ul></li>
+  <li><a href="#참고" id="toc-참고" class="nav-link" data-scroll-target="#참고">참고</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/edit/main/00-foundations/ops-mlflow-tracking.md" class="toc-action"><i class="bi bi-github"></i>편집</a></li><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/blob/main/00-foundations/ops-mlflow-tracking.md" class="toc-action"><i class="bi empty"></i>소스코드 보기</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../00-foundations/README.html">00 · Foundations</a></li><li class="breadcrumb-item"><a href="../00-foundations/ops-mlflow-tracking.html">Ops</a></li><li class="breadcrumb-item"><a href="../00-foundations/ops-mlflow-tracking.html">MLflow Tracking</a></li></ol></nav></header>
+
+
+
+
+
+<section id="mlflow-tracking" class="level1">
+<h1>MLflow Tracking</h1>
+<p>분산 학습에서 MLflow를 사용하는 패턴을 정리합니다. 본 쿡북은 <strong>MLflow 3.0+</strong> 기능(system metrics, per-epoch <code>LoggedModel</code>, dataset linking)을 명시적으로 사용합니다.</p>
+<section id="기본-원칙" class="level2">
+<h2 class="anchored" data-anchor-id="기본-원칙">기본 원칙</h2>
+<p>분산 학습에서 MLflow를 안전하게 쓰려면 다음 세 가지를 지키면 됩니다.</p>
+<ul>
+<li><strong>rank 0만 로깅합니다.</strong> 모든 rank가 동시에 <code>mlflow.log_metric</code>을 호출하면 race가 일어납니다.</li>
+<li>실험(<code>experiment</code>)과 run은 driver(=rank 0)에서 시작하고 child 프로세스에 <code>run_id</code>를 전달합니다.</li>
+<li>Lightning <code>Trainer</code>의 <code>MLFlowLogger</code>는 자동으로 rank 0에서만 기록되므로 별도 가드가 필요 없습니다. 직접 PyTorch 루프를 쓰는 경우에는 가드를 명시합니다.</li>
+</ul>
+</section>
+<section id="pytorch-루프-mlflow-직접-호출-단일-gpu" class="level2">
+<h2 class="anchored" data-anchor-id="pytorch-루프-mlflow-직접-호출-단일-gpu">PyTorch 루프 + MLflow 직접 호출 (단일 GPU)</h2>
+<p>가장 단순한 형태입니다. 시스템 메트릭(CPU/GPU/메모리/네트워크/디스크)을 자동 수집하고 모든 epoch을 하나의 run에 묶습니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>mlflow.set_experiment(<span class="st">"/Users/&lt;email&gt;/recommender-1x1"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run(</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    run_name<span class="op">=</span><span class="st">"recommender-1x1"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    log_system_metrics<span class="op">=</span><span class="va">True</span>,                <span class="co"># MLflow 3.0+: 시스템 메트릭 자동 수집</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>) <span class="im">as</span> run:</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    run_id <span class="op">=</span> run.info.run_id</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 하이퍼파라미터</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    mlflow.log_params({</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"n_users"</span>: N_USERS,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"n_items"</span>: N_ITEMS,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"emb_dim"</span>: EMB_DIM,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">"batch_size"</span>: BATCH_SIZE,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"lr"</span>: LR,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(NUM_EPOCHS):</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        train_loss <span class="op">=</span> train_one_epoch(model, optimizer, train_loader, device)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        val_loss, val_auc <span class="op">=</span> evaluate(model, val_loader, device)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 에폭별 메트릭</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        mlflow.log_metric(<span class="st">"train/loss"</span>, train_loss, step<span class="op">=</span>epoch)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        mlflow.log_metric(<span class="st">"val/loss"</span>, val_loss, step<span class="op">=</span>epoch)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        mlflow.log_metric(<span class="st">"val/auc"</span>, val_auc, step<span class="op">=</span>epoch)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>mlflow.pytorch.autolog()</code>를 호출하면 옵티마이저 step, learning rate, 모델 그래프 등을 자동으로 기록합니다. 반드시 <strong>rank 0에서만</strong> 호출해야 합니다.</p>
+</section>
+<section id="mlflow-3.0-핵심-기능" class="level2">
+<h2 class="anchored" data-anchor-id="mlflow-3.0-핵심-기능">MLflow 3.0+ 핵심 기능</h2>
+<section id="log_system_metricstrue" class="level3">
+<h3 class="anchored" data-anchor-id="log_system_metricstrue">1. <code>log_system_metrics=True</code></h3>
+<p><code>mlflow.start_run(..., log_system_metrics=True)</code>로 시스템 메트릭이 자동 수집됩니다. MLflow UI의 System Metrics 탭에서 GPU 활용도, 메모리, 네트워크, 디스크 I/O를 볼 수 있습니다. 분산 학습에서 GPU가 idle 상태인지(데이터 로더 병목) 진단할 때 핵심 도구입니다.</p>
+<p>Multi-node TorchDistributor에는 함정이 하나 있습니다. <code>local_mode=False</code>에서는 학습이 worker 노드에서만 실행되고 driver는 코디네이션만 담당합니다. 따라서 driver-side <code>log_system_metrics=True</code>만으론 idle driver의 메트릭만 잡히고 실제 GPU 사용률은 비어 버립니다. 실제 학습 노드의 메트릭을 보려면 <strong>rank-0 worker가 <code>mlflow.start_run(run_id=..., log_system_metrics=True)</code>로 attach할 때 함께 켜야</strong> 합니다. single-node(<code>local_mode=True</code>)는 driver와 worker가 같은 머신이라 driver-side만으로 충분합니다. Lightning을 쓰는 경우 <code>MLFlowLogger</code>에는 <code>log_system_metrics</code> 옵션이 없으므로, worker 함수 안에서 <code>MLFlowLogger(run_id=...)</code>와 별도로 <code>mlflow.start_run(run_id=..., log_system_metrics=True)</code>를 호출해 메트릭 스레드를 띄워야 합니다(아래 TorchDistributor 섹션 예제 참고).</p>
+</section>
+<section id="에폭별-loggedmodel-mlflow.pytorch.log_model...-step..." class="level3">
+<h3 class="anchored" data-anchor-id="에폭별-loggedmodel-mlflow.pytorch.log_model...-step...">2. 에폭별 <code>LoggedModel</code> (<code>mlflow.pytorch.log_model(..., step=...)</code>)</h3>
+<p>기존 MLflow에서는 <code>log_model</code>을 여러 번 호출하면 artifact가 중복됐습니다. MLflow 3.0+는 <strong>하나의 run 안에 여러 LoggedModel</strong>을 가질 수 있어, 각 epoch의 checkpoint를 모두 보존하고 학습 종료 후 가장 좋은 것을 선택할 수 있습니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 시그니처 생성 (Unity Catalog 등록을 위해 필수)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>sample_input <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(train_loader))[<span class="dv">0</span>][:<span class="dv">5</span>].cpu().numpy()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>model.<span class="bu">eval</span>()</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.no_grad():</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    sample_output <span class="op">=</span> model(<span class="op">*</span>[torch.tensor(x).to(device) <span class="cf">for</span> x <span class="kw">in</span> sample_input]).cpu().numpy()</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>signature <span class="op">=</span> mlflow.models.infer_signature(sample_input, sample_output)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(NUM_EPOCHS):</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... 학습 / 검증 ...</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    model_info <span class="op">=</span> mlflow.pytorch.log_model(</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        pytorch_model<span class="op">=</span>model,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span><span class="ss">f"recommender-epoch-</span><span class="sc">{</span>epoch<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        params<span class="op">=</span>{<span class="st">"epoch"</span>: epoch <span class="op">+</span> <span class="dv">1</span>, <span class="st">"architecture"</span>: <span class="st">"TwoTowerMLP"</span>},</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        step<span class="op">=</span>epoch,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        signature<span class="op">=</span>signature,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        input_example<span class="op">=</span>sample_input,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 메트릭을 이 LoggedModel과 dataset에 연결</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    mlflow.log_metric(</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"val/auc"</span>, val_auc,</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        step<span class="op">=</span>epoch,</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        model_id<span class="op">=</span>model_info.model_id,</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        dataset<span class="op">=</span>val_mlflow_dataset,                  <span class="co"># 아래 #3 참고</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<p>학습 종료 후 best 모델을 찾는 방법은 다음과 같습니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> mlflow <span class="im">import</span> MlflowClient</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> MlflowClient()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>run <span class="op">=</span> client.get_run(run_id)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>model_outputs <span class="op">=</span> run.outputs.model_outputs  <span class="co"># 모든 LoggedModel</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ... 메트릭과 묶어 정렬 ...</span></span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="dataset-linking-mlflow.data.from_pandas" class="level3">
+<h3 class="anchored" data-anchor-id="dataset-linking-mlflow.data.from_pandas">3. Dataset linking (<code>mlflow.data.from_pandas</code>)</h3>
+<p>학습 데이터를 MLflow dataset 객체로 등록하면, 메트릭이 어느 데이터셋에서 측정됐는지 추적할 수 있습니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>train_dataset <span class="op">=</span> mlflow.data.from_pandas(train_pd, name<span class="op">=</span><span class="st">"train"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>val_dataset <span class="op">=</span> mlflow.data.from_pandas(val_pd, name<span class="op">=</span><span class="st">"validation"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># log_metric 호출 시 dataset 인자로 연결</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>mlflow.log_metric(<span class="st">"train/loss"</span>, loss, step<span class="op">=</span>epoch, dataset<span class="op">=</span>train_dataset)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="torchdistributor-distributed-사용-시" class="level2">
+<h2 class="anchored" data-anchor-id="torchdistributor-distributed-사용-시">TorchDistributor / <code>@distributed</code> 사용 시</h2>
+<p>함수 안에서 새로 <code>mlflow.start_run</code>을 하지 말고, <strong>driver에서 run_id를 넘긴 뒤 child에서 <code>mlflow.start_run(run_id=run_id)</code>로 attach</strong>합니다.</p>
+<p>또한 child 프로세스는 driver의 Databricks 자격증명을 자동 상속하지 않으므로, <code>DATABRICKS_HOST</code>와 <code>DATABRICKS_TOKEN</code>을 명시적으로 전달해야 합니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Driver (notebook cell)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> dbutils.notebook.entry_point.getDbutils().notebook().getContext()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>db_host <span class="op">=</span> context.extraContext().<span class="bu">apply</span>(<span class="st">"api_url"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>db_token <span class="op">=</span> context.apiToken().get()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run(run_name<span class="op">=</span><span class="st">"recommender-mxn"</span>, log_system_metrics<span class="op">=</span><span class="va">True</span>) <span class="im">as</span> run:</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    run_id <span class="op">=</span> run.info.run_id</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># with-block을 빠져나가면 driver-side run은 FINISHED 상태가 되지만, run_id로 child에서 metric을 계속 append할 수 있습니다.</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>TorchDistributor(num_processes<span class="op">=</span><span class="dv">8</span>, local_mode<span class="op">=</span><span class="va">False</span>, use_gpu<span class="op">=</span><span class="va">True</span>).run(</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    train_fn,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    run_id<span class="op">=</span>run_id,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    db_host<span class="op">=</span>db_host,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    db_token<span class="op">=</span>db_token,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... 기타 학습 인자 ...</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># train_fn (모듈 최상위 또는 별도 .py)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train_fn(run_id, db_host, db_token, ...):</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> os, mlflow</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    os.environ[<span class="st">"DATABRICKS_HOST"</span>] <span class="op">=</span> db_host</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    os.environ[<span class="st">"DATABRICKS_TOKEN"</span>] <span class="op">=</span> db_token</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    rank <span class="op">=</span> <span class="bu">int</span>(os.environ[<span class="st">"RANK"</span>])</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rank <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># multi-node(local_mode=False)에서는 driver가 학습에 참여하지 않으므로</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 실제 GPU 메트릭을 잡으려면 worker 측 attach 시점에 log_system_metrics를 켭니다.</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        mlflow.start_run(run_id<span class="op">=</span>run_id, log_system_metrics<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... DDP 학습 ...</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rank <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        mlflow.end_run()</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="lightning-mlflow" class="level2">
+<h2 class="anchored" data-anchor-id="lightning-mlflow">Lightning + MLflow</h2>
+<p><code>MLFlowLogger</code>를 <code>Trainer(logger=...)</code>로 명시 주입합니다. rank-0 가드는 Lightning이 알아서 처리해 줍니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lightning.pytorch.loggers <span class="im">import</span> MLFlowLogger</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>logger <span class="op">=</span> MLFlowLogger(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    experiment_name<span class="op">=</span><span class="st">"/Users/&lt;email&gt;/recommender-lightning"</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    run_name<span class="op">=</span><span class="st">"recommender-1xn"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    tracking_uri<span class="op">=</span><span class="st">"databricks"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    log_model<span class="op">=</span><span class="va">True</span>,                          <span class="co"># epoch별 checkpoint 자동 등록</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>trainer <span class="op">=</span> pl.Trainer(logger<span class="op">=</span>logger, ...)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="unity-catalog-모델-등록" class="level2">
+<h2 class="anchored" data-anchor-id="unity-catalog-모델-등록">Unity Catalog 모델 등록</h2>
+<p>학습 후 best checkpoint를 UC Model Registry에 등록합니다. 등록에는 시그니처가 반드시 필요합니다(위 #2 참고).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>uc_model_name <span class="op">=</span> <span class="st">"main.distributed_cookbook.two_tower_mlp"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>model_uri <span class="op">=</span> <span class="ss">f"runs:/</span><span class="sc">{</span>run_id<span class="sc">}</span><span class="ss">/model"</span>          <span class="co"># 또는 best LoggedModel의 model_uri</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>registered <span class="op">=</span> mlflow.register_model(model_uri, uc_model_name)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Registered </span><span class="sc">{</span>uc_model_name<span class="sc">}</span><span class="ss"> v</span><span class="sc">{</span>registered<span class="sc">.</span>version<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<p>이 단계는 각 셀의 <code>eval_and_register</code> 노트북에서 처리합니다.</p>
+</section>
+<section id="databricks-환경에서의-특수성" class="level2">
+<h2 class="anchored" data-anchor-id="databricks-환경에서의-특수성">Databricks 환경에서의 특수성</h2>
+<p>위 패턴은 모두 일반 MLflow와 동일하지만, Databricks 위에서는 몇 가지 부분이 자동·특수 처리됩니다. 분산 학습에서 자주 헷갈리는 지점만 정리해 두겠습니다.</p>
+<section id="tracking_uridatabricks가-자동인-이유" class="level3">
+<h3 class="anchored" data-anchor-id="tracking_uridatabricks가-자동인-이유"><code>tracking_uri="databricks"</code>가 자동인 이유</h3>
+<p>Databricks 노트북이나 Job에서 시작된 Python은 환경변수 <code>MLFLOW_TRACKING_URI=databricks</code>가 미리 세팅되어 있습니다. 그래서 별다른 설정 없이도 워크스페이스 MLflow로 라우팅됩니다.</p>
+<ul>
+<li><code>mlflow.start_run(...)</code>만 호출해도 자동으로 워크스페이스 MLflow에 기록됩니다.</li>
+<li><code>MLFlowLogger(tracking_uri="databricks")</code>의 명시는 redundant하지만 child 프로세스 안전성 차원에서 권장합니다(child가 환경변수를 못 받는 시나리오 대비).</li>
+</ul>
+<p>TorchDistributor child는 fresh interpreter이지만 환경변수는 상속하므로 <code>MLFLOW_TRACKING_URI</code>도 자동 전달됩니다. 그럼에도 child가 인증에 실패한다면 원인은 URI가 아니라 토큰입니다(<a href="../00-foundations/env-auth.html"><code>env-auth.md</code></a>).</p>
+</section>
+<section id="driver의-with-block이-빠지면-어떻게-attach가-가능한가" class="level3">
+<h3 class="anchored" data-anchor-id="driver의-with-block이-빠지면-어떻게-attach가-가능한가">Driver의 with-block이 빠지면 어떻게 attach가 가능한가</h3>
+<p><code>ops-mlflow-tracking.md</code>의 multi-node 패턴은 직관에 반하는 부분이 있습니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run(...) <span class="im">as</span> run:</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    run_id <span class="op">=</span> run.info.run_id</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># with-block을 빠져나옴 → driver-side run은 FINISHED 상태</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 그런데 child에서 attach가 가능</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>TorchDistributor(...).run(train_fn, run_id<span class="op">=</span>run_id)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<p>원리는 단순합니다. MLflow의 <code>start_run(run_id=...)</code>은 <strong>이미 종료된 run에도 metric을 추가로 append할 수 있게</strong> 설계됐습니다(MLflow 1.x 이래의 동작). UI는 latest metric까지 그대로 보여 줍니다. driver의 <code>end_run</code>은 “현재 thread의 active run을 닫는다”는 의미일 뿐, run 객체 자체는 서버에 남아 있습니다.</p>
+<p>MLflow 3.0+에서도 동작은 같습니다. 다만 system_metrics는 child에서 별도로 켜야 한다는 점만 다릅니다(<a href="../00-foundations/ops-mlflow-tracking.html"><code>ops-mlflow-tracking.md</code> §1</a>의 multi-node 함정).</p>
+</section>
+<section id="unity-catalog-model-registry-권한" class="level3">
+<h3 class="anchored" data-anchor-id="unity-catalog-model-registry-권한">Unity Catalog Model Registry 권한</h3>
+<p>학습 종료 후 <code>mlflow.register_model(uri, "main.distributed_cookbook.two_tower_mlp")</code>가 막히는 흔한 이유는 권한입니다. 필요한 grant는 다음과 같습니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">USE</span> CATALOG <span class="kw">ON</span> CATALOG main <span class="kw">TO</span> `<span class="op">&lt;</span><span class="fu">user</span><span class="op">-</span><span class="kw">or</span><span class="op">-</span>sp<span class="op">&gt;</span>`;</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">USE</span> <span class="kw">SCHEMA</span> <span class="kw">ON</span> <span class="kw">SCHEMA</span> main.distributed_cookbook <span class="kw">TO</span> `<span class="op">&lt;</span><span class="fu">user</span><span class="op">-</span><span class="kw">or</span><span class="op">-</span>sp<span class="op">&gt;</span>`;</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">CREATE</span> MODEL <span class="kw">ON</span> <span class="kw">SCHEMA</span> main.distributed_cookbook <span class="kw">TO</span> `<span class="op">&lt;</span><span class="fu">user</span><span class="op">-</span><span class="kw">or</span><span class="op">-</span>sp<span class="op">&gt;</span>`;</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<p>흔히 보는 에러는 <code>PERMISSION_DENIED: User does not have CREATE MODEL on schema</code>입니다. 자세한 권한 모델은 <a href="../00-foundations/env-auth.html"><code>env-auth.md</code></a>의 “권한 함정” 섹션을 참조하세요.</p>
+<p><code>mlflow.set_registry_uri("databricks-uc")</code>가 UC Model Registry로 라우팅하는 핵심 호출입니다(DBR 17.3 LTS ML은 default가 UC). 워크스페이스 registry로 등록하려면 <code>"databricks"</code>로 명시해야 합니다. 본 쿡북은 UC 등록을 가정합니다.</p>
+</section>
+<section id="experiment-경로-사용자-vs-sp" class="level3">
+<h3 class="anchored" data-anchor-id="experiment-경로-사용자-vs-sp">Experiment 경로 — 사용자 vs SP</h3>
+<p>실행 주체에 따라 experiment 경로를 어디에 두어야 하는지 정리하면 다음과 같습니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 66%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>실행 주체</th>
+<th>권장 EXPERIMENT_PATH</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Interactive 노트북 (사용자)</td>
+<td><code>/Users/{username}/recommender-...</code></td>
+</tr>
+<tr class="even">
+<td>Job, <code>run_as = 사용자</code></td>
+<td>동일</td>
+</tr>
+<tr class="odd">
+<td>Job, <code>run_as = service principal</code></td>
+<td><code>/Shared/recommender-...</code> (SP는 personal 폴더 없음)</td>
+</tr>
+</tbody>
+</table>
+<p>본 쿡북의 <code>EXPERIMENT_PATH = f"/Users/{USERNAME}/..."</code>는 사용자 기준입니다. SP로 돌릴 때는 setup 노트북의 경로를 교체합니다. 자세한 내용은 <a href="../00-foundations/env-auth.html"><code>env-auth.md</code></a>를 참조하세요.</p>
+</section>
+</section>
+<section id="참고" class="level2">
+<h2 class="anchored" data-anchor-id="참고">참고</h2>
+<p>자세한 내용은 다음 자료를 참조하세요.</p>
+<ul>
+<li><a href="https://docs.databricks.com/aws/en/machine-learning/train-model/huggingface/">HF Transformers on Databricks</a></li>
+<li><a href="https://mlflow.org/docs/latest/tracking/autolog.html">MLflow autolog</a></li>
+<li><a href="https://mlflow.org/docs/latest/model">MLflow 3.0 LoggedModel</a></li>
+<li><a href="https://mlflow.org/docs/latest/system-metrics">MLflow system metrics</a></li>
+<li><a href="https://docs.databricks.com/aws/en/machine-learning/manage-model-lifecycle/index">Unity Catalog Model Registry</a></li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "복사완료!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "복사완료!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/aiden-jeon\.github\.io\/databricks-distributed-training");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../00-foundations/data-uc-volumes-checkpoints.html" class="pagination-link" aria-label="UC Volumes에 체크포인트 저장">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">UC Volumes에 체크포인트 저장</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../00-foundations/ops-resume-training.html" class="pagination-link" aria-label="학습 재개 (Resume)">
+        <span class="nav-page-text">학습 재개 (Resume)</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/edit/main/00-foundations/ops-mlflow-tracking.md" class="toc-action"><i class="bi bi-github"></i>편집</a></li><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/blob/main/00-foundations/ops-mlflow-tracking.md" class="toc-action"><i class="bi empty"></i>소스코드 보기</a></li></ul></div></div></div></footer></body></html>

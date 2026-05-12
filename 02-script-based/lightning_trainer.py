@@ -142,6 +142,9 @@ def fit(
         mode="min",
     )
 
+    # 1x1에서 strategy="ddp"를 강제하면 단일 프로세스에서 NCCL init이 실패할 수 있다.
+    # "auto"는 single process 환경을 안전하게 처리하면서, devices>1 또는 num_nodes>1
+    # 일 때만 명시적으로 "ddp"를 켠다.
     strategy = "ddp" if (devices > 1 or num_nodes > 1) else "auto"
     trainer = L.Trainer(
         accelerator="gpu",

@@ -1,0 +1,161 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "index.qmd"
+    - "00-foundations/README.md"
+    - "00-foundations/**/*.md"
+    - "01-notebook-based/README.md"
+    - "01-notebook-based/**/*.md"
+    - "01-notebook-based/**/*.ipynb"
+    - "02-script-based/README.md"
+    - "02-script-based/**/*.md"
+    - "02-script-based/**/*.ipynb"
+    - "03-custom-package-script-based/README.md"
+    - "03-custom-package-script-based/**/*.md"
+    - "03-custom-package-script-based/**/*.ipynb"
+    - "docs/README.md"
+    - "docs/**/*.md"
+    - "!CLAUDE.md"
+    - "!AGENTS.md"
+    - "!03-custom-package-script-based/custom_packages/**"
+
+website:
+  title: "Databricks Distributed Training Cookbook"
+  description: "Databricks에서 Two-Tower MLP 추천 모델을 TorchDistributor / PyTorch Lightning / HF Accelerate로 분산학습하는 패턴을 코드 조직 방식 × launcher × 토폴로지 매트릭스로 정리한 쿡북."
+  site-url: https://aiden-jeon.github.io/databricks-distributed-training
+  repo-url: https://github.com/Aiden-Jeon/databricks-distributed-training
+  repo-actions: [edit, source]
+  open-graph: true
+  twitter-card: true
+  page-navigation: true
+  search:
+    location: navbar
+    type: overlay
+  navbar:
+    background: primary
+    left:
+      - href: index.qmd
+        text: Home
+      - href: 00-foundations/README.md
+        text: 00 · Foundations
+      - text: Cookbooks
+        menu:
+          - href: 01-notebook-based/README.md
+            text: 01 · Notebook-based
+          - href: 02-script-based/README.md
+            text: 02 · Script-based
+          - href: 03-custom-package-script-based/README.md
+            text: 03 · Custom-package Script-based
+      - href: docs/README.md
+        text: 참고 자료
+  sidebar:
+    style: docked
+    collapse-level: 3
+    contents:
+      - text: Home
+        href: index.qmd
+      - section: "00 · Foundations"
+        href: 00-foundations/README.md
+        contents:
+          - section: "Concepts"
+            contents:
+              - 00-foundations/concepts-recommender-baseline.md
+              - 00-foundations/concepts-distributed-training.md
+              - 00-foundations/concepts-torchdistributor-internals.md
+          - section: "Environment"
+            contents:
+              - 00-foundations/env-databricks-environments.md
+              - 00-foundations/env-cluster-recipes.md
+              - 00-foundations/env-library-management.md
+              - 00-foundations/env-auth.md
+          - section: "Data"
+            contents:
+              - 00-foundations/data-pipeline.md
+              - 00-foundations/data-uc-volumes-checkpoints.md
+          - section: "Ops"
+            contents:
+              - 00-foundations/ops-mlflow-tracking.md
+              - 00-foundations/ops-resume-training.md
+          - section: "Debug"
+            contents:
+              - 00-foundations/debug-common-pitfalls.md
+      - section: "01 · Notebook-based"
+        href: 01-notebook-based/README.md
+        contents:
+          - 01-notebook-based/00-setup.ipynb
+          - 01-notebook-based/01-data_prep.ipynb
+          - 01-notebook-based/02-train_torch_distributor_1x1_1xN.ipynb
+          - 01-notebook-based/03-train_torch_distributor_MxN.ipynb
+          - 01-notebook-based/04-train_pytorch_lightning_1x1_1xN.ipynb
+          - 01-notebook-based/05-train_pytorch_lightning_MxN.ipynb
+      - section: "02 · Script-based"
+        href: 02-script-based/README.md
+        contents:
+          - 02-script-based/00-setup.ipynb
+          - 02-script-based/01-data_prep.ipynb
+          - section: "TorchDistributor"
+            contents:
+              - 02-script-based/02-launch_torch_distributor_1x1.ipynb
+              - 02-script-based/03-launch_torch_distributor_1xN.ipynb
+              - 02-script-based/04-launch_torch_distributor_MxN.ipynb
+          - section: "PyTorch Lightning"
+            contents:
+              - 02-script-based/05-launch_lightning_trainer_1x1.ipynb
+              - 02-script-based/06-launch_lightning_trainer_1xN.ipynb
+              - 02-script-based/07-launch_lightning_trainer_MxN.ipynb
+          - section: "Accelerate"
+            contents:
+              - 02-script-based/08-launch_accelerator_MxN.ipynb
+      - section: "03 · Custom-package Script-based"
+        href: 03-custom-package-script-based/README.md
+        contents:
+          - 03-custom-package-script-based/00-setup.ipynb
+          - 03-custom-package-script-based/01-data_prep.ipynb
+          - section: "TorchDistributor"
+            contents:
+              - 03-custom-package-script-based/02-launch_torch_distributor_1x1.ipynb
+              - 03-custom-package-script-based/03-launch_torch_distributor_1xN.ipynb
+              - 03-custom-package-script-based/04-launch_torch_distributor_MxN.ipynb
+          - section: "PyTorch Lightning"
+            contents:
+              - 03-custom-package-script-based/05-launch_lightning_trainer_1x1.ipynb
+              - 03-custom-package-script-based/06-launch_lightning_trainer_1xN.ipynb
+              - 03-custom-package-script-based/07-launch_lightning_trainer_MxN.ipynb
+          - section: "Accelerate"
+            contents:
+              - 03-custom-package-script-based/08-launch_accelerator_MxN.ipynb
+      - section: "참고 자료"
+        href: docs/README.md
+        contents:
+          - docs/official-notebooks-mirror.md
+
+format:
+  html:
+    theme:
+      light: [cosmo, theme.scss]
+      dark: [darkly, theme.scss]
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    grid:
+      sidebar-width: 280px
+      body-width: 760px
+      margin-width: 260px
+      gutter-width: 2.5rem
+    code-copy: true
+    code-overflow: scroll
+    highlight-style: github-dark
+    include-in-header:
+      text: |
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    anchor-sections: true
+    description-meta: "Databricks에서 Two-Tower MLP 추천 모델을 TorchDistributor / PyTorch Lightning / HF Accelerate로 분산학습하는 패턴을 코드 조직 방식 × launcher × 토폴로지 매트릭스로 정리한 쿡북."
+
+execute:
+  enabled: false
+  freeze: true
+
+lang: ko

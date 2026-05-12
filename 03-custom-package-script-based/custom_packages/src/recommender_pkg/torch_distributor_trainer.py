@@ -94,9 +94,14 @@ def train_fn(
 
     train_dataset = load_split("train")
     val_dataset = load_split("val")
+    # train: drop_last=True — 각 rank의 step 수를 동일하게 맞춰 누가 먼저 끝나면서
+    # AllReduce를 기다리는 hang을 막는다 (common-pitfalls §4).
     train_sampler = DistributedSampler(
         train_dataset, num_replicas=world_size, rank=global_rank, drop_last=True
     )
+    # val: shuffle=False (deterministic 평가), drop_last=False (전체 데이터 사용).
+    # 마지막 batch가 rank마다 크기가 다를 수 있으나, 아래 loss/n을 all_reduce(SUM) 후
+    # 나누는 방식이라 unbiased로 평균이 나온다.
     val_sampler = DistributedSampler(
         val_dataset, num_replicas=world_size, rank=global_rank, shuffle=False, drop_last=False
     )
@@ -131,12 +136,17 @@ def train_fn(
 
     global_step = 0
     for epoch in range(num_epochs):
+        # DistributedSampler가 epoch마다 다른 shuffle seed를 쓰도록 알려준다.
+        # 빼먹으면 모든 epoch이 동일한 순서로 돌아 학습 dynamics가 망가진다.
         train_sampler.set_epoch(epoch)
         model.train()
         for step, (u, i, y) in enumerate(train_loader):
             if step >= max_steps_per_epoch:
                 break
             u, i, y = u.to(device), i.to(device), y.to(device)
+            # set_to_none=True: grad를 0 tensor로 채우지 않고 None으로 해제. 다음
+            # backward에서 새로 할당하므로 메모리 회수 효과. 임베딩처럼 큰 grad 텐서에서
+            # 유의미한 절감.
             optimizer.zero_grad(set_to_none=True)
             logits = model(u, i)
             loss = loss_fn(logits, y)
@@ -167,12 +177,17 @@ def train_fn(
                 f"(best={early_stop.best:.6f} counter={early_stop.counter})"
             )
 
+        # 모든 rank가 all_reduce된 동일한 val_loss로 step() 호출 → 같은 시점에 break.
+        # 이게 보장돼야 rank 간 학습 종료 시점이 어긋나 hang 되지 않는다 (model.py 의
+        # EarlyStopping docstring 참고).
         if early_stop.step(val_loss):
             if global_rank == 0:
                 print(f"early stop at epoch {epoch} (best val_loss={early_stop.best:.6f})")
                 mlflow.log_metric("early_stop_epoch", epoch)
             break
 
+    # rank 0가 ckpt 저장하는 동안 다른 rank가 먼저 destroy_process_group으로 들어가
+    # NCCL 통신이 깨지지 않도록 동기화.
     dist.barrier()
     if global_rank == 0:
         torch.save({"model": model.module.state_dict()}, ckpt_path)

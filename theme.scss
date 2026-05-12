@@ -84,6 +84,23 @@ pre:not(.sourceCode) {
   font-size: 0.8125rem;
 }
 
+// Navbar — cosmo/darkly 기본 크기 차이 제거 + 전체적으로 컴팩트하게.
+.navbar {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  min-height: 44px;
+}
+.navbar .navbar-brand {
+  font-size: 1rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+.navbar .navbar-nav .nav-link {
+  font-size: 0.875rem;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+
 // 외곽 여백 — page-columns 양옆에 패딩 추가.
 @media (min-width: 992px) {
   .page-columns {

@@ -54,7 +54,7 @@ def fn():
 
 ## 함정 3: 의존성 충돌
 
-DBR 17.3 LTS ML은 `torch`, `accelerate`, `transformers` 등을 **고정 버전으로 사전 설치**합니다 (`databricks-environments.md` 표 참고). `%pip install lightning` 같은 명령은 lightning이 요구하는 `torch` 버전이 DBR 사전 설치 버전과 호환되지 않으면 torch를 downgrade/upgrade하려 시도하고, NCCL/CUDA 호환성이 깨질 수 있습니다.
+DBR 17.3 LTS ML은 `torch`, `accelerate`, `transformers` 등을 **고정 버전으로 사전 설치**합니다 (`env-databricks-environments.md` 표 참고). `%pip install lightning` 같은 명령은 lightning이 요구하는 `torch` 버전이 DBR 사전 설치 버전과 호환되지 않으면 torch를 downgrade/upgrade하려 시도하고, NCCL/CUDA 호환성이 깨질 수 있습니다.
 
 권장:
 - `%pip install --quiet "lightning==2.5.1"` 처럼 **DBR과 호환되는 정확한 버전을 고정** (본 쿡북 패턴)

@@ -6,7 +6,7 @@
 
 쿡북 셀들의 학습 시간은 **15분 이내**로 제한합니다. *분산 학습 패턴 자체*에 집중하면서도 **val/loss가 의미 있게 감소하는** 학습을 보여주기 위해 [MovieLens 25M](https://files.grouplens.org/datasets/movielens/ml-25m.zip) (GroupLens, ~250MB) 실데이터를 사용합니다. 합성 데이터로는 랜덤 라벨 때문에 metric이 움직이지 않습니다.
 
-자세한 데이터 스키마와 implicit feedback 변환 규칙은 [`recommender-baseline.md`](recommender-baseline.md). 핵심 요약:
+자세한 데이터 스키마와 implicit feedback 변환 규칙은 [`concepts-recommender-baseline.md`](concepts-recommender-baseline.md). 핵심 요약:
 
 | 단계 | 처리 |
 |------|------|

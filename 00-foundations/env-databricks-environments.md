@@ -32,13 +32,13 @@
 
 추가 설치 (모든 행의 `00-setup.ipynb`):
 - `lightning==2.5.1` — DBR 미포함
-- `nvidia-ml-py` — MLflow `log_system_metrics=True` 가 GPU 메트릭을 수집할 때 필요 ([common-pitfalls.md §9](common-pitfalls.md))
+- `nvidia-ml-py` — MLflow `log_system_metrics=True` 가 GPU 메트릭을 수집할 때 필요 ([debug-common-pitfalls.md §9](debug-common-pitfalls.md))
 
 다른 DBR 버전 사용 시: torch/NCCL/CUDA 조합이 본 쿡북과 다를 수 있으므로 행 README의 "클러스터 권장 사양" 표를 참고해 인스턴스·라이브러리를 재조정합니다.
 
 ## 토폴로지별 클러스터 모양
 
-`cluster-recipes.md` 에 상세 정리. 핵심 요약:
+`env-cluster-recipes.md` 에 상세 정리. 핵심 요약:
 
 | 토폴로지 | Single node 토글 | Workers | TorchDistributor `local_mode` |
 |----------|-----------------|---------|------------------------------|
@@ -52,4 +52,4 @@ driver는 모든 토폴로지에서 GPU 인스턴스로 둡니다 (`local_mode=T
 
 - TorchDistributor: https://docs.databricks.com/aws/en/machine-learning/train-model/distributed-training/spark-pytorch-distributor
 - DBR 17.3 LTS ML release notes: https://docs.databricks.com/aws/en/release-notes/runtime/17.3lts-ml
-- 클러스터 세팅 상세: [`cluster-recipes.md`](cluster-recipes.md)
+- 클러스터 세팅 상세: [`env-cluster-recipes.md`](env-cluster-recipes.md)

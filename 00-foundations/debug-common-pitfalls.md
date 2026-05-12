@@ -81,7 +81,7 @@ def train_fn(db_host, db_token, run_id, ...):
 해결:
 1. `per_device_batch_size`를 절반으로 줄이고 점진적으로 늘립니다.
 2. `optimizer.zero_grad(set_to_none=True)`로 그래디언트 메모리 회수.
-3. 임베딩이 너무 크면 `cluster-recipes.md`에서 더 큰 GPU로 이동.
+3. 임베딩이 너무 크면 `env-cluster-recipes.md`에서 더 큰 GPU로 이동.
 
 ## 4. DDP에서 학습이 멈춘 것처럼 보입니다
 
@@ -97,13 +97,13 @@ def train_fn(db_host, db_token, run_id, ...):
 
 원인: 모든 rank가 `mlflow.start_run`을 호출.
 
-해결: [`mlflow-tracking.md`](mlflow-tracking.md)의 "rank 0만 로깅" 패턴 적용.
+해결: [`ops-mlflow-tracking.md`](ops-mlflow-tracking.md)의 "rank 0만 로깅" 패턴 적용.
 
 ## 6. UC Volume 저장이 너무 느립니다
 
 원인: 모든 rank가 매 save_steps마다 동시에 UC Volume에 씀.
 
-해결: [`uc-volumes-checkpoints.md`](uc-volumes-checkpoints.md)의 "local disk + copy" 패턴. rank 0만 저장.
+해결: [`data-uc-volumes-checkpoints.md`](data-uc-volumes-checkpoints.md)의 "local disk + copy" 패턴. rank 0만 저장.
 
 ## 7. Serverless GPU에서 multi-node가 안 됩니다
 
@@ -139,13 +139,13 @@ multi-node에서의 적용 범위: `%pip install` + `%restart_python`은 **noteb
 
 참고
 - MLflow가 인식하는 패키지 이름은 `nvidia-ml-py`(공식, 최신) 또는 `pynvml`(예전 별칭) 둘 다. 새로 설치한다면 `nvidia-ml-py` 권장.
-- 같은 차트가 비어 있는 또 다른 원인은 **multi-node에서 driver만 `log_system_metrics=True`** 인 경우(driver는 학습에 참여 안 함). 해결은 [`mlflow-tracking.md` §1](mlflow-tracking.md) — rank-0 worker가 `mlflow.start_run(run_id=..., log_system_metrics=True)`로 attach.
+- 같은 차트가 비어 있는 또 다른 원인은 **multi-node에서 driver만 `log_system_metrics=True`** 인 경우(driver는 학습에 참여 안 함). 해결은 [`ops-mlflow-tracking.md` §1](ops-mlflow-tracking.md) — rank-0 worker가 `mlflow.start_run(run_id=..., log_system_metrics=True)`로 attach.
 
 ## 11. multi-node worker의 로그를 어디서 보는가
 
 증상: `local_mode=False` 학습이 시작은 됐는데 노트북 셀에는 driver의 코디네이션 로그만 보입니다. worker rank들의 stderr를 찾지 못해 NCCL 에러 / OOM / 학습 진행 상황을 진단할 수 없습니다.
 
-원리: TorchDistributor가 `local_mode=False` 로 띄운 child는 **Spark task**로 실행됩니다 ([`torchdistributor-internals.md`](torchdistributor-internals.md)). 각 task의 stdout/stderr는 해당 worker 노드의 executor log에 쌓입니다.
+원리: TorchDistributor가 `local_mode=False` 로 띄운 child는 **Spark task**로 실행됩니다 ([`concepts-torchdistributor-internals.md`](concepts-torchdistributor-internals.md)). 각 task의 stdout/stderr는 해당 worker 노드의 executor log에 쌓입니다.
 
 ### 어디서 보는가
 

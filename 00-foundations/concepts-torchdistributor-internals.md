@@ -60,7 +60,7 @@ DDP 경험자가 torchrun에서 보던 환경변수와 동일합니다. TorchDis
 | `MASTER_ADDR` | 127.0.0.1 | rank 0 task가 스케줄된 worker의 host |
 | `MASTER_PORT` | 자동 할당 (29500 기본) | 자동 할당 |
 
-`common-pitfalls.md` §1 "직접 만들지 말 것" 의 의미: 위 값들이 모두 **TorchDistributor가 task 배치 시점에 계산** 합니다. 사용자가 노트북에서 `os.environ["MASTER_ADDR"]=...` 로 미리 잡으면 task별 정확한 값을 덮어쓰게 되어 NCCL rendezvous가 깨집니다.
+`debug-common-pitfalls.md` §1 "직접 만들지 말 것" 의 의미: 위 값들이 모두 **TorchDistributor가 task 배치 시점에 계산** 합니다. 사용자가 노트북에서 `os.environ["MASTER_ADDR"]=...` 로 미리 잡으면 task별 정확한 값을 덮어쓰게 되어 NCCL rendezvous가 깨집니다.
 
 ## NCCL rendezvous 단계
 
@@ -110,17 +110,17 @@ DDP 경험자가 torchrun에서 보던 환경변수와 동일합니다. TorchDis
 
 ## Spark UI에서 확인
 
-`local_mode=False` 학습 중에 Spark UI → Jobs 탭을 보면 **barrier stage** 하나가 떠 있습니다. task 수 = `M*N`. 각 task의 stderr가 executor log로 흘러 들어갑니다 — worker 노드의 NCCL/PyTorch 로그를 보려면 거기서 확인 (`common-pitfalls.md` 의 "Worker 로그 읽는 법" 섹션 참고).
+`local_mode=False` 학습 중에 Spark UI → Jobs 탭을 보면 **barrier stage** 하나가 떠 있습니다. task 수 = `M*N`. 각 task의 stderr가 executor log로 흘러 들어갑니다 — worker 노드의 NCCL/PyTorch 로그를 보려면 거기서 확인 (`debug-common-pitfalls.md` 의 "Worker 로그 읽는 법" 섹션 참고).
 
 ## 한계와 대안
 
 | 한계 | 대안 |
 |------|------|
 | 같은 노트북에서 `.run()` 연속 호출 불안정 | 노트북 분리 (본 쿡북 패턴) |
-| child가 driver 자격증명 자동 상속 안 함 | host/token 명시 전달 ([common-pitfalls.md §2-1](common-pitfalls.md)) |
-| cloudpickle 직렬화 한계 (SparkSession 등) | `train_fn` 모듈 최상위 정의, 인자는 primitives만 ([common-pitfalls.md §2](common-pitfalls.md)) |
+| child가 driver 자격증명 자동 상속 안 함 | host/token 명시 전달 ([debug-common-pitfalls.md §2-1](debug-common-pitfalls.md)) |
+| cloudpickle 직렬화 한계 (SparkSession 등) | `train_fn` 모듈 최상위 정의, 인자는 primitives만 ([debug-common-pitfalls.md §2](debug-common-pitfalls.md)) |
 | Autoscaling과 호환 안 됨 | DDP는 시작 시 노드 수 고정 → autoscaling OFF |
-| 학습 중 노드 교체 (spot) 불가 | spot interruption 시 전체 재시작 — [`resume-training.md`](resume-training.md) |
+| 학습 중 노드 교체 (spot) 불가 | spot interruption 시 전체 재시작 — [`ops-resume-training.md`](ops-resume-training.md) |
 
 ## 참고
 

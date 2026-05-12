@@ -58,27 +58,37 @@ website:
       - section: "00 · Foundations"
         href: 00-foundations/README.md
         contents:
-          - 00-foundations/recommender-baseline.md
-          - 00-foundations/distributed-training-concepts.md
-          - 00-foundations/databricks-environments.md
-          - 00-foundations/cluster-recipes.md
-          - 00-foundations/torchdistributor-internals.md
-          - 00-foundations/data-loading.md
-          - 00-foundations/mlflow-tracking.md
-          - 00-foundations/uc-volumes-checkpoints.md
-          - 00-foundations/resume-training.md
-          - 00-foundations/library-management.md
-          - 00-foundations/auth.md
-          - 00-foundations/common-pitfalls.md
+          - section: "Concepts"
+            contents:
+              - 00-foundations/concepts-recommender-baseline.md
+              - 00-foundations/concepts-distributed-training.md
+              - 00-foundations/concepts-torchdistributor-internals.md
+          - section: "Environment"
+            contents:
+              - 00-foundations/env-databricks-environments.md
+              - 00-foundations/env-cluster-recipes.md
+              - 00-foundations/env-library-management.md
+              - 00-foundations/env-auth.md
+          - section: "Data"
+            contents:
+              - 00-foundations/data-pipeline.md
+              - 00-foundations/data-uc-volumes-checkpoints.md
+          - section: "Ops"
+            contents:
+              - 00-foundations/ops-mlflow-tracking.md
+              - 00-foundations/ops-resume-training.md
+          - section: "Debug"
+            contents:
+              - 00-foundations/debug-common-pitfalls.md
       - section: "01 · Notebook-based"
         href: 01-notebook-based/README.md
         contents:
           - 01-notebook-based/00-setup.ipynb
           - 01-notebook-based/01-data_prep.ipynb
-          - 01-notebook-based/02-train_torch_distributor_single_node.ipynb
-          - 01-notebook-based/03-train_torch_distributor_multi_node.ipynb
-          - 01-notebook-based/04-train_pytorch_lightning_single_node.ipynb
-          - 01-notebook-based/05-train_pytorch_lightning_multi_node.ipynb
+          - 01-notebook-based/02-train_torch_distributor_1x1_1xN.ipynb
+          - 01-notebook-based/03-train_torch_distributor_MxN.ipynb
+          - 01-notebook-based/04-train_pytorch_lightning_1x1_1xN.ipynb
+          - 01-notebook-based/05-train_pytorch_lightning_MxN.ipynb
       - section: "02 · Script-based"
         href: 02-script-based/README.md
         contents:

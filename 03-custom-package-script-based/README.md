@@ -71,7 +71,7 @@ subprocess.run(["uv", "build"], cwd=f"{NOTEBOOK_DIR}/custom_packages", check=Tru
 
 추가 오버헤드: `uv build` (00-setup 안에서 ~수 초) + `%pip install ./dist/*.whl` (~10초). 한 번 빌드/설치하면 후속 노트북에서 즉시 import 가능.
 
-08 (Accelerate) 가 02-script-based의 08과 다른 점: 시스템 `accelerate` 가 wheel을 못 보므로 `sys.executable -m accelerate.commands.accelerate_cli launch -m recommender_pkg.torch_distributor_trainer` 모듈 모드 호출이 필수 ([`library-management.md`](../00-foundations/library-management.md) §"함정 4").
+08 (Accelerate) 가 02-script-based의 08과 다른 점: 시스템 `accelerate` 가 wheel을 못 보므로 `sys.executable -m accelerate.commands.accelerate_cli launch -m recommender_pkg.torch_distributor_trainer` 모듈 모드 호출이 필수 ([`env-library-management.md`](../00-foundations/env-library-management.md) §"함정 4").
 
 확장 시나리오 (본 쿡북 밖):
 - wheel을 PyPI / 내부 artifact registry에 publish → 여러 cluster·Job에서 동일 버전 import

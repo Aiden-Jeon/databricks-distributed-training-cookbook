@@ -6,7 +6,7 @@
 |---------|------|
 | Spot interruption | worker 노드가 회수되어 NCCL rendezvous가 깨짐 |
 | Cluster auto-termination | inactivity timeout, max runtime 초과 |
-| Driver OOM / process death | 메모리 누수, py4j callback 단절 ([torchdistributor-internals.md](torchdistributor-internals.md)) |
+| Driver OOM / process death | 메모리 누수, py4j callback 단절 ([concepts-torchdistributor-internals.md](concepts-torchdistributor-internals.md)) |
 | Job retry | Workflow에서 task 실패 후 재시작 |
 
 이 문서는 위 시나리오에서 **마지막 checkpoint부터 학습을 이어받는** 패턴을 정리합니다.
@@ -42,7 +42,7 @@ def save_checkpoint(ckpt_path, model, optimizer, epoch, global_step, early_stop)
     }, ckpt_path)
 ```
 
-`uc-volumes-checkpoints.md` 의 `save_checkpoint` 헬퍼는 model만 저장합니다. resume 시 위 시그니처로 확장합니다.
+`data-uc-volumes-checkpoints.md` 의 `save_checkpoint` 헬퍼는 model만 저장합니다. resume 시 위 시그니처로 확장합니다.
 
 ## resume 로직 (학습 함수 시작부)
 
@@ -145,4 +145,4 @@ Databricks Workflow의 task가 실패하면 `max_retries` 만큼 재실행됩니
 - PyTorch checkpoint 가이드: https://pytorch.org/tutorials/recipes/recipes/saving_and_loading_a_general_checkpoint.html
 - MLflow run resume: https://mlflow.org/docs/latest/python_api/mlflow.html#mlflow.start_run
 - Databricks Job retries: https://docs.databricks.com/aws/en/jobs/repair-job-failures
-- 본 쿡북의 checkpoint 저장: [`uc-volumes-checkpoints.md`](uc-volumes-checkpoints.md)
+- 본 쿡북의 checkpoint 저장: [`data-uc-volumes-checkpoints.md`](data-uc-volumes-checkpoints.md)

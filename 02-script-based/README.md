@@ -65,7 +65,7 @@ TorchDistributor(...).run(td_train_fn, ..., script_dir=SCRIPT_DIR)
 | 1×N | 03, 06, 08 | ON | 0 |
 | M×N | 04, 07, 08 | OFF | M (예: 1~3) |
 
-driver/worker는 모두 `g5.12xlarge` (4× A10G) 권장. Autoscaling 항상 OFF. 1×1은 `g5.2xlarge` (1× A10G)로도 충분. 상세는 [`00-foundations/cluster-recipes.md`](../00-foundations/cluster-recipes.md).
+driver/worker는 모두 `g5.12xlarge` (4× A10G) 권장. Autoscaling 항상 OFF. 1×1은 `g5.2xlarge` (1× A10G)로도 충분. 상세는 [`00-foundations/env-cluster-recipes.md`](../00-foundations/env-cluster-recipes.md).
 
 ## 📈 기대 결과
 
@@ -82,8 +82,8 @@ driver/worker는 모두 `g5.12xlarge` (4× A10G) 권장. Autoscaling 항상 OFF.
 | 08 | Accelerate (auto) | 토폴로지에 따라 위와 동일 | 동일 | 동일 |
 
 스크립트 분리 자체로 인한 추가 오버헤드는 없습니다 — `import` 한 함수가 같은 Python interpreter에서 실행되므로 01과 동일. 차이가 크다면:
-- `sys.path` 보강이 child에서 누락되어 import 실패 → Spark UI executor log 확인 ([`common-pitfalls.md §11`](../00-foundations/common-pitfalls.md))
-- 노트북 분리 후 cluster를 재시작했다면 `%pip install` 휘발 — `00-setup` 재실행 필요 ([`library-management.md`](../00-foundations/library-management.md))
+- `sys.path` 보강이 child에서 누락되어 import 실패 → Spark UI executor log 확인 ([`debug-common-pitfalls.md §11`](../00-foundations/debug-common-pitfalls.md))
+- 노트북 분리 후 cluster를 재시작했다면 `%pip install` 휘발 — `00-setup` 재실행 필요 ([`env-library-management.md`](../00-foundations/env-library-management.md))
 
 ## ➡️ 다음
 

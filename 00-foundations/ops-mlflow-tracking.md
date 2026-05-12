@@ -194,11 +194,11 @@ Databricks 노트북·Job에서 시작된 Python은 환경변수 `MLFLOW_TRACKIN
 - `mlflow.start_run(...)` 만 호출해도 자동으로 워크스페이스 MLflow에 기록
 - `MLFlowLogger(tracking_uri="databricks")` 의 명시도 redundant하지만 child 프로세스 안전성 차원에서 권장 (child가 환경변수를 못 받는 시나리오 대비)
 
-TorchDistributor child는 fresh interpreter이지만 환경변수는 상속하므로 `MLFLOW_TRACKING_URI` 도 자동 전달됩니다. 그래도 child가 인증 자체에 실패하는 이유는 토큰이지 URI가 아닙니다 ([`auth.md`](auth.md)).
+TorchDistributor child는 fresh interpreter이지만 환경변수는 상속하므로 `MLFLOW_TRACKING_URI` 도 자동 전달됩니다. 그래도 child가 인증 자체에 실패하는 이유는 토큰이지 URI가 아닙니다 ([`env-auth.md`](env-auth.md)).
 
 ### Driver의 with-block 이 빠지면 어떻게 attach가 가능한가
 
-`mlflow-tracking.md` 의 multi-node 패턴은 직관에 반합니다:
+`ops-mlflow-tracking.md` 의 multi-node 패턴은 직관에 반합니다:
 
 ```python
 with mlflow.start_run(...) as run:
@@ -211,7 +211,7 @@ TorchDistributor(...).run(train_fn, run_id=run_id)
 
 원리: MLflow의 `start_run(run_id=...)` 은 **이미 종료된 run에도 metric을 추가로 append할 수 있게** 설계됐습니다 (MLflow 1.x 이래의 동작). UI는 latest metric까지 그대로 보여줍니다. driver의 `end_run` 은 단지 "현재 thread의 active run을 닫는다" 일 뿐, run 객체 자체는 서버에 남아 있습니다.
 
-→ MLflow 3.0+ 에서도 같은 동작. system_metrics만 child에서 별도 켜야 한다는 점이 다를 뿐 ([`mlflow-tracking.md` §1](mlflow-tracking.md)의 multi-node 함정).
+→ MLflow 3.0+ 에서도 같은 동작. system_metrics만 child에서 별도 켜야 한다는 점이 다를 뿐 ([`ops-mlflow-tracking.md` §1](ops-mlflow-tracking.md)의 multi-node 함정).
 
 ### Unity Catalog Model Registry 권한
 
@@ -223,7 +223,7 @@ GRANT USE SCHEMA ON SCHEMA main.distributed_cookbook TO `<user-or-sp>`;
 GRANT CREATE MODEL ON SCHEMA main.distributed_cookbook TO `<user-or-sp>`;
 ```
 
-흔한 에러: `PERMISSION_DENIED: User does not have CREATE MODEL on schema`. 자세한 권한 모델은 [`auth.md`](auth.md) §"권한 함정".
+흔한 에러: `PERMISSION_DENIED: User does not have CREATE MODEL on schema`. 자세한 권한 모델은 [`env-auth.md`](env-auth.md) §"권한 함정".
 
 `mlflow.set_registry_uri("databricks-uc")` 가 UC Model Registry로 라우팅하는 핵심 호출 (DBR 17.3 LTS ML은 default가 UC). 워크스페이스 registry로 등록하려면 `"databricks"` 로 명시 — 본 쿡북은 UC 등록을 가정.
 
@@ -235,7 +235,7 @@ GRANT CREATE MODEL ON SCHEMA main.distributed_cookbook TO `<user-or-sp>`;
 | Job, `run_as = 사용자` | 동일 |
 | Job, `run_as = service principal` | `/Shared/recommender-...` (SP는 personal 폴더 없음) |
 
-본 쿡북의 `EXPERIMENT_PATH = f"/Users/{USERNAME}/..."` 는 사용자 기준. SP로 돌릴 때는 setup 노트북의 경로를 교체 — 자세한 내용은 [`auth.md`](auth.md).
+본 쿡북의 `EXPERIMENT_PATH = f"/Users/{USERNAME}/..."` 는 사용자 기준. SP로 돌릴 때는 setup 노트북의 경로를 교체 — 자세한 내용은 [`env-auth.md`](env-auth.md).
 
 ## 참고
 

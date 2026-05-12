@@ -20,7 +20,7 @@ userId/movieId는 dense index(0-based contiguous)로 remap합니다. embedding l
 | n_users | 162,541 |
 | n_items | 59,047 (실제 등장 movie 수) |
 
-다운로드와 전처리는 [`data-loading.md`](data-loading.md), 그리고 각 행의 `01-data_prep.ipynb`에서 처리합니다.
+다운로드와 전처리는 [`data-pipeline.md`](data-pipeline.md), 그리고 각 행의 `01-data_prep.ipynb`에서 처리합니다.
 
 ## 모델 구조
 

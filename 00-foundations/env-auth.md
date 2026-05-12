@@ -28,12 +28,12 @@ os.environ["DATABRICKS_TOKEN"] = db_token
 
 ## 왜 child가 driver의 자격증명을 자동 상속하지 않는가
 
-`common-pitfalls.md §2-1` 의 설명을 보강합니다. TorchDistributor child는:
+`debug-common-pitfalls.md §2-1` 의 설명을 보강합니다. TorchDistributor child는:
 
 - `local_mode=True` → driver의 subprocess이지만 **fresh Python interpreter**. driver Python 프로세스의 메모리(`dbutils` 객체, MLflow tracking client)는 상속되지 않습니다. 환경변수만 OS 레벨에서 상속됩니다.
 - `local_mode=False` → 다른 머신(worker 노드)의 executor task. driver와 완전히 다른 OS 프로세스라 더더욱 상속 없음.
 
-그리고 `dbutils.notebook.entry_point` 는 driver의 py4j gateway를 통해서만 접근 가능 — child 프로세스에서는 호출 자체가 안 됩니다 (`common-pitfalls.md §8`).
+그리고 `dbutils.notebook.entry_point` 는 driver의 py4j gateway를 통해서만 접근 가능 — child 프로세스에서는 호출 자체가 안 됩니다 (`debug-common-pitfalls.md §8`).
 
 따라서 **driver 셀에서 `dbutils` 로 자격증명을 추출** → **인자로 child에 명시 전달** 이 유일한 길입니다.
 
@@ -158,4 +158,4 @@ Job, run_as = service principal
 - Service principal OAuth: https://docs.databricks.com/aws/en/dev-tools/auth/oauth-m2m
 - `dbutils.secrets`: https://docs.databricks.com/aws/en/security/secrets/example-secret-workflow
 - UC Model Registry 권한: https://docs.databricks.com/aws/en/machine-learning/manage-model-lifecycle/index
-- 본 쿡북의 자격증명 함정: [`common-pitfalls.md` §2-1](common-pitfalls.md)
+- 본 쿡북의 자격증명 함정: [`debug-common-pitfalls.md` §2-1](debug-common-pitfalls.md)

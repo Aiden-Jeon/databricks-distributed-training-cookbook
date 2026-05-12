@@ -2,9 +2,9 @@
 
 토폴로지에 따른 권장 인스턴스 사양. 본 쿡북은 **AWS만 대상으로 합니다** (Azure/GCP는 스코프 밖). 가격은 변하므로 카탈로그 가격 비교는 별도로 확인합니다.
 
-기준 모델은 [recommender-baseline.md](recommender-baseline.md)의 Two-Tower MLP, 데이터셋은 MovieLens 25M 고정.
+기준 모델은 [concepts-recommender-baseline.md](concepts-recommender-baseline.md)의 Two-Tower MLP, 데이터셋은 MovieLens 25M 고정.
 
-본 쿡북은 ML-25M 단일 데이터셋 + 단일 모델 config로 통일했습니다 ([recommender-baseline.md](recommender-baseline.md)). 1×1 / 1×N / M×N의 차이는 **클러스터 모양과 launcher 설정**입니다.
+본 쿡북은 ML-25M 단일 데이터셋 + 단일 모델 config로 통일했습니다 ([concepts-recommender-baseline.md](concepts-recommender-baseline.md)). 1×1 / 1×N / M×N의 차이는 **클러스터 모양과 launcher 설정**입니다.
 
 ## 1×1 GPU (단일 노드 / 단일 GPU)
 

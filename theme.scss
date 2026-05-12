@@ -1,0 +1,122 @@
+/*-- scss:defaults --*/
+
+// 본문 Inter, 코드 JetBrains Mono. Bootswatch(cosmo/darkly)의 기본 폰트·크기 차이 제거.
+$font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif !default;
+$font-family-monospace: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace !default;
+$font-size-base: 0.875rem !default;
+
+// 코드 블록 배경 — GitHub dark 톤(부드러운 다크). $code-bg(인라인용)는 건드리지 않음.
+$code-block-bg: #161b22 !default;
+
+/*-- scss:rules --*/
+
+// 인라인 코드 — 라이트/다크 공통: 반투명 회색 pill + 본문색. claude.com 스타일.
+// Quarto가 p/li/td 안의 code:not(.sourceCode)를 별도 specificity(0,1,2)로 오버라이드하므로
+// 같은 선택자를 모두 포함해 specificity를 맞추고 cascade 순서로 승리.
+code:not(.sourceCode),
+p code:not(.sourceCode),
+li code:not(.sourceCode),
+td code:not(.sourceCode),
+p code.sourceCode,
+li code.sourceCode,
+td code.sourceCode {
+  background-color: rgba(175, 184, 193, 0.2);
+  color: inherit;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.875em;
+  word-wrap: break-word;
+}
+
+// 코드 블록(펜스) — 부드러운 다크 + 얇은 border + 둥근 모서리.
+div.sourceCode,
+pre.sourceCode,
+pre:not(.sourceCode) {
+  background-color: #161b22;
+  border: 1px solid rgba(240, 246, 252, 0.1);
+  border-radius: 8px;
+}
+
+div.sourceCode pre.sourceCode,
+pre.sourceCode,
+pre:not(.sourceCode) {
+  color: #e6edf3;
+}
+
+.code-copy-button {
+  color: #8b949e;
+  &:hover {
+    color: #e6edf3;
+  }
+}
+
+// 사이드바 — active 항목 회색 pill, hover 미세 강조.
+.sidebar-navigation .sidebar-link.active,
+.sidebar nav[role="doc-toc"] a.active {
+  background-color: rgba(175, 184, 193, 0.2);
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.sidebar-navigation .sidebar-link:hover {
+  background-color: rgba(175, 184, 193, 0.1);
+  border-radius: 6px;
+}
+
+// 사이드바 섹션 헤더 — 대문자 소형 레이블 톤.
+.sidebar-item.sidebar-item-section > .sidebar-item-container > .sidebar-item-text {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.65;
+}
+
+// 사이드바 항목 — 본문보다 한 단계 작은 폰트 + 수직 패딩.
+.sidebar-navigation .sidebar-item .sidebar-item-text {
+  font-size: 0.8125rem;
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+// TOC 항목도 동일 크기로 맞춤.
+.sidebar nav[role="doc-toc"] ul li a {
+  font-size: 0.8125rem;
+}
+
+// 외곽 여백 — page-columns 양옆에 패딩 추가.
+@media (min-width: 992px) {
+  .page-columns {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+// 콘텐츠 상하 패딩 — navbar 아래 호흡 + 하단 푸터 공간.
+main.content {
+  padding-top: 2rem;
+  padding-bottom: 4rem;
+}
+
+// 페이지 타이틀과 본문 사이 간격.
+.quarto-title-block {
+  margin-bottom: 2.5rem;
+}
+
+// 본문 수직 리듬 — 헤딩 위·아래 여백, 문단 간격, line-height.
+main h1:not(.title) { margin-top: 3rem; margin-bottom: 1rem; }
+main h2 { margin-top: 2.5rem; margin-bottom: 0.75rem; }
+main h3 { margin-top: 1.75rem; margin-bottom: 0.5rem; }
+main h4 { margin-top: 1.25rem; margin-bottom: 0.5rem; }
+main p { margin-bottom: 1rem; line-height: 1.7; }
+main ul, main ol { margin-bottom: 1rem; }
+main li { margin-bottom: 0.35rem; }
+
+// TOC 항목 간격.
+.sidebar nav[role="doc-toc"] ul li {
+  margin-bottom: 0.25rem;
+}
+.sidebar nav[role="doc-toc"] ul li a {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}

@@ -1,16 +1,18 @@
 # MLflow Tracking
 
-분산 학습에서 MLflow를 사용하는 패턴. 본 쿡북은 **MLflow 3.0+** 기능(system metrics, per-epoch `LoggedModel`, dataset linking)을 명시적으로 사용합니다.
+분산 학습에서 MLflow를 사용하는 패턴을 정리합니다. 본 쿡북은 **MLflow 3.0+** 기능(system metrics, per-epoch `LoggedModel`, dataset linking)을 명시적으로 사용합니다.
 
 ## 기본 원칙
 
+분산 학습에서 MLflow를 안전하게 쓰려면 다음 세 가지를 지키면 됩니다.
+
 - **rank 0만 로깅합니다.** 모든 rank가 동시에 `mlflow.log_metric`을 호출하면 race가 일어납니다.
 - 실험(`experiment`)과 run은 driver(=rank 0)에서 시작하고 child 프로세스에 `run_id`를 전달합니다.
-- Lightning `Trainer`의 `MLFlowLogger`는 자동으로 rank 0에서만 기록되므로 별도 가드가 필요 없습니다. 직접 PyTorch 루프를 쓰는 경우 가드를 명시합니다.
+- Lightning `Trainer`의 `MLFlowLogger`는 자동으로 rank 0에서만 기록되므로 별도 가드가 필요 없습니다. 직접 PyTorch 루프를 쓰는 경우에는 가드를 명시합니다.
 
 ## PyTorch 루프 + MLflow 직접 호출 (단일 GPU)
 
-가장 단순한 형태. 시스템 메트릭(CPU/GPU/메모리/네트워크/디스크)을 자동 수집하고 모든 epoch을 하나의 run에 묶습니다.
+가장 단순한 형태입니다. 시스템 메트릭(CPU/GPU/메모리/네트워크/디스크)을 자동 수집하고 모든 epoch을 하나의 run에 묶습니다.
 
 ```python
 import os
@@ -43,19 +45,19 @@ with mlflow.start_run(
         mlflow.log_metric("val/auc", val_auc, step=epoch)
 ```
 
-`mlflow.pytorch.autolog()`를 호출하면 옵티마이저 step·learning rate·모델 그래프 등을 자동으로 기록합니다. **rank 0에서만** 호출합니다.
+`mlflow.pytorch.autolog()`를 호출하면 옵티마이저 step, learning rate, 모델 그래프 등을 자동으로 기록합니다. 반드시 **rank 0에서만** 호출해야 합니다.
 
 ## MLflow 3.0+ 핵심 기능
 
 ### 1. `log_system_metrics=True`
 
-`mlflow.start_run(..., log_system_metrics=True)`로 시스템 메트릭이 자동 수집됩니다. MLflow UI → System Metrics 탭에서 GPU 활용도, 메모리, 네트워크, 디스크 I/O를 볼 수 있습니다. 분산 학습에서 GPU가 idle 상태인지(데이터 로더 병목) 진단할 때 핵심.
+`mlflow.start_run(..., log_system_metrics=True)`로 시스템 메트릭이 자동 수집됩니다. MLflow UI의 System Metrics 탭에서 GPU 활용도, 메모리, 네트워크, 디스크 I/O를 볼 수 있습니다. 분산 학습에서 GPU가 idle 상태인지(데이터 로더 병목) 진단할 때 핵심 도구입니다.
 
-**Multi-node TorchDistributor 함정**: `local_mode=False`에서는 학습이 worker 노드에서만 실행되고 driver는 코디네이션만 담당합니다. 따라서 driver-side `log_system_metrics=True`만으론 idle driver의 메트릭만 잡히고 실제 GPU 사용률은 비어 있습니다. 실제 학습 노드의 메트릭을 보려면 **rank-0 worker가 `mlflow.start_run(run_id=..., log_system_metrics=True)`로 attach할 때 함께 켜야** 합니다. single-node(`local_mode=True`)는 driver와 worker가 같은 머신이라 driver-side만으로 충분합니다. Lightning을 쓰는 경우 `MLFlowLogger`는 `log_system_metrics` 옵션이 없으므로, worker 함수 안에서 `MLFlowLogger(run_id=...)`와 별도로 `mlflow.start_run(run_id=..., log_system_metrics=True)`를 호출해 메트릭 스레드를 띄워야 합니다 (아래 TorchDistributor 섹션 예제 참고).
+Multi-node TorchDistributor에는 함정이 하나 있습니다. `local_mode=False`에서는 학습이 worker 노드에서만 실행되고 driver는 코디네이션만 담당합니다. 따라서 driver-side `log_system_metrics=True`만으론 idle driver의 메트릭만 잡히고 실제 GPU 사용률은 비어 버립니다. 실제 학습 노드의 메트릭을 보려면 **rank-0 worker가 `mlflow.start_run(run_id=..., log_system_metrics=True)`로 attach할 때 함께 켜야** 합니다. single-node(`local_mode=True`)는 driver와 worker가 같은 머신이라 driver-side만으로 충분합니다. Lightning을 쓰는 경우 `MLFlowLogger`에는 `log_system_metrics` 옵션이 없으므로, worker 함수 안에서 `MLFlowLogger(run_id=...)`와 별도로 `mlflow.start_run(run_id=..., log_system_metrics=True)`를 호출해 메트릭 스레드를 띄워야 합니다(아래 TorchDistributor 섹션 예제 참고).
 
 ### 2. 에폭별 `LoggedModel` (`mlflow.pytorch.log_model(..., step=...)`)
 
-기존 MLflow에서는 `log_model`을 여러 번 호출하면 artifact가 중복됐습니다. MLflow 3.0+는 **하나의 run 안에 여러 LoggedModel**을 가질 수 있습니다. 각 epoch의 checkpoint를 모두 보존하고, 학습 종료 후 가장 좋은 것을 선택할 수 있습니다.
+기존 MLflow에서는 `log_model`을 여러 번 호출하면 artifact가 중복됐습니다. MLflow 3.0+는 **하나의 run 안에 여러 LoggedModel**을 가질 수 있어, 각 epoch의 checkpoint를 모두 보존하고 학습 종료 후 가장 좋은 것을 선택할 수 있습니다.
 
 ```python
 import mlflow
@@ -87,7 +89,7 @@ for epoch in range(NUM_EPOCHS):
     )
 ```
 
-학습 종료 후 best 모델을 찾으려면:
+학습 종료 후 best 모델을 찾는 방법은 다음과 같습니다.
 
 ```python
 from mlflow import MlflowClient
@@ -99,7 +101,7 @@ model_outputs = run.outputs.model_outputs  # 모든 LoggedModel
 
 ### 3. Dataset linking (`mlflow.data.from_pandas`)
 
-학습 데이터를 MLflow dataset 객체로 등록하면, 메트릭이 어느 데이터셋에서 측정됐는지 추적됩니다.
+학습 데이터를 MLflow dataset 객체로 등록하면, 메트릭이 어느 데이터셋에서 측정됐는지 추적할 수 있습니다.
 
 ```python
 import mlflow
@@ -115,7 +117,7 @@ mlflow.log_metric("train/loss", loss, step=epoch, dataset=train_dataset)
 
 함수 안에서 새로 `mlflow.start_run`을 하지 말고, **driver에서 run_id를 넘긴 뒤 child에서 `mlflow.start_run(run_id=run_id)`로 attach**합니다.
 
-또한 child 프로세스는 driver의 Databricks 자격증명을 자동 상속하지 않으므로, `DATABRICKS_HOST`/`DATABRICKS_TOKEN`을 명시적으로 전달합니다.
+또한 child 프로세스는 driver의 Databricks 자격증명을 자동 상속하지 않으므로, `DATABRICKS_HOST`와 `DATABRICKS_TOKEN`을 명시적으로 전달해야 합니다.
 
 ```python
 # Driver (notebook cell)
@@ -155,7 +157,7 @@ def train_fn(run_id, db_host, db_token, ...):
 
 ## Lightning + MLflow
 
-`MLFlowLogger`를 `Trainer(logger=...)`로 명시 주입합니다. rank-0 가드는 Lightning이 알아서 처리합니다.
+`MLFlowLogger`를 `Trainer(logger=...)`로 명시 주입합니다. rank-0 가드는 Lightning이 알아서 처리해 줍니다.
 
 ```python
 from lightning.pytorch.loggers import MLFlowLogger
@@ -171,7 +173,7 @@ trainer = pl.Trainer(logger=logger, ...)
 
 ## Unity Catalog 모델 등록
 
-학습 후 best checkpoint를 UC Model Registry에 등록. 시그니처가 있어야 합니다 (위 #2 참고).
+학습 후 best checkpoint를 UC Model Registry에 등록합니다. 등록에는 시그니처가 반드시 필요합니다(위 #2 참고).
 
 ```python
 uc_model_name = "main.distributed_cookbook.two_tower_mlp"
@@ -181,24 +183,24 @@ registered = mlflow.register_model(model_uri, uc_model_name)
 print(f"Registered {uc_model_name} v{registered.version}")
 ```
 
-이 단계는 각 셀의 `eval_and_register` 노트북에서 처리.
+이 단계는 각 셀의 `eval_and_register` 노트북에서 처리합니다.
 
 ## Databricks 환경에서의 특수성
 
-위 패턴은 모두 일반 MLflow와 동일하지만, Databricks 위에서는 몇 가지 부분이 자동/특수 처리됩니다. 분산 학습에서 자주 헷갈리는 지점만 정리.
+위 패턴은 모두 일반 MLflow와 동일하지만, Databricks 위에서는 몇 가지 부분이 자동·특수 처리됩니다. 분산 학습에서 자주 헷갈리는 지점만 정리해 두겠습니다.
 
-### `tracking_uri="databricks"` 가 자동인 이유
+### `tracking_uri="databricks"`가 자동인 이유
 
-Databricks 노트북·Job에서 시작된 Python은 환경변수 `MLFLOW_TRACKING_URI=databricks` 가 미리 세팅되어 있습니다. 그래서:
+Databricks 노트북이나 Job에서 시작된 Python은 환경변수 `MLFLOW_TRACKING_URI=databricks`가 미리 세팅되어 있습니다. 그래서 별다른 설정 없이도 워크스페이스 MLflow로 라우팅됩니다.
 
-- `mlflow.start_run(...)` 만 호출해도 자동으로 워크스페이스 MLflow에 기록
-- `MLFlowLogger(tracking_uri="databricks")` 의 명시도 redundant하지만 child 프로세스 안전성 차원에서 권장 (child가 환경변수를 못 받는 시나리오 대비)
+- `mlflow.start_run(...)`만 호출해도 자동으로 워크스페이스 MLflow에 기록됩니다.
+- `MLFlowLogger(tracking_uri="databricks")`의 명시는 redundant하지만 child 프로세스 안전성 차원에서 권장합니다(child가 환경변수를 못 받는 시나리오 대비).
 
-TorchDistributor child는 fresh interpreter이지만 환경변수는 상속하므로 `MLFLOW_TRACKING_URI` 도 자동 전달됩니다. 그래도 child가 인증 자체에 실패하는 이유는 토큰이지 URI가 아닙니다 ([`env-auth.md`](env-auth.md)).
+TorchDistributor child는 fresh interpreter이지만 환경변수는 상속하므로 `MLFLOW_TRACKING_URI`도 자동 전달됩니다. 그럼에도 child가 인증에 실패한다면 원인은 URI가 아니라 토큰입니다([`env-auth.md`](env-auth.md)).
 
-### Driver의 with-block 이 빠지면 어떻게 attach가 가능한가
+### Driver의 with-block이 빠지면 어떻게 attach가 가능한가
 
-`ops-mlflow-tracking.md` 의 multi-node 패턴은 직관에 반합니다:
+`ops-mlflow-tracking.md`의 multi-node 패턴은 직관에 반하는 부분이 있습니다.
 
 ```python
 with mlflow.start_run(...) as run:
@@ -209,13 +211,13 @@ with mlflow.start_run(...) as run:
 TorchDistributor(...).run(train_fn, run_id=run_id)
 ```
 
-원리: MLflow의 `start_run(run_id=...)` 은 **이미 종료된 run에도 metric을 추가로 append할 수 있게** 설계됐습니다 (MLflow 1.x 이래의 동작). UI는 latest metric까지 그대로 보여줍니다. driver의 `end_run` 은 단지 "현재 thread의 active run을 닫는다" 일 뿐, run 객체 자체는 서버에 남아 있습니다.
+원리는 단순합니다. MLflow의 `start_run(run_id=...)`은 **이미 종료된 run에도 metric을 추가로 append할 수 있게** 설계됐습니다(MLflow 1.x 이래의 동작). UI는 latest metric까지 그대로 보여 줍니다. driver의 `end_run`은 "현재 thread의 active run을 닫는다"는 의미일 뿐, run 객체 자체는 서버에 남아 있습니다.
 
-→ MLflow 3.0+ 에서도 같은 동작. system_metrics만 child에서 별도 켜야 한다는 점이 다를 뿐 ([`ops-mlflow-tracking.md` §1](ops-mlflow-tracking.md)의 multi-node 함정).
+MLflow 3.0+에서도 동작은 같습니다. 다만 system_metrics는 child에서 별도로 켜야 한다는 점만 다릅니다([`ops-mlflow-tracking.md` §1](ops-mlflow-tracking.md)의 multi-node 함정).
 
 ### Unity Catalog Model Registry 권한
 
-학습 종료 후 `mlflow.register_model(uri, "main.distributed_cookbook.two_tower_mlp")` 가 자주 막히는 이유는 권한입니다. 필요한 grant:
+학습 종료 후 `mlflow.register_model(uri, "main.distributed_cookbook.two_tower_mlp")`가 막히는 흔한 이유는 권한입니다. 필요한 grant는 다음과 같습니다.
 
 ```sql
 GRANT USE CATALOG ON CATALOG main TO `<user-or-sp>`;
@@ -223,11 +225,13 @@ GRANT USE SCHEMA ON SCHEMA main.distributed_cookbook TO `<user-or-sp>`;
 GRANT CREATE MODEL ON SCHEMA main.distributed_cookbook TO `<user-or-sp>`;
 ```
 
-흔한 에러: `PERMISSION_DENIED: User does not have CREATE MODEL on schema`. 자세한 권한 모델은 [`env-auth.md`](env-auth.md) §"권한 함정".
+흔히 보는 에러는 `PERMISSION_DENIED: User does not have CREATE MODEL on schema`입니다. 자세한 권한 모델은 [`env-auth.md`](env-auth.md)의 "권한 함정" 섹션을 참조하세요.
 
-`mlflow.set_registry_uri("databricks-uc")` 가 UC Model Registry로 라우팅하는 핵심 호출 (DBR 17.3 LTS ML은 default가 UC). 워크스페이스 registry로 등록하려면 `"databricks"` 로 명시 — 본 쿡북은 UC 등록을 가정.
+`mlflow.set_registry_uri("databricks-uc")`가 UC Model Registry로 라우팅하는 핵심 호출입니다(DBR 17.3 LTS ML은 default가 UC). 워크스페이스 registry로 등록하려면 `"databricks"`로 명시해야 합니다. 본 쿡북은 UC 등록을 가정합니다.
 
 ### Experiment 경로 — 사용자 vs SP
+
+실행 주체에 따라 experiment 경로를 어디에 두어야 하는지 정리하면 다음과 같습니다.
 
 | 실행 주체 | 권장 EXPERIMENT_PATH |
 |----------|--------------------|
@@ -235,12 +239,14 @@ GRANT CREATE MODEL ON SCHEMA main.distributed_cookbook TO `<user-or-sp>`;
 | Job, `run_as = 사용자` | 동일 |
 | Job, `run_as = service principal` | `/Shared/recommender-...` (SP는 personal 폴더 없음) |
 
-본 쿡북의 `EXPERIMENT_PATH = f"/Users/{USERNAME}/..."` 는 사용자 기준. SP로 돌릴 때는 setup 노트북의 경로를 교체 — 자세한 내용은 [`env-auth.md`](env-auth.md).
+본 쿡북의 `EXPERIMENT_PATH = f"/Users/{USERNAME}/..."`는 사용자 기준입니다. SP로 돌릴 때는 setup 노트북의 경로를 교체합니다. 자세한 내용은 [`env-auth.md`](env-auth.md)를 참조하세요.
 
 ## 참고
 
-- HF Transformers on Databricks: https://docs.databricks.com/aws/en/machine-learning/train-model/huggingface/
-- MLflow autolog: https://mlflow.org/docs/latest/tracking/autolog.html
-- MLflow 3.0 LoggedModel: https://mlflow.org/docs/latest/model
-- MLflow system metrics: https://mlflow.org/docs/latest/system-metrics
-- Unity Catalog Model Registry: https://docs.databricks.com/aws/en/machine-learning/manage-model-lifecycle/index
+자세한 내용은 다음 자료를 참조하세요.
+
+- [HF Transformers on Databricks](https://docs.databricks.com/aws/en/machine-learning/train-model/huggingface/)
+- [MLflow autolog](https://mlflow.org/docs/latest/tracking/autolog.html)
+- [MLflow 3.0 LoggedModel](https://mlflow.org/docs/latest/model)
+- [MLflow system metrics](https://mlflow.org/docs/latest/system-metrics)
+- [Unity Catalog Model Registry](https://docs.databricks.com/aws/en/machine-learning/manage-model-lifecycle/index)

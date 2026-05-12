@@ -1,10 +1,10 @@
 # 00 · Foundations
 
-본 폴더는 12개 셀을 읽기 전에 알아야 할 **공통 개념과 환경 지식**을 모아둡니다. 셀 README가 짧게 유지될 수 있도록, 반복되는 설명은 여기로 끌어냅니다.
+본 폴더는 12개 셀을 읽기 전에 알아 두면 좋은 **공통 개념과 환경 지식**을 모아 둡니다. 셀 README가 짧게 유지될 수 있도록 반복되는 설명을 이곳으로 끌어냈습니다.
 
 ## 📂 인덱스
 
-파일명은 `<group>-<topic>.md` 형식으로, 그룹은 다음과 같습니다.
+파일명은 `<group>-<topic>.md` 형식이며, 그룹 의미는 다음과 같습니다.
 
 | 그룹 | 의미 |
 |------|------|
@@ -19,7 +19,7 @@
 | 문서 | 내용 |
 |------|------|
 | [concepts-recommender-baseline.md](concepts-recommender-baseline.md) | 모든 셀이 공유하는 Two-Tower MLP 모델 정의 |
-| [concepts-distributed-training.md](concepts-distributed-training.md) | DDP / 임베딩 테이블 / mixed precision 개념 |
+| [concepts-distributed-training.md](concepts-distributed-training.md) | DDP·TorchDistributor `local_mode`·Lightning과의 조합·rank 간 metric 합산 |
 | [concepts-torchdistributor-internals.md](concepts-torchdistributor-internals.md) | TorchDistributor 내부 동작 — Spark task, rendezvous, py4j 단절 |
 
 ### env-
@@ -52,6 +52,8 @@
 | [debug-common-pitfalls.md](debug-common-pitfalls.md) | pickle, NCCL, OOM 등 자주 부딪히는 함정 + 진단 표 |
 
 ## 🧭 어디서부터 읽나
+
+상황에 맞춰 다음 순서로 읽으면 됩니다.
 
 - Databricks 환경 첫 셋업: `env-databricks-environments.md` → `env-cluster-recipes.md` → `env-library-management.md`
 - 학습 코드 작성 전: `concepts-recommender-baseline.md` → `concepts-distributed-training.md` → `concepts-torchdistributor-internals.md`

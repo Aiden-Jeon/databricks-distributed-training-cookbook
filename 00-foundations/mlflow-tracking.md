@@ -183,9 +183,64 @@ print(f"Registered {uc_model_name} v{registered.version}")
 
 이 단계는 각 셀의 `eval_and_register` 노트북에서 처리.
 
+## Databricks 환경에서의 특수성
+
+위 패턴은 모두 일반 MLflow와 동일하지만, Databricks 위에서는 몇 가지 부분이 자동/특수 처리됩니다. 분산 학습에서 자주 헷갈리는 지점만 정리.
+
+### `tracking_uri="databricks"` 가 자동인 이유
+
+Databricks 노트북·Job에서 시작된 Python은 환경변수 `MLFLOW_TRACKING_URI=databricks` 가 미리 세팅되어 있습니다. 그래서:
+
+- `mlflow.start_run(...)` 만 호출해도 자동으로 워크스페이스 MLflow에 기록
+- `MLFlowLogger(tracking_uri="databricks")` 의 명시도 redundant하지만 child 프로세스 안전성 차원에서 권장 (child가 환경변수를 못 받는 시나리오 대비)
+
+TorchDistributor child는 fresh interpreter이지만 환경변수는 상속하므로 `MLFLOW_TRACKING_URI` 도 자동 전달됩니다. 그래도 child가 인증 자체에 실패하는 이유는 토큰이지 URI가 아닙니다 ([`auth.md`](auth.md)).
+
+### Driver의 with-block 이 빠지면 어떻게 attach가 가능한가
+
+`mlflow-tracking.md` 의 multi-node 패턴은 직관에 반합니다:
+
+```python
+with mlflow.start_run(...) as run:
+    run_id = run.info.run_id
+# with-block을 빠져나옴 → driver-side run은 FINISHED 상태
+
+# 그런데 child에서 attach가 가능
+TorchDistributor(...).run(train_fn, run_id=run_id)
+```
+
+원리: MLflow의 `start_run(run_id=...)` 은 **이미 종료된 run에도 metric을 추가로 append할 수 있게** 설계됐습니다 (MLflow 1.x 이래의 동작). UI는 latest metric까지 그대로 보여줍니다. driver의 `end_run` 은 단지 "현재 thread의 active run을 닫는다" 일 뿐, run 객체 자체는 서버에 남아 있습니다.
+
+→ MLflow 3.0+ 에서도 같은 동작. system_metrics만 child에서 별도 켜야 한다는 점이 다를 뿐 ([`mlflow-tracking.md` §1](mlflow-tracking.md)의 multi-node 함정).
+
+### Unity Catalog Model Registry 권한
+
+학습 종료 후 `mlflow.register_model(uri, "main.distributed_cookbook.two_tower_mlp")` 가 자주 막히는 이유는 권한입니다. 필요한 grant:
+
+```sql
+GRANT USE CATALOG ON CATALOG main TO `<user-or-sp>`;
+GRANT USE SCHEMA ON SCHEMA main.distributed_cookbook TO `<user-or-sp>`;
+GRANT CREATE MODEL ON SCHEMA main.distributed_cookbook TO `<user-or-sp>`;
+```
+
+흔한 에러: `PERMISSION_DENIED: User does not have CREATE MODEL on schema`. 자세한 권한 모델은 [`auth.md`](auth.md) §"권한 함정".
+
+`mlflow.set_registry_uri("databricks-uc")` 가 UC Model Registry로 라우팅하는 핵심 호출 (DBR 17.3 LTS ML은 default가 UC). 워크스페이스 registry로 등록하려면 `"databricks"` 로 명시 — 본 쿡북은 UC 등록을 가정.
+
+### Experiment 경로 — 사용자 vs SP
+
+| 실행 주체 | 권장 EXPERIMENT_PATH |
+|----------|--------------------|
+| Interactive 노트북 (사용자) | `/Users/{username}/recommender-...` |
+| Job, `run_as = 사용자` | 동일 |
+| Job, `run_as = service principal` | `/Shared/recommender-...` (SP는 personal 폴더 없음) |
+
+본 쿡북의 `EXPERIMENT_PATH = f"/Users/{USERNAME}/..."` 는 사용자 기준. SP로 돌릴 때는 setup 노트북의 경로를 교체 — 자세한 내용은 [`auth.md`](auth.md).
+
 ## 참고
 
 - HF Transformers on Databricks: https://docs.databricks.com/aws/en/machine-learning/train-model/huggingface/
 - MLflow autolog: https://mlflow.org/docs/latest/tracking/autolog.html
 - MLflow 3.0 LoggedModel: https://mlflow.org/docs/latest/model
 - MLflow system metrics: https://mlflow.org/docs/latest/system-metrics
+- Unity Catalog Model Registry: https://docs.databricks.com/aws/en/machine-learning/manage-model-lifecycle/index

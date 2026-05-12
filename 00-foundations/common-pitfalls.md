@@ -2,6 +2,23 @@
 
 분산 학습에서 자주 부딪히는 실패와 해결법. 디버깅 중이면 여기부터 봅니다.
 
+## 진단 — 에러 메시지로 항목 찾기
+
+| 증상 / 에러 메시지 | 섹션 |
+|------------------|------|
+| `NCCL error ... unhandled cuda error` 또는 첫 스텝에서 hang | [§1](#1-nccl-초기화-실패--타임아웃) |
+| `Can't pickle local object`, `cannot pickle '_thread.RLock'` | [§2](#2-pickle-에러-torchdistributorrunfn-) |
+| `401 Unauthorized`, `Could not find experiment` (child) | [§2-1](#2-1-child-프로세스에서-mlflow가-인증-실패) |
+| `CUDA out of memory` at first forward | [§3](#3-oom-at-first-forward) |
+| DDP backward에서 일부 rank만 멈춤 / hang | [§4](#4-ddp에서-학습이-멈춘-것처럼-보입니다) |
+| MLflow에 같은 metric이 rank 수만큼 중복 | [§5](#5-mlflow가-중복-로그를-만듭니다) |
+| UC Volume 저장이 매우 느림 | [§6](#6-uc-volume-저장이-너무-느립니다) |
+| Multi-node `local_mode=False` 가 실패 | [§7](#7-serverless-gpu에서-multi-node가-안-됩니다) |
+| `@distributed` 안에서 `dbutils` 호출 실패 | [§8](#8-distributed-안에서-dbutils를-못-씁니다) |
+| `Skip logging GPU metrics` 만 찍히고 GPU 차트 비어 있음 | [§9](#9-mlflow가-skip-logging-gpu-metrics-만-찍고-gpu-차트가-비어-있습니다) |
+| Multi-node throughput 이 기대치보다 낮음 | [§10](#10-multi-node-ddp인데-throughput이-안-올라갑니다) |
+| Worker rank의 stderr/NCCL 로그를 어디서 보는지 모름 | [§11](#11-multi-node-worker의-로그를-어디서-보는가) |
+
 ## 1. NCCL 초기화 실패 / 타임아웃
 
 증상: `NCCL error ... unhandled cuda error` 또는 첫 스텝에서 멈춤.
@@ -123,6 +140,51 @@ multi-node에서의 적용 범위: `%pip install` + `%restart_python`은 **noteb
 참고
 - MLflow가 인식하는 패키지 이름은 `nvidia-ml-py`(공식, 최신) 또는 `pynvml`(예전 별칭) 둘 다. 새로 설치한다면 `nvidia-ml-py` 권장.
 - 같은 차트가 비어 있는 또 다른 원인은 **multi-node에서 driver만 `log_system_metrics=True`** 인 경우(driver는 학습에 참여 안 함). 해결은 [`mlflow-tracking.md` §1](mlflow-tracking.md) — rank-0 worker가 `mlflow.start_run(run_id=..., log_system_metrics=True)`로 attach.
+
+## 11. multi-node worker의 로그를 어디서 보는가
+
+증상: `local_mode=False` 학습이 시작은 됐는데 노트북 셀에는 driver의 코디네이션 로그만 보입니다. worker rank들의 stderr를 찾지 못해 NCCL 에러 / OOM / 학습 진행 상황을 진단할 수 없습니다.
+
+원리: TorchDistributor가 `local_mode=False` 로 띄운 child는 **Spark task**로 실행됩니다 ([`torchdistributor-internals.md`](torchdistributor-internals.md)). 각 task의 stdout/stderr는 해당 worker 노드의 executor log에 쌓입니다.
+
+### 어디서 보는가
+
+1. **노트북 셀에 흘러나오는 부분**
+   - TorchDistributor가 child stdout을 driver로 stream합니다. 약간의 latency가 있지만 학습 함수 안의 `print(...)` 는 결국 노트북 셀에 나타납니다.
+   - 모든 rank의 출력이 뒤섞여 나오므로 학습 함수에서 항상 rank prefix를 붙입니다:
+     ```python
+     print(f"[rank={global_rank}] epoch={epoch} loss={loss:.4f}")
+     ```
+
+2. **Spark UI의 executor log** (가장 정확)
+   - 노트북 우측 상단 → "Spark UI" → Stages 탭에서 진행 중인 **barrier stage** 클릭 → 각 task의 "stderr" / "stdout" 링크
+   - rank N의 출력 = task N의 log (task index = global rank)
+   - 학습 함수의 `print` 뿐 아니라 NCCL/PyTorch warning, OOM stack trace 등이 모두 여기 있음
+
+3. **Driver log + Cluster log delivery**
+   - Cluster 설정 → "Log delivery" 를 활성화하면 driver/worker 로그가 UC Volume 또는 S3에 영구 저장됩니다.
+   - 학습 종료 후 사후 분석에 유용. 실시간 디버깅은 Spark UI가 빠름.
+
+### NCCL 로그 켜기
+
+multi-node에서 inter-node bandwidth가 의심되거나 rendezvous가 멈출 때:
+
+```python
+def train_fn(...):
+    os.environ["NCCL_DEBUG"] = "INFO"
+    os.environ["NCCL_DEBUG_SUBSYS"] = "INIT,COLL"   # 선택 — INIT만 보고 싶으면 "INIT"
+    dist.init_process_group("nccl")
+    ...
+```
+
+NCCL이 각 rank의 stderr에 사용 중인 transport (IB / EFA / SOCKET), NIC, ring topology를 출력합니다. **Spark UI executor log → stderr 탭** 에서 확인.
+
+### 함정
+
+- `local_mode=True` 의 child stdout/stderr는 driver의 노트북 셀에 자연스럽게 나옵니다. Spark UI를 볼 필요 없음.
+- worker가 죽었을 때 driver에는 `Py4JError` 또는 `BarrierTaskException` 만 보고되는 경우가 많습니다. 실제 원인은 **worker stderr (Spark UI)** 에 있습니다 — 노트북 셀의 에러만 보고 판단하지 말 것.
+- multi-node 학습이 영원히 hang이면 보통 NCCL init 실패. `NCCL_DEBUG=INFO` 로 어떤 transport에서 멈췄는지 확인.
+- Spark UI는 cluster terminate 후에도 일정 시간 접근 가능하지만 사라질 수 있음. 중요한 로그는 cluster log delivery로 영구화.
 
 ## 10. multi-node DDP인데 throughput이 안 올라갑니다
 

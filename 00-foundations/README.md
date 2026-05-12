@@ -8,19 +8,24 @@
 |------|------|
 | [recommender-baseline.md](recommender-baseline.md) | 모든 셀이 공유하는 Two-Tower MLP 모델 정의 |
 | [distributed-training-concepts.md](distributed-training-concepts.md) | DDP / 임베딩 테이블 / mixed precision 개념 |
-| [databricks-environments.md](databricks-environments.md) | Classic GPU vs Serverless GPU vs AI Runtime 비교 |
+| [databricks-environments.md](databricks-environments.md) | Classic GPU 환경, DBR 17.3 LTS ML 가정 |
 | [cluster-recipes.md](cluster-recipes.md) | 토폴로지·데이터 규모별 권장 인스턴스 |
-| [data-loading.md](data-loading.md) | 합성 user-item interaction 데이터 생성과 로딩 패턴 |
-| [mlflow-tracking.md](mlflow-tracking.md) | 분산 학습에서 MLflow autolog 사용법 |
+| [torchdistributor-internals.md](torchdistributor-internals.md) | TorchDistributor 내부 동작 — Spark task, rendezvous, py4j 단절 |
+| [data-loading.md](data-loading.md) | 합성 user-item interaction 데이터 생성과 로딩 패턴, Databricks 경로 비교 |
+| [mlflow-tracking.md](mlflow-tracking.md) | 분산 학습에서 MLflow autolog 사용법 + Databricks-specific |
 | [uc-volumes-checkpoints.md](uc-volumes-checkpoints.md) | UC Volumes에 체크포인트 저장하는 패턴 |
-| [common-pitfalls.md](common-pitfalls.md) | pickle, NCCL, OOM 등 자주 부딪히는 함정 |
+| [resume-training.md](resume-training.md) | spot interruption / Job retry에서 학습 이어받기 |
+| [library-management.md](library-management.md) | `%pip` vs cluster library vs wheel install, child 가시성 |
+| [auth.md](auth.md) | PAT / service principal / OAuth 패턴과 권한 함정 |
+| [common-pitfalls.md](common-pitfalls.md) | pickle, NCCL, OOM 등 자주 부딪히는 함정 + 진단 표 |
 
 ## 🧭 어디서부터 읽나
 
-- 분산 학습 처음: `distributed-training-concepts.md` → `recommender-baseline.md` → `cluster-recipes.md`
-- Databricks 환경 선택부터: `databricks-environments.md` → `cluster-recipes.md`
-- 모델은 알고 데이터·체크포인트만 궁금: `data-loading.md` + `uc-volumes-checkpoints.md`
-- 디버깅 중: `common-pitfalls.md`
+- Databricks 환경 첫 셋업: `databricks-environments.md` → `cluster-recipes.md` → `library-management.md`
+- 학습 코드 작성 전: `recommender-baseline.md` → `distributed-training-concepts.md` → `torchdistributor-internals.md`
+- 데이터·체크포인트: `data-loading.md` → `uc-volumes-checkpoints.md` → `resume-training.md`
+- MLflow / 권한 / 인증: `mlflow-tracking.md` → `auth.md`
+- 디버깅 중: `common-pitfalls.md` (상단의 진단 표부터)
 
 ## ➡️ 다음
 

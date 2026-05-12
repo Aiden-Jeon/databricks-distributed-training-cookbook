@@ -62,9 +62,13 @@ website:
           - 00-foundations/distributed-training-concepts.md
           - 00-foundations/databricks-environments.md
           - 00-foundations/cluster-recipes.md
+          - 00-foundations/torchdistributor-internals.md
           - 00-foundations/data-loading.md
           - 00-foundations/mlflow-tracking.md
           - 00-foundations/uc-volumes-checkpoints.md
+          - 00-foundations/resume-training.md
+          - 00-foundations/library-management.md
+          - 00-foundations/auth.md
           - 00-foundations/common-pitfalls.md
       - section: "01 · Notebook-based"
         href: 01-notebook-based/README.md
@@ -120,13 +124,24 @@ website:
 format:
   html:
     theme:
-      light: cosmo
-      dark: darkly
+      light: [cosmo, theme.scss]
+      dark: [darkly, theme.scss]
     toc: true
     toc-depth: 3
+    toc-location: right
+    grid:
+      sidebar-width: 280px
+      body-width: 760px
+      margin-width: 260px
+      gutter-width: 2.5rem
     code-copy: true
     code-overflow: scroll
-    highlight-style: github
+    highlight-style: github-dark
+    include-in-header:
+      text: |
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     anchor-sections: true
     description-meta: "Databricks에서 Two-Tower MLP 추천 모델을 TorchDistributor / PyTorch Lightning / HF Accelerate로 분산학습하는 패턴을 코드 조직 방식 × launcher × 토폴로지 매트릭스로 정리한 쿡북."
 

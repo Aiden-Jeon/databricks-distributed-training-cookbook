@@ -56,6 +56,26 @@ H100/A100을 쓰려면 `p4d.24xlarge` 또는 H100 인스턴스로 교체 ([`clus
   - Single-node(02, 04): driver-side에서만 켜도 충분 (driver와 worker가 같은 머신).
   - **Multi-node(03, 05)**: driver는 학습에 참여하지 않으므로 driver-side만 켜면 idle 메트릭만 잡힙니다. 03·05의 학습 함수는 **rank-0 worker에서 `mlflow.start_run(run_id=..., log_system_metrics=True)`로 attach**해 worker 노드의 GPU 메트릭을 함께 기록합니다 ([`00-foundations/mlflow-tracking.md §1`](../00-foundations/mlflow-tracking.md)).
 
+## 📈 기대 결과
+
+ML-25M 데이터(positive+negative ≈ 25M 행) + `max_steps_per_epoch=200` 기준. 환경(NCCL 버전, EFA 유무, 디스크 캐시 상태)에 따라 ±30%는 흔합니다.
+
+| 노트북 | 토폴로지 | 학습 시간 | val/loss (10 epoch 또는 early stop) | GPU util (rank-0 기준) |
+|--------|---------|----------|-----------------------------------|----------------------|
+| 02 (1×1) | 1 노드 × 1 GPU (A10G) | 3~6분 | ≈ 0.45 ~ 0.55 | 60~85% |
+| 02 (1×N) | 1 노드 × 4 GPU (g5.12xlarge) | 2~4분 | ≈ 0.45 ~ 0.55 | 50~80% (DataLoader 병목 시 낮음) |
+| 03 (M×N) | 2 노드 × 4 GPU | 2~3분 | ≈ 0.45 ~ 0.55 | 40~70% (EFA 없으면 낮음) |
+| 04 (1×1) | Lightning, 1 노드 × 1 GPU | 3~6분 | ≈ 0.45 ~ 0.55 | 60~85% |
+| 04 (1×N) | Lightning, 1 노드 × 4 GPU | 2~4분 | ≈ 0.45 ~ 0.55 | 50~80% |
+| 05 (M×N) | Lightning, 2 노드 × 4 GPU | 2~3분 | ≈ 0.45 ~ 0.55 | 40~70% |
+
+체크리스트:
+- `val/loss` 가 첫 epoch 직후 0.6+ → 학습 자체는 진행 중. 5~7 epoch 안에 0.5 아래로 떨어져야 정상.
+- early stop이 epoch 5 이내에 발동 → patience(3) 대비 너무 빠르면 `min_delta` 가 큼 (현재 1e-4).
+- multi-node throughput 이 single-node와 비슷 → inter-node bandwidth 병목 ([`common-pitfalls.md §10`](../00-foundations/common-pitfalls.md)).
+- GPU util 이 10% 미만 → DataLoader 병목. `num_workers` / `pin_memory` 점검.
+- MLflow UI System Metrics 탭에서 GPU 차트가 비어 있음 → `nvidia-ml-py` 미설치 또는 multi-node에서 driver-side만 켠 경우 ([`common-pitfalls.md §9`](../00-foundations/common-pitfalls.md)).
+
 ## ⚠️ 제약
 
 - HuggingFace Accelerate는 CLI 기반 launcher라 노트북 only 방식에 적합하지 않습니다. 단일 노트북에서 가시 GPU 수를 자동 감지해 1×1/1×N/M×N을 모두 다루는 [`02-script-based/08-launch_accelerator_MxN.ipynb`](../02-script-based/08-launch_accelerator_MxN.ipynb) 참고.

@@ -149,6 +149,72 @@ loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler,
 
 `pq.read_table`은 전체 split을 RAM에 올립니다. ML-25M의 train split(~22M 행, 컬럼 3개 int/float)은 약 600MB이므로 driver와 각 worker GPU 노드에서 충분히 들어갑니다. 더 큰 데이터에서는 `pq.ParquetDataset` + lazy `__getitem__` 또는 `petastorm` 패턴을 고려합니다.
 
+## Databricks 경로 비교 — 어디에 데이터를 두는가
+
+분산 학습에서 데이터 경로 선택은 throughput과 안정성에 직결됩니다.
+
+| 경로 | driver 접근 | worker 접근 | 영속성 | read 성능 | 권장 용도 |
+|------|------------|------------|--------|-----------|----------|
+| `/local_disk0/...` | ✅ | ✅ (각 노드의 로컬 SSD) | 클러스터 종료 시 소실 | 가장 빠름 (NVMe) | 임시 unzip, scratch space |
+| DBFS (`/dbfs/...`) | ✅ | ✅ | 영속 | 중간 (FUSE 오버헤드) | 레거시 — 신규 사용 비권장 |
+| **UC Volume** (`/Volumes/.../`) | ✅ | ✅ | 영속, UC governance | 중간 (cloud object store) | 본 쿡북 기본 |
+| Cloud direct (`s3://`, `abfss://`) | API 호출 | API 호출 | 영속 | 가장 빠른 cloud read (UC Volume 우회) | TB+ 데이터, throughput 최우선 |
+
+### `/local_disk0` 의 노드별 분리
+
+`/local_disk0` 은 **각 노드의 로컬 SSD** 입니다 — driver의 `/local_disk0` 과 worker의 `/local_disk0` 은 다른 디스크. 따라서:
+
+- ✅ driver에서 unzip하고 같은 `/local_disk0` 에 데이터를 두면 → driver만 학습할 때 (1×1, 1×N) 빠름
+- ❌ multi-node (M×N) 학습은 worker가 driver의 `/local_disk0` 을 못 봄. UC Volume에 옮겨야 함
+- ❌ 클러스터 restart/auto-termination 시 모든 노드의 `/local_disk0` 소실
+
+본 쿡북의 `01-data_prep.ipynb` 가 `/local_disk0` 에 unzip 후 UC Volume에 shard parquet로 옮기는 이유가 이 두 가지 — driver-only 작업은 빠른 로컬, 학습 데이터는 worker에서도 보이는 UC Volume.
+
+### UC Volume read 성능
+
+UC Volume은 내부적으로 cloud object store(S3/ADLS/GCS)를 마운트한 것입니다. 따라서:
+
+- 첫 read는 cloud latency (수십 ms)
+- 같은 노드에서 같은 파일을 다시 읽으면 Databricks Runtime의 **disk cache** 가 SSD에 저장 — 두 번째 read부터 빠름
+- 노드 간에는 cache가 공유되지 않음. multi-node에서 모든 rank가 같은 train split을 읽으면 각 worker가 독립적으로 캐싱
+
+→ ML-25M의 600MB train split은 첫 epoch의 첫 read에 ~몇 초, 이후는 RAM 안에 있어 무관 (본 쿡북은 `pq.read_table` 로 일괄 RAM 로드).
+
+### multi-rank 동시 읽기 시 contention
+
+같은 노드의 여러 rank(예: 1×N에서 4개 rank)가 같은 parquet 파일을 동시에 `pq.read_table` 하면:
+
+- 첫 rank가 캐시 채움, 나머지는 캐시 hit — contention 거의 없음
+- 다른 노드의 rank들과는 독립
+
+→ DDP에서 `DistributedSampler` 가 인덱스만 나누고 각 rank가 같은 파일을 모두 로드하는 본 쿡북 패턴은 ML-25M 규모에서 문제 없음. **TB+ 데이터에서는 rank별로 다른 shard만 읽도록** 분배 필요 (petastorm, mosaic-streaming 등).
+
+### cloud direct read
+
+UC Volume을 거치지 않고 `s3://my-bucket/...` 로 직접 읽으면:
+
+- ✅ FUSE 오버헤드 우회 — 최대 throughput
+- ❌ UC governance·lineage 없음, IAM 자격증명 별도 설정 필요
+- ❌ Databricks disk cache 미적용
+
+`pq.read_table` 은 s3 경로를 그대로 받습니다 (pyarrow가 boto3/s3fs로 호출). 본 쿡북 규모에서는 UC Volume이 충분.
+
+### 의사결정 트리
+
+```
+< 1GB, 모든 토폴로지
+  → UC Volume (본 쿡북 기본)
+
+1GB ~ 100GB, multi-node
+  → UC Volume + disk cache 신뢰 (각 노드에 자동 캐싱)
+
+100GB+, throughput critical
+  → cloud direct (s3://) + shard별 rank 분배 (petastorm/mosaic-streaming)
+
+학습 중 임시 파일 (unzip, intermediate)
+  → /local_disk0 (driver only) 또는 클러스터 종료까지만 필요한 데이터
+```
+
 ## 참고
 
 - MovieLens 25M README: https://files.grouplens.org/datasets/movielens/ml-25m-README.html

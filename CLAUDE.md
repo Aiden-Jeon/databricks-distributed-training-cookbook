@@ -122,8 +122,7 @@ Databricks에서 **추천 모델(Two-Tower MLP)**을 분산학습하는 패턴�
 │   ├── 06-launch_lightning_trainer_1xN.ipynb           # Lightning 1×N (TorchDistributor)
 │   ├── 07-launch_lightning_trainer_MxN.ipynb           # Lightning M×N
 │   └── 08-launch_accelerator_MxN.ipynb                 # accelerate launch (1×1/1×N/M×N 자동 감지, subprocess.Popen, wheel 모듈 모드)
-├── 99-references/                                  # 공식 노트북 / 외부 자료 / 이전 프로젝트 snippets
-└── docs/                                           # 부가 문서
+└── docs/                                           # 외부 자료 인덱스 / 공식 노트북 미러 / 작업 초기 메모
 ```
 
 ## 개발 명령어

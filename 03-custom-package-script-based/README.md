@@ -1,8 +1,10 @@
 # 03 · Custom-package Script-based
 
-> 학습 로직을 **설치 가능한 파이썬 패키지**로 만들고, wheel install 후 패키지명으로 import.
+> 학습 로직을 **설치 가능한 파이썬 패키지**로 만들고, wheel install 후 패키지명으로 import하는 패턴입니다.
 
 ## 🧭 파일 구성
+
+패키지 본체와 노트북이 어떻게 짝을 이루는지 보여 줍니다.
 
 | 종류 | 위치 | 역할 |
 |------|------|------|
@@ -21,6 +23,8 @@
 
 ## 🔌 Import 방식 — `02-script-based`와의 차이
 
+두 행이 import·빌드·배포 측면에서 어떻게 다른지 정리하면 다음과 같습니다.
+
 | 항목 | `02-script-based` | `03-custom-package-script-based` (이 폴더) |
 |------|-------------------|-----------------------------------------|
 | 코드 위치 | 노트북과 같은 폴더의 `.py` | `custom_packages/src/recommender_pkg/` 패키지 |
@@ -30,6 +34,8 @@
 | 적합한 경우 | PoC, 단일 프로젝트 | 여러 노트북/job에서 재사용, 버전 관리, CI/CD |
 
 ## 🛠️ 빌드/설치 흐름
+
+`00-setup.ipynb`에서 자동으로 다음 단계가 실행됩니다.
 
 ```python
 # 00-setup.ipynb에서 자동 수행
@@ -45,7 +51,7 @@ subprocess.run(["uv", "build"], cwd=f"{NOTEBOOK_DIR}/custom_packages", check=Tru
 
 ## 🔀 매트릭스
 
-`02-script-based`와 동일. 차이는 import 방식만.
+호출 패턴은 `02-script-based`와 동일하며, 차이는 import 방식뿐입니다.
 
 | launcher | 1×1 GPU | 1×N GPU | M×N GPU |
 |----------|---------|---------|---------|
@@ -53,11 +59,11 @@ subprocess.run(["uv", "build"], cwd=f"{NOTEBOOK_DIR}/custom_packages", check=Tru
 | Lightning | `fit(devices=1, num_nodes=1)` 직접 호출 | `TorchDistributor(num_processes=N, local_mode=True).run(td_lit_fit, devices=N, num_nodes=1)` | `TorchDistributor(num_processes=M*N, local_mode=False).run(td_lit_fit, devices=N, num_nodes=M)` |
 | Accelerate | 08 (단일 노트북, 자동 감지) | 08 (동일) | 08 (동일) |
 
-> Accelerate 행은 `sys.executable -m accelerate.commands.accelerate_cli launch -m recommender_pkg.torch_distributor_trainer` 를 `subprocess.Popen` 으로 호출합니다. 시스템 `/databricks/python3/bin/accelerate` 가 wheel 로 설치된 `recommender_pkg` 를 보지 못하므로, notebook-scoped Python(`sys.executable`)에서 모듈 모드로 띄우는 것이 필수입니다. `--num_processes` 는 생략 — 가시 GPU 수가 자동으로 채워져 한 노트북으로 1×1/1×N/M×N 모두 커버합니다.
+> Accelerate 행은 `sys.executable -m accelerate.commands.accelerate_cli launch -m recommender_pkg.torch_distributor_trainer`를 `subprocess.Popen`으로 호출합니다. 시스템 `/databricks/python3/bin/accelerate`가 wheel로 설치된 `recommender_pkg`를 보지 못하므로, notebook-scoped Python(`sys.executable`)에서 모듈 모드로 띄우는 것이 필수입니다. `--num_processes`는 생략하며, 가시 GPU 수가 자동으로 채워져 한 노트북으로 1×1/1×N/M×N을 모두 커버합니다.
 
 ## 📈 기대 결과
 
-02-script-based와 동일 코드·동일 결과. 차이는 import 경로(`recommender_pkg.*` vs sibling `.py`)와 빌드 단계뿐.
+02-script-based와 코드·결과가 동일합니다. 차이는 import 경로(`recommender_pkg.*` vs sibling `.py`)와 빌드 단계뿐입니다.
 
 | 노트북 | 토폴로지 | 학습 시간 | val/loss | GPU util |
 |--------|---------|----------|----------|----------|
@@ -69,14 +75,15 @@ subprocess.run(["uv", "build"], cwd=f"{NOTEBOOK_DIR}/custom_packages", check=Tru
 | 07 | Lightning M×N | 2~3분 | ≈ 0.45 ~ 0.55 | 40~70% |
 | 08 | Accelerate (auto) | 토폴로지에 따라 위와 동일 | 동일 | 동일 |
 
-추가 오버헤드: `uv build` (00-setup 안에서 ~수 초) + `%pip install ./dist/*.whl` (~10초). 한 번 빌드/설치하면 후속 노트북에서 즉시 import 가능.
+추가로 드는 오버헤드는 `uv build`(00-setup 안에서 수 초)와 `%pip install ./dist/*.whl`(약 10초)뿐입니다. 한 번 빌드·설치해 두면 후속 노트북에서 곧바로 import할 수 있습니다.
 
-08 (Accelerate) 가 02-script-based의 08과 다른 점: 시스템 `accelerate` 가 wheel을 못 보므로 `sys.executable -m accelerate.commands.accelerate_cli launch -m recommender_pkg.torch_distributor_trainer` 모듈 모드 호출이 필수 ([`env-library-management.md`](../00-foundations/env-library-management.md) §"함정 4").
+08(Accelerate)이 02-script-based의 08과 다른 점은, 시스템 `accelerate`가 wheel을 보지 못하므로 `sys.executable -m accelerate.commands.accelerate_cli launch -m recommender_pkg.torch_distributor_trainer` 모듈 모드 호출이 필수라는 점입니다 ([`env-library-management.md` §"함정 4"](../00-foundations/env-library-management.md)).
 
-확장 시나리오 (본 쿡북 밖):
-- wheel을 PyPI / 내부 artifact registry에 publish → 여러 cluster·Job에서 동일 버전 import
-- CI에서 `uv build` + 테스트 자동화
+본 쿡북 밖이지만 자연스럽게 이어지는 확장 시나리오는 다음과 같습니다.
+
+- wheel을 PyPI나 내부 artifact registry에 publish해 여러 cluster·Job에서 동일 버전을 import합니다.
+- CI에서 `uv build`와 테스트를 자동화합니다.
 
 ## ➡️ 다음
 
-foundations로 돌아가기: [`../00-foundations/`](../00-foundations/README.md)
+foundations로 돌아가려면 [`../00-foundations/`](../00-foundations/README.md)을 참고하세요.

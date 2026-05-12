@@ -1,0 +1,133 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "index.qmd"
+    - "00-foundations/README.md"
+    - "00-foundations/**/*.md"
+    - "01-notebook-based/README.md"
+    - "01-notebook-based/**/*.md"
+    - "01-notebook-based/**/*.ipynb"
+    - "02-script-based/README.md"
+    - "02-script-based/**/*.md"
+    - "02-script-based/**/*.ipynb"
+    - "03-custom-package-script-based/README.md"
+    - "03-custom-package-script-based/**/*.md"
+    - "03-custom-package-script-based/**/*.ipynb"
+    - "docs/README.md"
+    - "docs/**/*.md"
+    - "!CLAUDE.md"
+    - "!AGENTS.md"
+    - "!03-custom-package-script-based/custom_packages/**"
+
+website:
+  title: "Databricks Distributed Training Cookbook"
+  site-url: https://aiden-jeon.github.io/databricks-distributed-training
+  repo-url: https://github.com/Aiden-Jeon/databricks-distributed-training
+  repo-actions: [edit, source]
+  page-navigation: true
+  search:
+    location: navbar
+    type: overlay
+  navbar:
+    background: primary
+    left:
+      - href: index.qmd
+        text: Home
+      - href: 00-foundations/README.md
+        text: Foundations
+      - text: Cookbooks
+        menu:
+          - href: 01-notebook-based/README.md
+            text: 01 · Notebook-based
+          - href: 02-script-based/README.md
+            text: 02 · Script-based
+          - href: 03-custom-package-script-based/README.md
+            text: 03 · Custom package
+      - href: docs/README.md
+        text: References
+  sidebar:
+    style: docked
+    collapse-level: 2
+    contents:
+      - text: Home
+        href: index.qmd
+      - section: "00 · Foundations"
+        contents:
+          - 00-foundations/README.md
+          - 00-foundations/recommender-baseline.md
+          - 00-foundations/distributed-training-concepts.md
+          - 00-foundations/databricks-environments.md
+          - 00-foundations/cluster-recipes.md
+          - 00-foundations/data-loading.md
+          - 00-foundations/mlflow-tracking.md
+          - 00-foundations/uc-volumes-checkpoints.md
+          - 00-foundations/common-pitfalls.md
+      - section: "01 · Notebook-based"
+        contents:
+          - 01-notebook-based/README.md
+          - 01-notebook-based/00-setup.ipynb
+          - 01-notebook-based/01-data_prep.ipynb
+          - 01-notebook-based/02-train_torch_distributor_single_node.ipynb
+          - 01-notebook-based/03-train_torch_distributor_multi_node.ipynb
+          - 01-notebook-based/04-train_pytorch_lightning_single_node.ipynb
+          - 01-notebook-based/05-train_pytorch_lightning_multi_node.ipynb
+      - section: "02 · Script-based"
+        contents:
+          - 02-script-based/README.md
+          - 02-script-based/00-setup.ipynb
+          - 02-script-based/01-data_prep.ipynb
+          - section: "TorchDistributor"
+            contents:
+              - 02-script-based/02-launch_torch_distributor_1x1.ipynb
+              - 02-script-based/03-launch_torch_distributor_1xN.ipynb
+              - 02-script-based/04-launch_torch_distributor_MxN.ipynb
+          - section: "PyTorch Lightning"
+            contents:
+              - 02-script-based/05-launch_lightning_trainer_1x1.ipynb
+              - 02-script-based/06-launch_lightning_trainer_1xN.ipynb
+              - 02-script-based/07-launch_lightning_trainer_MxN.ipynb
+          - section: "Accelerate"
+            contents:
+              - 02-script-based/08-launch_accelerator_MxN.ipynb
+      - section: "03 · Custom package"
+        contents:
+          - 03-custom-package-script-based/README.md
+          - 03-custom-package-script-based/00-setup.ipynb
+          - 03-custom-package-script-based/01-data_prep.ipynb
+          - section: "TorchDistributor"
+            contents:
+              - 03-custom-package-script-based/02-launch_torch_distributor_1x1.ipynb
+              - 03-custom-package-script-based/03-launch_torch_distributor_1xN.ipynb
+              - 03-custom-package-script-based/04-launch_torch_distributor_MxN.ipynb
+          - section: "PyTorch Lightning"
+            contents:
+              - 03-custom-package-script-based/05-launch_lightning_trainer_1x1.ipynb
+              - 03-custom-package-script-based/06-launch_lightning_trainer_1xN.ipynb
+              - 03-custom-package-script-based/07-launch_lightning_trainer_MxN.ipynb
+          - section: "Accelerate"
+            contents:
+              - 03-custom-package-script-based/08-launch_accelerator_MxN.ipynb
+      - section: "References"
+        contents:
+          - docs/README.md
+          - docs/llm-wiki.md
+          - docs/official-notebooks-mirror.md
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    highlight-style: github
+    anchor-sections: true
+
+execute:
+  enabled: false
+  freeze: true
+
+lang: ko

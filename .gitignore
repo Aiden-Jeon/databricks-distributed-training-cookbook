@@ -1,1 +1,8 @@
 .claude/
+_site/
+.quarto/
+_freeze/
+.venv/
+
+/.quarto/
+**/*.quarto_ipynb

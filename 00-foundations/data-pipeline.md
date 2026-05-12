@@ -4,7 +4,7 @@
 
 ## 본 쿡북의 기본 선택: MovieLens 25M
 
-쿡북 셀들의 학습 시간은 **15분 이내**로 제한합니다. *분산 학습 패턴 자체*에 집중하면서도 **val/loss가 의미 있게 감소하는** 학습을 보여주기 위해 [MovieLens 25M](https://files.grouplens.org/datasets/movielens/ml-25m.zip) (GroupLens, ~250MB) 실데이터를 사용합니다. 합성 데이터를 쓰면 라벨이 랜덤이라 metric이 움직이지 않기 때문입니다.
+쿡북 셀들의 학습 시간은 **15분 이내**로 제한합니다. *분산 학습 패턴 자체*에 집중하면서도 **val/loss가 의미 있게 감소하는** 학습을 보여주기 위해 [MovieLens 25M](https://grouplens.org/datasets/movielens/25m/) (GroupLens, ~250MB) 실데이터를 사용합니다. 합성 데이터를 쓰면 라벨이 랜덤이라 metric이 움직이지 않기 때문입니다.
 
 자세한 데이터 스키마와 implicit feedback 변환 규칙은 [`concepts-recommender-baseline.md`](concepts-recommender-baseline.md)에 있습니다. 핵심을 한 표로 요약하면 다음과 같습니다.
 

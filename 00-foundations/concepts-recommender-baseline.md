@@ -4,7 +4,7 @@
 
 ## 데이터셋
 
-데이터셋은 [MovieLens 25M](https://files.grouplens.org/datasets/movielens/ml-25m.zip)(GroupLens, 약 250MB 압축)을 사용합니다. user-movie rating 25M 행을 implicit feedback으로 변환합니다.
+데이터셋은 [MovieLens 25M](https://grouplens.org/datasets/movielens/25m/)(GroupLens, 약 250MB 압축)을 사용합니다. user-movie rating 25M 행을 implicit feedback으로 변환합니다.
 
 - positive: `rating >= 4` (약 12M 행)
 - negative: 각 positive마다 해당 user가 아직 보지 않은 movie를 uniform 랜덤 1개 샘플링 (negative ratio 1:1)

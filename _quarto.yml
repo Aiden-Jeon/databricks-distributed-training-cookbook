@@ -128,7 +128,6 @@ website:
       - section: "참고 자료"
         href: docs/README.md
         contents:
-          - docs/llm-wiki.md
           - docs/official-notebooks-mirror.md
 
 format:

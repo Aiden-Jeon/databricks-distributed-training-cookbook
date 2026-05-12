@@ -2,7 +2,7 @@ name: Publish Quarto site
 
 on:
   push:
-    branches: [publish]
+    branches: [main]
   workflow_dispatch:
 
 jobs:

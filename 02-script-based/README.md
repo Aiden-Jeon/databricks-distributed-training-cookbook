@@ -69,7 +69,7 @@ TorchDistributor(...).run(td_train_fn, ..., script_dir=SCRIPT_DIR)
 | 1×N | 03, 06, 08 | ON | 0 |
 | M×N | 04, 07, 08 | OFF | M (예: 1~3) |
 
-driver와 worker는 모두 `g5.12xlarge`(4× A10G)를 권장합니다. Autoscaling은 항상 OFF로 두세요. 1×1만 사용한다면 `g5.2xlarge`(1× A10G)로도 충분합니다. 상세 비교는 [`00-foundations/env-cluster-recipes.md`](../00-foundations/env-cluster-recipes.md)를 참고하세요.
+driver와 worker는 모두 `g5.12xlarge`(4× A10G)를 권장합니다. Autoscaling은 항상 OFF로 두세요. 1×1만 사용한다면 `g5.2xlarge`(1× A10G)로도 충분합니다. 상세 비교는 [`00-foundations/env-databricks-environments.md`](../00-foundations/env-databricks-environments.md)를 참고하세요.
 
 ## 📈 기대 결과
 
@@ -87,7 +87,7 @@ driver와 worker는 모두 `g5.12xlarge`(4× A10G)를 권장합니다. Autoscali
 
 스크립트 분리 자체로 인한 추가 오버헤드는 없습니다. `import`한 함수가 같은 Python interpreter에서 실행되므로 01과 동일한 결과가 나옵니다. 차이가 크다면 다음을 점검하세요.
 
-- `sys.path` 보강이 child에서 누락되어 import가 실패한 경우입니다. Spark UI의 executor log를 확인하세요 ([`debug-common-pitfalls.md §11`](../00-foundations/debug-common-pitfalls.md)).
+- `sys.path` 보강이 child에서 누락되어 import가 실패한 경우입니다. Spark UI의 executor log를 확인하세요 ([`debug-common-pitfalls.md §11`](../docs/debug-common-pitfalls.md)).
 - 노트북 분리 후 클러스터를 재시작했다면 `%pip install`이 휘발되었을 수 있습니다. `00-setup`을 다시 실행하세요 ([`env-library-management.md`](../00-foundations/env-library-management.md)).
 
 ## ➡️ 다음

@@ -6,7 +6,7 @@
 |---------|------|
 | Spot interruption | worker 노드가 회수되어 NCCL rendezvous가 깨짐 |
 | Cluster auto-termination | inactivity timeout, max runtime 초과 |
-| Driver OOM / process death | 메모리 누수, py4j callback 단절 ([concepts-torchdistributor-internals.md](concepts-torchdistributor-internals.md)) |
+| Driver OOM / process death | 메모리 누수, py4j callback 단절 ([debug-common-pitfalls.md §12](../docs/debug-common-pitfalls.md#12-같은-노트북에서-torchdistributorrun-연속-호출-시-py4j-callback-단절)) |
 | Job retry | Workflow에서 task 실패 후 재시작 |
 
 표의 어떤 경우든 학습은 중간에서 끊겨 버립니다. 이 문서는 그 시점에서 **마지막 checkpoint부터 학습을 이어받는** 패턴을 정리합니다.

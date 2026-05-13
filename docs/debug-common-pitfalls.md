@@ -20,6 +20,7 @@
 | `Skip logging GPU metrics` 만 찍히고 GPU 차트 비어 있음 | [§9](#9-mlflow가-skip-logging-gpu-metrics-만-찍고-gpu-차트가-비어-있습니다) |
 | Multi-node throughput 이 기대치보다 낮음 | [§10](#10-multi-node-ddp인데-throughput이-안-올라갑니다) |
 | Worker rank의 stderr/NCCL 로그를 어디서 보는지 모름 | [§11](#11-multi-node-worker의-로그를-어디서-보는가) |
+| `Py4JError: ... callbackServer`, 두 번째 `TorchDistributor.run` 호출이 죽음 | [§12](#12-같은-노트북에서-torchdistributorrun-연속-호출-시-py4j-callback-단절) |
 
 ## 1. NCCL 초기화 실패 / 타임아웃
 
@@ -88,7 +89,7 @@ def train_fn(db_host, db_token, run_id, ...):
 
 1. `per_device_batch_size`를 절반으로 줄이고 점진적으로 늘립니다.
 2. `optimizer.zero_grad(set_to_none=True)`로 그래디언트 메모리를 회수합니다.
-3. 임베딩이 너무 크면 `env-cluster-recipes.md`에서 더 큰 GPU로 옮깁니다.
+3. 임베딩이 너무 크면 `env-databricks-environments.md`에서 더 큰 GPU로 옮깁니다.
 
 ## 4. DDP에서 학습이 멈춘 것처럼 보입니다
 
@@ -207,3 +208,20 @@ multi-node 로그 확인에서 자주 빠지는 함정은 다음과 같습니다
 - `per_device_batch_size`를 GPU 메모리가 허용하는 최대까지 키웁니다.
 - `pin_memory=True`, `num_workers=4` 등 DataLoader 옵션을 점검합니다.
 - 그래도 안 오르면 단일 노드로 충분한 워크로드일 수 있음을 인정합니다. 본 쿡북의 M×N 셀은 **패턴 시연**이 1차 목적이라는 점도 함께 고려합니다.
+
+## 12. 같은 노트북에서 `TorchDistributor.run` 연속 호출 시 py4j callback 단절
+
+[`02-script-based/README.md`](../02-script-based/README.md)와 [`03-custom-package-script-based/README.md`](../03-custom-package-script-based/README.md)에서 언급된 현상입니다(DBR 17.3 LTS ML, g5.12xlarge에서 관찰). 근본 원인은 확정되지 않았지만 가능한 가설은 다음과 같습니다.
+
+1. **TorchDistributor가 cloudpickle 직렬화 시 driver-side `SparkContext`/`SparkSession` 참조를 캡처할 수 있습니다.** child가 그 참조를 deserialize하려고 py4j gateway에 접근하면, 두 번째 호출 시점에 gateway가 stale 상태일 수 있습니다.
+2. **barrier execution mode가 SparkContext의 `BarrierTaskContext` 상태를 변경**합니다. 연속 호출 시 이전 barrier job의 정리가 늦어지면서 callback channel이 일시적으로 끊길 수 있습니다.
+3. **child 프로세스가 종료 시 driver-side py4j callback 서버에 등록된 listener를 정리하지 못하는 경우**가 있어, 누적된 stale callback이 다음 호출의 새 callback과 충돌할 수 있습니다.
+
+증상은 두 번째 `TorchDistributor.run` 호출이 시작은 되지만 학습 중간에 `Py4JError: An error occurred while calling ... callbackServer` 같은 에러로 죽거나, 학습은 끝났는데 driver에서 결과 수집이 되지 않는 형태로 나타납니다.
+
+본 쿡북이 채택한 회피책은 **launcher × 토폴로지별로 노트북을 분리**해 매번 fresh Python interpreter로 시작하는 것입니다. 같은 노트북에서 `dbutils.notebook.exit` 후 재실행해도 되지만 노트북 분리가 더 깔끔합니다.
+
+다른 회피책도 참고삼아 적어 둡니다.
+
+- `spark.conf.set("spark.databricks.python.barrier.enabled", "true")` 명시 (이미 default)
+- 두 호출 사이에 `SparkContext._gateway.callback_server.shutdown()` 후 재시작 — fragile해서 권장하지 않음

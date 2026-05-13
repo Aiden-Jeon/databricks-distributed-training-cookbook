@@ -95,4 +95,4 @@ if dist.is_initialized():
 
 ## 참고
 
-데이터·체크포인트 디렉토리 구조는 셀별 README의 `00_setup.py`에서 변수로 받게 합니다.
+데이터·체크포인트 디렉토리 구조는 셀별 README의 `00-setup.ipynb`에서 변수로 받게 합니다.

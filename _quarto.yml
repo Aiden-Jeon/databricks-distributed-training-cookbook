@@ -61,12 +61,11 @@ website:
           - section: "Concepts"
             contents:
               - 00-foundations/concepts-recommender-baseline.md
-              - 00-foundations/concepts-distributed-training.md
               - 00-foundations/concepts-torchdistributor-internals.md
+              - 00-foundations/concepts-torchdistributor-with-lightning.md
           - section: "Environment"
             contents:
               - 00-foundations/env-databricks-environments.md
-              - 00-foundations/env-cluster-recipes.md
               - 00-foundations/env-library-management.md
               - 00-foundations/env-auth.md
           - section: "Data"
@@ -76,10 +75,8 @@ website:
           - section: "Ops"
             contents:
               - 00-foundations/ops-mlflow-tracking.md
+              - 00-foundations/ops-uc-model-registry.md
               - 00-foundations/ops-resume-training.md
-          - section: "Debug"
-            contents:
-              - 00-foundations/debug-common-pitfalls.md
       - section: "01 · Notebook-based"
         href: 01-notebook-based/README.md
         contents:
@@ -129,6 +126,7 @@ website:
         href: docs/README.md
         contents:
           - docs/official-notebooks-mirror.md
+          - docs/debug-common-pitfalls.md
 
 format:
   html:

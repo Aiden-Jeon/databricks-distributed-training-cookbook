@@ -54,7 +54,9 @@ def fit(
     os.environ["DATABRICKS_TOKEN"] = db_token
 
     class TwoTowerLitModule(L.LightningModule):
-        def __init__(self, n_users, n_items, emb_dim, tower_hidden, lr=1e-3, weight_decay=1e-5):
+        def __init__(
+            self, n_users, n_items, emb_dim, tower_hidden, lr=1e-3, weight_decay=1e-5
+        ):
             super().__init__()
             self.save_hyperparameters()
             self.model = TwoTowerMLP(n_users, n_items, emb_dim, tower_hidden)
@@ -67,7 +69,14 @@ def fit(
             u, i, y = batch
             logits = self(u, i)
             loss = self.loss_fn(logits, y)
-            self.log("train/loss", loss, on_step=True, on_epoch=False, prog_bar=True, sync_dist=True)
+            self.log(
+                "train/loss",
+                loss,
+                on_step=True,
+                on_epoch=False,
+                prog_bar=True,
+                sync_dist=True,
+            )
             return loss
 
         def validation_step(self, batch, batch_idx):
@@ -75,12 +84,21 @@ def fit(
             logits = self(u, i)
             loss = self.loss_fn(logits, y)
             # EarlyStopping이 monitor하는 키. on_epoch=True + sync_dist=True로 DDP rank 합산.
-            self.log("val/loss", loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
+            self.log(
+                "val/loss",
+                loss,
+                on_step=False,
+                on_epoch=True,
+                prog_bar=True,
+                sync_dist=True,
+            )
             return loss
 
         def configure_optimizers(self):
             return torch.optim.AdamW(
-                self.parameters(), lr=self.hparams.lr, weight_decay=self.hparams.weight_decay
+                self.parameters(),
+                lr=self.hparams.lr,
+                weight_decay=self.hparams.weight_decay,
             )
 
     class InteractionsDataModule(L.LightningDataModule):
@@ -93,7 +111,9 @@ def fit(
         def _load_split(self, split):
             split_dir = os.path.join(self.data_dir, split)
             files = sorted(
-                os.path.join(split_dir, f) for f in os.listdir(split_dir) if f.endswith(".parquet")
+                os.path.join(split_dir, f)
+                for f in os.listdir(split_dir)
+                if f.endswith(".parquet")
             )
             table = pq.read_table(files, columns=["user_id", "item_id", "label"])
             return TensorDataset(
@@ -164,11 +184,13 @@ def fit(
     attached = False
     if rank == 0 and mlflow.active_run() is None:
         mlflow.start_run(run_id=run_id, log_system_metrics=True)
-        mlflow.log_params({
-            "topology": topology,
-            "world_size": devices * num_nodes,
-            "code_organization": "02-script-based",
-        })
+        mlflow.log_params(
+            {
+                "topology": topology,
+                "world_size": devices * num_nodes,
+                "code_organization": "02-script-based",
+            }
+        )
         attached = True
     try:
         trainer.fit(model, datamodule=dm)

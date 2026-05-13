@@ -74,7 +74,9 @@ def train_fn(
     def load_split(split):
         split_dir = os.path.join(data_dir, split)
         files = sorted(
-            os.path.join(split_dir, f) for f in os.listdir(split_dir) if f.endswith(".parquet")
+            os.path.join(split_dir, f)
+            for f in os.listdir(split_dir)
+            if f.endswith(".parquet")
         )
         table = pq.read_table(files, columns=["user_id", "item_id", "label"])
         return TensorDataset(
@@ -94,13 +96,25 @@ def train_fn(
     # 마지막 batch가 rank마다 크기가 다를 수 있으나, 아래 loss/n을 all_reduce(SUM) 후
     # 나누는 방식이라 unbiased로 평균이 나온다.
     val_sampler = DistributedSampler(
-        val_dataset, num_replicas=world_size, rank=global_rank, shuffle=False, drop_last=False
+        val_dataset,
+        num_replicas=world_size,
+        rank=global_rank,
+        shuffle=False,
+        drop_last=False,
     )
     train_loader = DataLoader(
-        train_dataset, batch_size=batch_size, sampler=train_sampler, num_workers=2, pin_memory=True
+        train_dataset,
+        batch_size=batch_size,
+        sampler=train_sampler,
+        num_workers=2,
+        pin_memory=True,
     )
     val_loader = DataLoader(
-        val_dataset, batch_size=batch_size, sampler=val_sampler, num_workers=2, pin_memory=True
+        val_dataset,
+        batch_size=batch_size,
+        sampler=val_sampler,
+        num_workers=2,
+        pin_memory=True,
     )
 
     model = TwoTowerMLP(n_users, n_items, emb_dim, tower_hidden).to(device)
@@ -111,19 +125,21 @@ def train_fn(
 
     if global_rank == 0:
         mlflow.start_run(run_id=run_id, log_system_metrics=True)
-        mlflow.log_params({
-            "topology": topology,
-            "world_size": world_size,
-            "n_users": n_users,
-            "n_items": n_items,
-            "emb_dim": emb_dim,
-            "batch_size": batch_size,
-            "num_epochs": num_epochs,
-            "max_steps_per_epoch": max_steps_per_epoch,
-            "patience": patience,
-            "min_delta": min_delta,
-            "code_organization": "02-script-based",
-        })
+        mlflow.log_params(
+            {
+                "topology": topology,
+                "world_size": world_size,
+                "n_users": n_users,
+                "n_items": n_items,
+                "emb_dim": emb_dim,
+                "batch_size": batch_size,
+                "num_epochs": num_epochs,
+                "max_steps_per_epoch": max_steps_per_epoch,
+                "patience": patience,
+                "min_delta": min_delta,
+                "code_organization": "02-script-based",
+            }
+        )
 
     global_step = 0
     for epoch in range(num_epochs):
@@ -173,7 +189,9 @@ def train_fn(
         # EarlyStopping docstring 참고).
         if early_stop.step(val_loss):
             if global_rank == 0:
-                print(f"early stop at epoch {epoch} (best val_loss={early_stop.best:.6f})")
+                print(
+                    f"early stop at epoch {epoch} (best val_loss={early_stop.best:.6f})"
+                )
                 mlflow.log_metric("early_stop_epoch", epoch)
             break
 

@@ -903,92 +903,120 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> load_split(split):</span>
 <span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>        split_dir <span class="op">=</span> os.path.join(data_dir, split)</span>
 <span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>        files <span class="op">=</span> <span class="bu">sorted</span>(</span>
-<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>            os.path.join(split_dir, f) <span class="cf">for</span> f <span class="kw">in</span> os.listdir(split_dir) <span class="cf">if</span> f.endswith(<span class="st">".parquet"</span>)</span>
-<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>        table <span class="op">=</span> pq.read_table(files, columns<span class="op">=</span>[<span class="st">"user_id"</span>, <span class="st">"item_id"</span>, <span class="st">"label"</span>])</span>
-<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> TensorDataset(</span>
-<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>            torch.from_numpy(table.column(<span class="st">"user_id"</span>).to_numpy()),</span>
-<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>            torch.from_numpy(table.column(<span class="st">"item_id"</span>).to_numpy()),</span>
-<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>            torch.from_numpy(table.column(<span class="st">"label"</span>).to_numpy()),</span>
-<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>    train_dataset <span class="op">=</span> load_split(<span class="st">"train"</span>)</span>
-<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>    val_dataset <span class="op">=</span> load_split(<span class="st">"val"</span>)</span>
-<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>    train_sampler <span class="op">=</span> DistributedSampler(train_dataset, num_replicas<span class="op">=</span>world_size, rank<span class="op">=</span>global_rank, drop_last<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>    val_sampler <span class="op">=</span> DistributedSampler(val_dataset, num_replicas<span class="op">=</span>world_size, rank<span class="op">=</span>global_rank, shuffle<span class="op">=</span><span class="va">False</span>, drop_last<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>    train_loader <span class="op">=</span> DataLoader(train_dataset, batch_size<span class="op">=</span>batch_size, sampler<span class="op">=</span>train_sampler, num_workers<span class="op">=</span><span class="dv">2</span>, pin_memory<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>    val_loader <span class="op">=</span> DataLoader(val_dataset, batch_size<span class="op">=</span>batch_size, sampler<span class="op">=</span>val_sampler, num_workers<span class="op">=</span><span class="dv">2</span>, pin_memory<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> TwoTowerMLP(n_users, n_items, emb_dim, tower_hidden).to(device)</span>
-<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> DDP(model, device_ids<span class="op">=</span>[local_rank], output_device<span class="op">=</span>local_rank)</span>
-<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>    loss_fn <span class="op">=</span> nn.BCEWithLogitsLoss()</span>
-<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>    optimizer <span class="op">=</span> torch.optim.AdamW(model.parameters(), lr<span class="op">=</span><span class="fl">1e-3</span>, weight_decay<span class="op">=</span><span class="fl">1e-5</span>)</span>
-<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>    early_stop <span class="op">=</span> EarlyStopping(patience<span class="op">=</span>patience, min_delta<span class="op">=</span>min_delta)</span>
-<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> global_rank <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>        mlflow.start_run(run_id<span class="op">=</span>run_id, log_system_metrics<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>        mlflow.log_params({</span>
-<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>            <span class="st">"topology"</span>: topology,</span>
-<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>            <span class="st">"world_size"</span>: world_size,</span>
-<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>            <span class="st">"n_users"</span>: n_users,</span>
-<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>            <span class="st">"n_items"</span>: n_items,</span>
-<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>            <span class="st">"emb_dim"</span>: emb_dim,</span>
-<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>            <span class="st">"batch_size"</span>: batch_size,</span>
-<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>            <span class="st">"num_epochs"</span>: num_epochs,</span>
-<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>            <span class="st">"max_steps_per_epoch"</span>: max_steps_per_epoch,</span>
-<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>            <span class="st">"patience"</span>: patience,</span>
-<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>            <span class="st">"min_delta"</span>: min_delta,</span>
-<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>        })</span>
-<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>    global_step <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(num_epochs):</span>
-<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>        train_sampler.set_epoch(epoch)</span>
-<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>        model.train()</span>
-<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> step, (u, i, y) <span class="kw">in</span> <span class="bu">enumerate</span>(train_loader):</span>
-<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> step <span class="op">&gt;=</span> max_steps_per_epoch:</span>
-<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
-<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a>            u, i, y <span class="op">=</span> u.to(device), i.to(device), y.to(device)</span>
-<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>            optimizer.zero_grad(set_to_none<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a>            logits <span class="op">=</span> model(u, i)</span>
-<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a>            loss <span class="op">=</span> loss_fn(logits, y)</span>
-<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a>            loss.backward()</span>
-<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a>            optimizer.step()</span>
-<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> global_rank <span class="op">==</span> <span class="dv">0</span> <span class="kw">and</span> step <span class="op">%</span> <span class="dv">20</span> <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a>                mlflow.log_metric(<span class="st">"train/loss"</span>, loss.item(), step<span class="op">=</span>global_step)</span>
-<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a>            global_step <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a>        model.<span class="bu">eval</span>()</span>
-<span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a>        local_loss_sum <span class="op">=</span> torch.zeros(<span class="dv">1</span>, device<span class="op">=</span>device)</span>
-<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a>        local_n <span class="op">=</span> torch.zeros(<span class="dv">1</span>, device<span class="op">=</span>device)</span>
-<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> torch.no_grad():</span>
-<span id="cb2-137"><a href="#cb2-137" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> u, i, y <span class="kw">in</span> val_loader:</span>
-<span id="cb2-138"><a href="#cb2-138" aria-hidden="true" tabindex="-1"></a>                u, i, y <span class="op">=</span> u.to(device), i.to(device), y.to(device)</span>
-<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a>                logits <span class="op">=</span> model(u, i)</span>
-<span id="cb2-140"><a href="#cb2-140" aria-hidden="true" tabindex="-1"></a>                loss <span class="op">=</span> loss_fn(logits, y)</span>
-<span id="cb2-141"><a href="#cb2-141" aria-hidden="true" tabindex="-1"></a>                local_loss_sum <span class="op">+=</span> loss <span class="op">*</span> y.size(<span class="dv">0</span>)</span>
-<span id="cb2-142"><a href="#cb2-142" aria-hidden="true" tabindex="-1"></a>                local_n <span class="op">+=</span> y.size(<span class="dv">0</span>)</span>
-<span id="cb2-143"><a href="#cb2-143" aria-hidden="true" tabindex="-1"></a>        dist.all_reduce(local_loss_sum, op<span class="op">=</span>dist.ReduceOp.SUM)</span>
-<span id="cb2-144"><a href="#cb2-144" aria-hidden="true" tabindex="-1"></a>        dist.all_reduce(local_n, op<span class="op">=</span>dist.ReduceOp.SUM)</span>
-<span id="cb2-145"><a href="#cb2-145" aria-hidden="true" tabindex="-1"></a>        val_loss <span class="op">=</span> (local_loss_sum <span class="op">/</span> local_n).item()</span>
-<span id="cb2-146"><a href="#cb2-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-147"><a href="#cb2-147" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> global_rank <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb2-148"><a href="#cb2-148" aria-hidden="true" tabindex="-1"></a>            mlflow.log_metric(<span class="st">"val/loss"</span>, val_loss, step<span class="op">=</span>epoch)</span>
-<span id="cb2-149"><a href="#cb2-149" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"[rank=0] epoch=</span><span class="sc">{</span>epoch<span class="sc">:2d}</span><span class="ss"> val_loss=</span><span class="sc">{</span>val_loss<span class="sc">:.6f}</span><span class="ss"> (best=</span><span class="sc">{</span>early_stop<span class="sc">.</span>best<span class="sc">:.6f}</span><span class="ss"> counter=</span><span class="sc">{</span>early_stop<span class="sc">.</span>counter<span class="sc">}</span><span class="ss">)"</span>)</span>
-<span id="cb2-150"><a href="#cb2-150" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-151"><a href="#cb2-151" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> early_stop.step(val_loss):</span>
-<span id="cb2-152"><a href="#cb2-152" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> global_rank <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb2-153"><a href="#cb2-153" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"early stop at epoch </span><span class="sc">{</span>epoch<span class="sc">}</span><span class="ss"> (best val_loss=</span><span class="sc">{</span>early_stop<span class="sc">.</span>best<span class="sc">:.6f}</span><span class="ss">)"</span>)</span>
-<span id="cb2-154"><a href="#cb2-154" aria-hidden="true" tabindex="-1"></a>                mlflow.log_metric(<span class="st">"early_stop_epoch"</span>, epoch)</span>
-<span id="cb2-155"><a href="#cb2-155" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>            os.path.join(split_dir, f)</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> f <span class="kw">in</span> os.listdir(split_dir)</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> f.endswith(<span class="st">".parquet"</span>)</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>        table <span class="op">=</span> pq.read_table(files, columns<span class="op">=</span>[<span class="st">"user_id"</span>, <span class="st">"item_id"</span>, <span class="st">"label"</span>])</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> TensorDataset(</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>            torch.from_numpy(table.column(<span class="st">"user_id"</span>).to_numpy()),</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>            torch.from_numpy(table.column(<span class="st">"item_id"</span>).to_numpy()),</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>            torch.from_numpy(table.column(<span class="st">"label"</span>).to_numpy()),</span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>    train_dataset <span class="op">=</span> load_split(<span class="st">"train"</span>)</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>    val_dataset <span class="op">=</span> load_split(<span class="st">"val"</span>)</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>    train_sampler <span class="op">=</span> DistributedSampler(</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>        train_dataset, num_replicas<span class="op">=</span>world_size, rank<span class="op">=</span>global_rank, drop_last<span class="op">=</span><span class="va">True</span></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>    val_sampler <span class="op">=</span> DistributedSampler(</span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>        val_dataset,</span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>        num_replicas<span class="op">=</span>world_size,</span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>        rank<span class="op">=</span>global_rank,</span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>        shuffle<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>        drop_last<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>    train_loader <span class="op">=</span> DataLoader(</span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>        train_dataset,</span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>        batch_size<span class="op">=</span>batch_size,</span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>        sampler<span class="op">=</span>train_sampler,</span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>        num_workers<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>        pin_memory<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>    val_loader <span class="op">=</span> DataLoader(</span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>        val_dataset,</span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>        batch_size<span class="op">=</span>batch_size,</span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>        sampler<span class="op">=</span>val_sampler,</span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>        num_workers<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>        pin_memory<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> TwoTowerMLP(n_users, n_items, emb_dim, tower_hidden).to(device)</span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> DDP(model, device_ids<span class="op">=</span>[local_rank], output_device<span class="op">=</span>local_rank)</span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>    loss_fn <span class="op">=</span> nn.BCEWithLogitsLoss()</span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>    optimizer <span class="op">=</span> torch.optim.AdamW(model.parameters(), lr<span class="op">=</span><span class="fl">1e-3</span>, weight_decay<span class="op">=</span><span class="fl">1e-5</span>)</span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a>    early_stop <span class="op">=</span> EarlyStopping(patience<span class="op">=</span>patience, min_delta<span class="op">=</span>min_delta)</span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> global_rank <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>        mlflow.start_run(run_id<span class="op">=</span>run_id, log_system_metrics<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a>        mlflow.log_params(</span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a>            {</span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a>                <span class="st">"topology"</span>: topology,</span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a>                <span class="st">"world_size"</span>: world_size,</span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>                <span class="st">"n_users"</span>: n_users,</span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a>                <span class="st">"n_items"</span>: n_items,</span>
+<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a>                <span class="st">"emb_dim"</span>: emb_dim,</span>
+<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a>                <span class="st">"batch_size"</span>: batch_size,</span>
+<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a>                <span class="st">"num_epochs"</span>: num_epochs,</span>
+<span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a>                <span class="st">"max_steps_per_epoch"</span>: max_steps_per_epoch,</span>
+<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a>                <span class="st">"patience"</span>: patience,</span>
+<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a>                <span class="st">"min_delta"</span>: min_delta,</span>
+<span id="cb2-137"><a href="#cb2-137" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb2-138"><a href="#cb2-138" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-140"><a href="#cb2-140" aria-hidden="true" tabindex="-1"></a>    global_step <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-141"><a href="#cb2-141" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(num_epochs):</span>
+<span id="cb2-142"><a href="#cb2-142" aria-hidden="true" tabindex="-1"></a>        train_sampler.set_epoch(epoch)</span>
+<span id="cb2-143"><a href="#cb2-143" aria-hidden="true" tabindex="-1"></a>        model.train()</span>
+<span id="cb2-144"><a href="#cb2-144" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> step, (u, i, y) <span class="kw">in</span> <span class="bu">enumerate</span>(train_loader):</span>
+<span id="cb2-145"><a href="#cb2-145" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> step <span class="op">&gt;=</span> max_steps_per_epoch:</span>
+<span id="cb2-146"><a href="#cb2-146" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
+<span id="cb2-147"><a href="#cb2-147" aria-hidden="true" tabindex="-1"></a>            u, i, y <span class="op">=</span> u.to(device), i.to(device), y.to(device)</span>
+<span id="cb2-148"><a href="#cb2-148" aria-hidden="true" tabindex="-1"></a>            optimizer.zero_grad(set_to_none<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-149"><a href="#cb2-149" aria-hidden="true" tabindex="-1"></a>            logits <span class="op">=</span> model(u, i)</span>
+<span id="cb2-150"><a href="#cb2-150" aria-hidden="true" tabindex="-1"></a>            loss <span class="op">=</span> loss_fn(logits, y)</span>
+<span id="cb2-151"><a href="#cb2-151" aria-hidden="true" tabindex="-1"></a>            loss.backward()</span>
+<span id="cb2-152"><a href="#cb2-152" aria-hidden="true" tabindex="-1"></a>            optimizer.step()</span>
+<span id="cb2-153"><a href="#cb2-153" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> global_rank <span class="op">==</span> <span class="dv">0</span> <span class="kw">and</span> step <span class="op">%</span> <span class="dv">20</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-154"><a href="#cb2-154" aria-hidden="true" tabindex="-1"></a>                mlflow.log_metric(<span class="st">"train/loss"</span>, loss.item(), step<span class="op">=</span>global_step)</span>
+<span id="cb2-155"><a href="#cb2-155" aria-hidden="true" tabindex="-1"></a>            global_step <span class="op">+=</span> <span class="dv">1</span></span>
 <span id="cb2-156"><a href="#cb2-156" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-157"><a href="#cb2-157" aria-hidden="true" tabindex="-1"></a>    dist.barrier()</span>
-<span id="cb2-158"><a href="#cb2-158" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> global_rank <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb2-159"><a href="#cb2-159" aria-hidden="true" tabindex="-1"></a>        torch.save({<span class="st">"model"</span>: model.module.state_dict()}, ckpt_path)</span>
-<span id="cb2-160"><a href="#cb2-160" aria-hidden="true" tabindex="-1"></a>        mlflow.log_param(<span class="st">"ckpt_path"</span>, ckpt_path)</span>
-<span id="cb2-161"><a href="#cb2-161" aria-hidden="true" tabindex="-1"></a>        mlflow.end_run()</span>
-<span id="cb2-162"><a href="#cb2-162" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"saved </span><span class="sc">{</span>ckpt_path<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb2-163"><a href="#cb2-163" aria-hidden="true" tabindex="-1"></a>    dist.destroy_process_group()</span>
-<span id="cb2-164"><a href="#cb2-164" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">"ok"</span></span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-157"><a href="#cb2-157" aria-hidden="true" tabindex="-1"></a>        model.<span class="bu">eval</span>()</span>
+<span id="cb2-158"><a href="#cb2-158" aria-hidden="true" tabindex="-1"></a>        local_loss_sum <span class="op">=</span> torch.zeros(<span class="dv">1</span>, device<span class="op">=</span>device)</span>
+<span id="cb2-159"><a href="#cb2-159" aria-hidden="true" tabindex="-1"></a>        local_n <span class="op">=</span> torch.zeros(<span class="dv">1</span>, device<span class="op">=</span>device)</span>
+<span id="cb2-160"><a href="#cb2-160" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> torch.no_grad():</span>
+<span id="cb2-161"><a href="#cb2-161" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> u, i, y <span class="kw">in</span> val_loader:</span>
+<span id="cb2-162"><a href="#cb2-162" aria-hidden="true" tabindex="-1"></a>                u, i, y <span class="op">=</span> u.to(device), i.to(device), y.to(device)</span>
+<span id="cb2-163"><a href="#cb2-163" aria-hidden="true" tabindex="-1"></a>                logits <span class="op">=</span> model(u, i)</span>
+<span id="cb2-164"><a href="#cb2-164" aria-hidden="true" tabindex="-1"></a>                loss <span class="op">=</span> loss_fn(logits, y)</span>
+<span id="cb2-165"><a href="#cb2-165" aria-hidden="true" tabindex="-1"></a>                local_loss_sum <span class="op">+=</span> loss <span class="op">*</span> y.size(<span class="dv">0</span>)</span>
+<span id="cb2-166"><a href="#cb2-166" aria-hidden="true" tabindex="-1"></a>                local_n <span class="op">+=</span> y.size(<span class="dv">0</span>)</span>
+<span id="cb2-167"><a href="#cb2-167" aria-hidden="true" tabindex="-1"></a>        dist.all_reduce(local_loss_sum, op<span class="op">=</span>dist.ReduceOp.SUM)</span>
+<span id="cb2-168"><a href="#cb2-168" aria-hidden="true" tabindex="-1"></a>        dist.all_reduce(local_n, op<span class="op">=</span>dist.ReduceOp.SUM)</span>
+<span id="cb2-169"><a href="#cb2-169" aria-hidden="true" tabindex="-1"></a>        val_loss <span class="op">=</span> (local_loss_sum <span class="op">/</span> local_n).item()</span>
+<span id="cb2-170"><a href="#cb2-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-171"><a href="#cb2-171" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> global_rank <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-172"><a href="#cb2-172" aria-hidden="true" tabindex="-1"></a>            mlflow.log_metric(<span class="st">"val/loss"</span>, val_loss, step<span class="op">=</span>epoch)</span>
+<span id="cb2-173"><a href="#cb2-173" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(</span>
+<span id="cb2-174"><a href="#cb2-174" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f"[rank=0] epoch=</span><span class="sc">{</span>epoch<span class="sc">:2d}</span><span class="ss"> val_loss=</span><span class="sc">{</span>val_loss<span class="sc">:.6f}</span><span class="ss"> (best=</span><span class="sc">{</span>early_stop<span class="sc">.</span>best<span class="sc">:.6f}</span><span class="ss"> counter=</span><span class="sc">{</span>early_stop<span class="sc">.</span>counter<span class="sc">}</span><span class="ss">)"</span></span>
+<span id="cb2-175"><a href="#cb2-175" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb2-176"><a href="#cb2-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-177"><a href="#cb2-177" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> early_stop.step(val_loss):</span>
+<span id="cb2-178"><a href="#cb2-178" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> global_rank <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-179"><a href="#cb2-179" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(</span>
+<span id="cb2-180"><a href="#cb2-180" aria-hidden="true" tabindex="-1"></a>                    <span class="ss">f"early stop at epoch </span><span class="sc">{</span>epoch<span class="sc">}</span><span class="ss"> (best val_loss=</span><span class="sc">{</span>early_stop<span class="sc">.</span>best<span class="sc">:.6f}</span><span class="ss">)"</span></span>
+<span id="cb2-181"><a href="#cb2-181" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb2-182"><a href="#cb2-182" aria-hidden="true" tabindex="-1"></a>                mlflow.log_metric(<span class="st">"early_stop_epoch"</span>, epoch)</span>
+<span id="cb2-183"><a href="#cb2-183" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb2-184"><a href="#cb2-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-185"><a href="#cb2-185" aria-hidden="true" tabindex="-1"></a>    dist.barrier()</span>
+<span id="cb2-186"><a href="#cb2-186" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> global_rank <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-187"><a href="#cb2-187" aria-hidden="true" tabindex="-1"></a>        torch.save({<span class="st">"model"</span>: model.module.state_dict()}, ckpt_path)</span>
+<span id="cb2-188"><a href="#cb2-188" aria-hidden="true" tabindex="-1"></a>        mlflow.log_param(<span class="st">"ckpt_path"</span>, ckpt_path)</span>
+<span id="cb2-189"><a href="#cb2-189" aria-hidden="true" tabindex="-1"></a>        mlflow.end_run()</span>
+<span id="cb2-190"><a href="#cb2-190" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"saved </span><span class="sc">{</span>ckpt_path<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-191"><a href="#cb2-191" aria-hidden="true" tabindex="-1"></a>    dist.destroy_process_group()</span>
+<span id="cb2-192"><a href="#cb2-192" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">"ok"</span></span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="mn-gpu" class="level2">
@@ -1006,7 +1034,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.ml.torch.distributor <span class="im">import</span> TorchDistributor</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>NUM_NODES <span class="op">=</span> <span class="dv">2</span>          <span class="co"># M (worker 노드 수. driver는 학습에 참여하지 않음 — local_mode=False)</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>NUM_NODES <span class="op">=</span> <span class="dv">2</span>  <span class="co"># M (worker 노드 수. driver는 학습에 참여하지 않음 — local_mode=False)</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>NUM_GPUS_PER_NODE <span class="op">=</span> <span class="dv">4</span>  <span class="co"># N</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>cfg <span class="op">=</span> CONFIG</span>

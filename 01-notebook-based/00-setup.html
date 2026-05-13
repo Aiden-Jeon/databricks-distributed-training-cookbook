@@ -876,7 +876,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>VOLUME <span class="op">=</span> <span class="st">"dataset"</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>VOLUME_ROOT <span class="op">=</span> <span class="ss">f"/Volumes/</span><span class="sc">{</span>CATALOG<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>SCHEMA<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>VOLUME<span class="sc">}</span><span class="ss">"</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>VOLUME_ROOT<span class="sc">}</span><span class="ss">/ml-25m"</span>      <span class="co"># train/, val/, _meta.json 위치</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>VOLUME_ROOT<span class="sc">}</span><span class="ss">/ml-25m"</span>  <span class="co"># train/, val/, _meta.json 위치</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>CKPT_DIR <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>VOLUME_ROOT<span class="sc">}</span><span class="ss">/checkpoints"</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>ML25M_URL <span class="op">=</span> <span class="st">"https://files.grouplens.org/datasets/movielens/ml-25m.zip"</span></span>
@@ -886,12 +886,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>spark.sql(<span class="ss">f"CREATE VOLUME IF NOT EXISTS </span><span class="sc">{</span>CATALOG<span class="sc">}</span><span class="ss">.</span><span class="sc">{</span>SCHEMA<span class="sc">}</span><span class="ss">.</span><span class="sc">{</span>VOLUME<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>os.makedirs(DATA_DIR, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>os.makedirs(CKPT_DIR, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"VOLUME_ROOT=</span><span class="sc">{</span>VOLUME_ROOT<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DATA_DIR=</span><span class="sc">{</span>DATA_DIR<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"CKPT_DIR=</span><span class="sc">{</span>CKPT_DIR<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>os.makedirs(DATA_DIR, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>os.makedirs(CKPT_DIR, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"VOLUME_ROOT=</span><span class="sc">{</span>VOLUME_ROOT<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DATA_DIR=</span><span class="sc">{</span>DATA_DIR<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"CKPT_DIR=</span><span class="sc">{</span>CKPT_DIR<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="mlflow-experiment" class="level2">
@@ -900,19 +901,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="b330fcaa" class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>USERNAME <span class="op">=</span> (</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    spark.sql(<span class="st">"SELECT current_user() AS user"</span>).first()[<span class="st">"user"</span>]</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>EXPERIMENT_PATH <span class="op">=</span> <span class="ss">f"/Users/</span><span class="sc">{</span>USERNAME<span class="sc">}</span><span class="ss">/recommender-notebook-based"</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 1×1 / 1×N / M×N의 모든 토폴로지 run이 하나의 experiment에 누적되도록 명시적으로 생성한다.</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>experiment <span class="op">=</span> mlflow.get_experiment_by_name(EXPERIMENT_PATH)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> experiment <span class="kw">is</span> <span class="va">None</span>:</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    EXPERIMENT_ID <span class="op">=</span> mlflow.create_experiment(EXPERIMENT_PATH)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    EXPERIMENT_ID <span class="op">=</span> experiment.experiment_id</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>mlflow.set_experiment(experiment_id<span class="op">=</span>EXPERIMENT_ID)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"EXPERIMENT_PATH=</span><span class="sc">{</span>EXPERIMENT_PATH<span class="sc">}</span><span class="ss"> (id=</span><span class="sc">{</span>EXPERIMENT_ID<span class="sc">}</span><span class="ss">)"</span>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>USERNAME <span class="op">=</span> spark.sql(<span class="st">"SELECT current_user() AS user"</span>).first()[<span class="st">"user"</span>]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>EXPERIMENT_PATH <span class="op">=</span> <span class="ss">f"/Users/</span><span class="sc">{</span>USERNAME<span class="sc">}</span><span class="ss">/recommender-notebook-based"</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 1×1 / 1×N / M×N의 모든 토폴로지 run이 하나의 experiment에 누적되도록 명시적으로 생성한다.</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>experiment <span class="op">=</span> mlflow.get_experiment_by_name(EXPERIMENT_PATH)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> experiment <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    EXPERIMENT_ID <span class="op">=</span> mlflow.create_experiment(EXPERIMENT_PATH)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    EXPERIMENT_ID <span class="op">=</span> experiment.experiment_id</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>mlflow.set_experiment(experiment_id<span class="op">=</span>EXPERIMENT_ID)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"EXPERIMENT_PATH=</span><span class="sc">{</span>EXPERIMENT_PATH<span class="sc">}</span><span class="ss"> (id=</span><span class="sc">{</span>EXPERIMENT_ID<span class="sc">}</span><span class="ss">)"</span>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="단일-config" class="level2">
@@ -997,13 +996,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        meta <span class="op">=</span> json.load(f)</span>
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    CONFIG[<span class="st">"n_users"</span>] <span class="op">=</span> meta[<span class="st">"n_users"</span>]</span>
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    CONFIG[<span class="st">"n_items"</span>] <span class="op">=</span> meta[<span class="st">"n_items"</span>]</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"loaded metadata: n_users=</span><span class="sc">{</span>meta[<span class="st">'n_users'</span>]<span class="sc">:,}</span><span class="ss"> n_items=</span><span class="sc">{</span>meta[<span class="st">'n_items'</span>]<span class="sc">:,}</span><span class="ss"> train_rows=</span><span class="sc">{</span>meta<span class="sc">.</span>get(<span class="st">'n_train_rows'</span>, <span class="st">'n/a'</span>)<span class="sc">:,}</span><span class="ss"> val_rows=</span><span class="sc">{</span>meta<span class="sc">.</span>get(<span class="st">'n_val_rows'</span>, <span class="st">'n/a'</span>)<span class="sc">:,}</span><span class="ss">"</span>)</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"[warn] </span><span class="sc">{</span>meta_path<span class="sc">}</span><span class="ss"> not found. Run 01-data_prep first before training."</span>)</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, v <span class="kw">in</span> CONFIG.items():</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  CONFIG[</span><span class="sc">{</span>k<span class="sc">!r}</span><span class="ss">] = </span><span class="sc">{</span>v<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"early stopping: patience=</span><span class="sc">{</span>PATIENCE<span class="sc">}</span><span class="ss"> min_delta=</span><span class="sc">{</span>MIN_DELTA<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"loaded metadata: n_users=</span><span class="sc">{</span>meta[<span class="st">'n_users'</span>]<span class="sc">:,}</span><span class="ss"> n_items=</span><span class="sc">{</span>meta[<span class="st">'n_items'</span>]<span class="sc">:,}</span><span class="ss"> train_rows=</span><span class="sc">{</span>meta<span class="sc">.</span>get(<span class="st">'n_train_rows'</span>, <span class="st">'n/a'</span>)<span class="sc">:,}</span><span class="ss"> val_rows=</span><span class="sc">{</span>meta<span class="sc">.</span>get(<span class="st">'n_val_rows'</span>, <span class="st">'n/a'</span>)<span class="sc">:,}</span><span class="ss">"</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"[warn] </span><span class="sc">{</span>meta_path<span class="sc">}</span><span class="ss"> not found. Run 01-data_prep first before training."</span>)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, v <span class="kw">in</span> CONFIG.items():</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  CONFIG[</span><span class="sc">{</span>k<span class="sc">!r}</span><span class="ss">] = </span><span class="sc">{</span>v<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"early stopping: patience=</span><span class="sc">{</span>PATIENCE<span class="sc">}</span><span class="ss"> min_delta=</span><span class="sc">{</span>MIN_DELTA<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="torchdistributor-child용-자격증명" class="level2">

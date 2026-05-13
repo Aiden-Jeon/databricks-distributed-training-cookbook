@@ -8,7 +8,7 @@
 
 <meta name="description" content="Databricks에서 Two-Tower MLP 추천 모델을 TorchDistributor / PyTorch Lightning / HF Accelerate로 분산학습하는 패턴을 코드 조직 방식 × launcher × 토폴로지 매트릭스로 정리한 쿡북.">
 
-<title>env-cluster-recipes – Databricks Distributed Training Cookbook</title>
+<title>concepts-torchdistributor-with-lightning – Databricks Distributed Training Cookbook</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -34,8 +34,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../00-foundations/env-library-management.html" rel="next">
-<link href="../00-foundations/env-databricks-environments.html" rel="prev">
+<link href="../00-foundations/env-databricks-environments.html" rel="next">
+<link href="../00-foundations/concepts-torchdistributor-internals.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -311,7 +311,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../00-foundations/README.html">00 · Foundations</a></li><li class="breadcrumb-item"><a href="../00-foundations/env-databricks-environments.html">Environment</a></li><li class="breadcrumb-item"><a href="../00-foundations/env-cluster-recipes.html">Cluster Recipes</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../00-foundations/README.html">00 · Foundations</a></li><li class="breadcrumb-item"><a href="../00-foundations/concepts-recommender-baseline.html">Concepts</a></li><li class="breadcrumb-item"><a href="../00-foundations/concepts-torchdistributor-with-lightning.html">TorchDistributor × Lightning 조합</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -355,14 +355,14 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/concepts-distributed-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Distributed Training Concepts</span></a>
+  <a href="../00-foundations/concepts-torchdistributor-internals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TorchDistributor 내부 동작</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/concepts-torchdistributor-internals.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">TorchDistributor 내부 동작</span></a>
+  <a href="../00-foundations/concepts-torchdistributor-with-lightning.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">TorchDistributor × Lightning 조합</span></a>
   </div>
 </li>
       </ul>
@@ -380,12 +380,6 @@ ul.task-list li input[type="checkbox"] {
   <div class="sidebar-item-container"> 
   <a href="../00-foundations/env-databricks-environments.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Databricks 실행 환경</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../00-foundations/env-cluster-recipes.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Cluster Recipes</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -442,25 +436,14 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/ops-resume-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">학습 재개 (Resume)</span></a>
+  <a href="../00-foundations/ops-uc-model-registry.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Unity Catalog Model Registry</span></a>
   </div>
 </li>
-      </ul>
-  </li>
-          <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
- <span class="menu-text">Debug</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="토글 섹션">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/debug-common-pitfalls.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">흔한 함정</span></a>
+  <a href="../00-foundations/ops-resume-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">학습 재개 (Resume)</span></a>
   </div>
 </li>
       </ul>
@@ -471,11 +454,11 @@ ul.task-list li input[type="checkbox"] {
       <div class="sidebar-item-container"> 
             <a href="../01-notebook-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">01 · Notebook-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../01-notebook-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -518,11 +501,11 @@ ul.task-list li input[type="checkbox"] {
       <div class="sidebar-item-container"> 
             <a href="../02-script-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">02 · Script-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -537,13 +520,13 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
  <span class="menu-text">TorchDistributor</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/02-launch_torch_distributor_1x1.html" class="sidebar-item-text sidebar-link">
@@ -566,13 +549,13 @@ ul.task-list li input[type="checkbox"] {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
  <span class="menu-text">PyTorch Lightning</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/05-launch_lightning_trainer_1x1.html" class="sidebar-item-text sidebar-link">
@@ -595,13 +578,13 @@ ul.task-list li input[type="checkbox"] {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
  <span class="menu-text">Accelerate</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/08-launch_accelerator_MxN.html" class="sidebar-item-text sidebar-link">
@@ -616,11 +599,11 @@ ul.task-list li input[type="checkbox"] {
       <div class="sidebar-item-container"> 
             <a href="../03-custom-package-script-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">03 · Custom-package Script-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -635,13 +618,13 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true">
  <span class="menu-text">TorchDistributor</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/02-launch_torch_distributor_1x1.html" class="sidebar-item-text sidebar-link">
@@ -664,13 +647,13 @@ ul.task-list li input[type="checkbox"] {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
  <span class="menu-text">PyTorch Lightning</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/05-launch_lightning_trainer_1x1.html" class="sidebar-item-text sidebar-link">
@@ -693,13 +676,13 @@ ul.task-list li input[type="checkbox"] {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true">
  <span class="menu-text">Accelerate</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/08-launch_accelerator_MxN.html" class="sidebar-item-text sidebar-link">
@@ -714,15 +697,21 @@ ul.task-list li input[type="checkbox"] {
       <div class="sidebar-item-container"> 
             <a href="../docs/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">참고 자료</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/official-notebooks-mirror.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Official Notebooks Mirror</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/debug-common-pitfalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">흔한 함정</span></a>
   </div>
 </li>
       </ul>
@@ -737,118 +726,116 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">목차</h2>
    
   <ul>
-  <li><a href="#cluster-recipes" id="toc-cluster-recipes" class="nav-link active" data-scroll-target="#cluster-recipes">Cluster Recipes</a>
+  <li><a href="#torchdistributor-lightning-조합" id="toc-torchdistributor-lightning-조합" class="nav-link active" data-scroll-target="#torchdistributor-lightning-조합">TorchDistributor × Lightning 조합</a>
   <ul class="collapse">
-  <li><a href="#gpu-단일-노드-단일-gpu" id="toc-gpu-단일-노드-단일-gpu" class="nav-link" data-scroll-target="#gpu-단일-노드-단일-gpu">1×1 GPU (단일 노드 / 단일 GPU)</a></li>
-  <li><a href="#n-gpu-단일-노드-다중-gpu" id="toc-n-gpu-단일-노드-다중-gpu" class="nav-link" data-scroll-target="#n-gpu-단일-노드-다중-gpu">1×N GPU (단일 노드 / 다중 GPU)</a></li>
-  <li><a href="#mn-gpu-다중-노드" id="toc-mn-gpu-다중-노드" class="nav-link" data-scroll-target="#mn-gpu-다중-노드">M×N GPU (다중 노드)</a></li>
-  <li><a href="#공통-권장" id="toc-공통-권장" class="nav-link" data-scroll-target="#공통-권장">공통 권장</a></li>
-  <li><a href="#참고" id="toc-참고" class="nav-link" data-scroll-target="#참고">참고</a></li>
+  <li><a href="#lightning에는-왜-local_mode가-없는가-driver는-어떻게-쓰이는가" id="toc-lightning에는-왜-local_mode가-없는가-driver는-어떻게-쓰이는가" class="nav-link" data-scroll-target="#lightning에는-왜-local_mode가-없는가-driver는-어떻게-쓰이는가">Lightning에는 왜 <code>local_mode</code>가 없는가 — driver는 어떻게 쓰이는가</a></li>
+  <li><a href="#본-쿡북의-셀-매핑" id="toc-본-쿡북의-셀-매핑" class="nav-link" data-scroll-target="#본-쿡북의-셀-매핑">본 쿡북의 셀 매핑</a></li>
+  <li><a href="#함정" id="toc-함정" class="nav-link" data-scroll-target="#함정">함정</a></li>
   </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/edit/main/00-foundations/env-cluster-recipes.md" class="toc-action"><i class="bi bi-github"></i>편집</a></li><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/blob/main/00-foundations/env-cluster-recipes.md" class="toc-action"><i class="bi empty"></i>소스코드 보기</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/edit/main/00-foundations/concepts-torchdistributor-with-lightning.md" class="toc-action"><i class="bi bi-github"></i>편집</a></li><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/blob/main/00-foundations/concepts-torchdistributor-with-lightning.md" class="toc-action"><i class="bi empty"></i>소스코드 보기</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../00-foundations/README.html">00 · Foundations</a></li><li class="breadcrumb-item"><a href="../00-foundations/env-databricks-environments.html">Environment</a></li><li class="breadcrumb-item"><a href="../00-foundations/env-cluster-recipes.html">Cluster Recipes</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../00-foundations/README.html">00 · Foundations</a></li><li class="breadcrumb-item"><a href="../00-foundations/concepts-recommender-baseline.html">Concepts</a></li><li class="breadcrumb-item"><a href="../00-foundations/concepts-torchdistributor-with-lightning.html">TorchDistributor × Lightning 조합</a></li></ol></nav></header>
 
 
 
 
 
-<section id="cluster-recipes" class="level1">
-<h1>Cluster Recipes</h1>
-<p>이 문서는 토폴로지에 따른 권장 인스턴스 사양을 정리합니다. 본 쿡북은 <strong>AWS만 대상으로 합니다</strong>(Azure와 GCP는 스코프 밖입니다). 가격은 수시로 바뀌므로 카탈로그 가격 비교는 별도로 확인하시기 바랍니다.</p>
-<p>기준 모델은 <a href="../00-foundations/concepts-recommender-baseline.html">concepts-recommender-baseline.md</a>의 Two-Tower MLP이고, 데이터셋은 MovieLens 25M으로 고정되어 있습니다. 본 쿡북은 ML-25M 단일 데이터셋과 단일 모델 config로 통일했기 때문에 1×1 / 1×N / M×N의 차이는 <strong>클러스터 모양과 launcher 설정</strong>에서만 나타납니다.</p>
-<section id="gpu-단일-노드-단일-gpu" class="level2">
-<h2 class="anchored" data-anchor-id="gpu-단일-노드-단일-gpu">1×1 GPU (단일 노드 / 단일 GPU)</h2>
-<p>가장 단순한 단일 GPU 구성입니다.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>항목</th>
-<th>권장</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>인스턴스</td>
-<td><code>g5.2xlarge</code> (1× A10G 24GB) 또는 <code>g5.12xlarge</code>의 1 GPU만 사용</td>
-</tr>
-</tbody>
-</table>
-<p>임베딩 테이블이 ~15M params 수준으로 작기 때문에 최신 GPU 중 무엇을 골라도 충분히 들어갑니다. 15분 budget 안에서 충분한 epoch을 돌릴 수 있습니다.</p>
-</section>
-<section id="n-gpu-단일-노드-다중-gpu" class="level2">
-<h2 class="anchored" data-anchor-id="n-gpu-단일-노드-다중-gpu">1×N GPU (단일 노드 / 다중 GPU)</h2>
-<p>같은 노드 안에서 GPU를 여러 장 쓰는 구성입니다.</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>항목</th>
-<th>권장</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>인스턴스</td>
-<td><code>g5.12xlarge</code> (4× A10G 24GB)</td>
-</tr>
-<tr class="even">
-<td>확장</td>
-<td><code>p4d.24xlarge</code> (8× A100 40GB)</td>
-</tr>
-</tbody>
-</table>
-<p>DDP는 임베딩 테이블을 GPU마다 복제하므로 GPU 메모리에 임베딩과 배치, 옵티마이저 상태가 모두 들어가야 합니다. 현재 모델 크기에서는 충분히 여유가 있습니다.</p>
-</section>
-<section id="mn-gpu-다중-노드" class="level2">
-<h2 class="anchored" data-anchor-id="mn-gpu-다중-노드">M×N GPU (다중 노드)</h2>
-<p>여러 노드를 묶어 GPU를 총 M×N개 사용하는 구성입니다.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>항목</th>
-<th>권장</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>기본</td>
-<td>2 노드 × <code>g5.12xlarge</code> (TorchDistributor <code>num_processes = M*N</code>)</td>
-</tr>
-<tr class="even">
-<td>확장</td>
-<td>2~4 노드 × <code>p4d.24xlarge</code> (inter-node bandwidth 중요, EFA 권장)</td>
-</tr>
-</tbody>
-</table>
+<section id="torchdistributor-lightning-조합" class="level1">
+<h1>TorchDistributor × Lightning 조합</h1>
+<p>TorchDistributor는 launcher고 PyTorch Lightning은 training framework입니다. 둘은 같은 층에 있는 도구가 아니라 위·아래로 겹쳐 쓰는 도구이므로, 어떻게 조합하느냐에 따라 동작이 크게 달라집니다. 이 문서는 본 쿡북의 Lightning 셀이 어떤 조합을 택했는지, 그리고 잘못 조합했을 때 어떤 일이 벌어지는지 정리합니다.</p>
+<section id="lightning에는-왜-local_mode가-없는가-driver는-어떻게-쓰이는가" class="level2">
+<h2 class="anchored" data-anchor-id="lightning에는-왜-local_mode가-없는가-driver는-어떻게-쓰이는가">Lightning에는 왜 <code>local_mode</code>가 없는가 — driver는 어떻게 쓰이는가</h2>
+<p>같은 분산 학습이라도 Lightning에는 <code>local_mode</code>에 해당하는 옵션이 보이지 않습니다. 이유는 단순합니다. <code>local_mode</code>는 TorchDistributor의 <strong>launcher 옵션</strong>인 반면, PyTorch Lightning은 launcher가 아니라 training framework이기 때문입니다. Lightning은 분산 환경 자체는 외부 launcher(<code>torchrun</code>, SLURM, TorchDistributor 등)가 잡아 준다는 전제 위에서 동작합니다.</p>
 <blockquote class="blockquote">
-<p>M×N의 가치는 <strong>데이터 처리량 확장</strong>에 있습니다. 같은 데이터셋과 같은 모델에서 batch_size를 GPU 총 수에 비례해 키우고 epoch당 wall-clock을 단축합니다. 노드 간 통신 비용은 작은 모델에서 무시할 수 없는 수준이므로, 본격 운영 전에 노드 수별 throughput을 측정하는 것이 좋습니다.</p>
+<p>“Lightning implementation of DDP calls your script under the hood multiple times with the correct environment variables.” / “simply launch your script with the torchrun command.” — <a href="https://lightning.ai/docs/pytorch/stable/accelerators/gpu_intermediate.html">PyTorch Lightning Docs: GPU training (Intermediate)</a></p>
+</blockquote>
+<p>그래서 <code>L.Trainer</code>가 받는 인자도 <code>devices</code>, <code>num_nodes</code>, <code>strategy</code> 정도로 단순합니다. “어디(driver냐 worker냐)에서 프로세스를 띄울지”는 Trainer가 알 필요가 없고, 그것은 한 단계 위에서 프로세스를 띄우는 launcher의 몫입니다.</p>
+<p>결과적으로 driver를 학습에 쓰느냐 마느냐는 <strong>launcher가 어떻게 잡아 주느냐</strong>에 따라 갈립니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 48%">
+<col style="width: 29%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>시나리오</th>
+<th>프로세스를 띄우는 주체</th>
+<th>driver 사용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>노트북에서 <code>Trainer.fit()</code> 직접 호출 (single-node)</td>
+<td>Lightning이 노트북 프로세스 자체에서 child 1~N개 spawn</td>
+<td>O — driver의 GPU 사용</td>
+</tr>
+<tr class="even">
+<td><code>TorchDistributor(local_mode=True)</code> + Lightning</td>
+<td>TorchDistributor가 driver 안에서 N개 프로세스 spawn, 각자가 <code>Trainer.fit()</code> 호출</td>
+<td>O</td>
+</tr>
+<tr class="odd">
+<td><code>TorchDistributor(local_mode=False)</code> + Lightning</td>
+<td>Spark가 worker 노드들에 분산 spawn</td>
+<td>X — driver는 코디네이션만</td>
+</tr>
+<tr class="even">
+<td>노트북에서 <code>Trainer(num_nodes=M&gt;1)</code> 직접 호출</td>
+<td>Lightning은 worker 노드에 프로세스를 띄울 수단이 없음</td>
+<td><strong>실패</strong></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="본-쿡북의-셀-매핑" class="level2">
+<h2 class="anchored" data-anchor-id="본-쿡북의-셀-매핑">본 쿡북의 셀 매핑</h2>
+<p>본 쿡북의 Lightning 셀(<code>01-notebook-based/04-train_pytorch_lightning_1x1_1xN.ipynb</code>, <code>05-train_pytorch_lightning_MxN.ipynb</code>)은 위 표 중 1·2·3행에 차례로 매핑됩니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 37%">
+<col style="width: 48%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>셀</th>
+<th>launcher</th>
+<th>Trainer 호출</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Lightning 1×1</td>
+<td>없음 — 노트북에서 직접</td>
+<td><code>Trainer(devices=1, num_nodes=1).fit(...)</code></td>
+</tr>
+<tr class="even">
+<td>Lightning 1×N</td>
+<td><code>TorchDistributor(num_processes=N, local_mode=True)</code></td>
+<td><code>Trainer(devices=N, num_nodes=1, strategy="ddp").fit(...)</code></td>
+</tr>
+<tr class="odd">
+<td>Lightning M×N</td>
+<td><code>TorchDistributor(num_processes=M*N, local_mode=False)</code></td>
+<td><code>Trainer(devices=N, num_nodes=M, strategy="ddp").fit(...)</code></td>
+</tr>
+</tbody>
+</table>
+<p>1×1만 TorchDistributor 없이 직접 호출하는 데는 이유가 있습니다. Lightning 단독으로도 single-process 학습이 완결되기 때문에, launcher를 한 겹 더 두는 가치가 거의 없습니다. 반면 1×N부터는 TorchDistributor가 프로세스 스폰과 NCCL 환경 변수(<code>RANK</code>, <code>WORLD_SIZE</code>, <code>MASTER_ADDR</code> 등)를 일관되게 잡아 주는 이점이 분명하므로 감싸 줍니다. M×N은 worker 노드에 프로세스를 분배해 줄 주체가 필요하므로 <strong>반드시</strong> <code>local_mode=False</code>로 감싸야 합니다 (<a href="https://www.databricks.com/blog/2023/04/20/pytorch-databricks-introducing-spark-pytorch-distributor.html">Databricks Blog: PyTorch on Databricks – Introducing the Spark PyTorch Distributor</a>).</p>
+<blockquote class="blockquote">
+<p>Databricks 공식 블로그는 multi-node Lightning에서 <code>Trainer(devices=1, num_nodes=num_processes)</code>도 권장 패턴으로 소개합니다. 각 TorchDistributor 프로세스를 독립된 “node”로 취급해 Lightning이 추가 child를 spawn하지 않게 만드는 단순화 패턴입니다. 본 쿡북은 클러스터 토폴로지를 그대로 드러내려는 의도로 <code>devices=N, num_nodes=M</code>을 사용합니다. 둘 다 동작하지만 의미와 디버깅 관점이 다르다는 점만 알아 두면 됩니다.</p>
 </blockquote>
 </section>
-<section id="공통-권장" class="level2">
-<h2 class="anchored" data-anchor-id="공통-권장">공통 권장</h2>
-<p>토폴로지와 무관하게 적용하는 공통 설정입니다.</p>
+<section id="함정" class="level2">
+<h2 class="anchored" data-anchor-id="함정">함정</h2>
+<p>Lightning을 TorchDistributor와 조합할 때 자주 만나는 함정도 정리해 둡니다.</p>
 <ul>
-<li>DBR은 17.3 LTS ML을 사용합니다(GPU 노드 타입을 선택하면 GPU 이미지가 자동으로 적용됩니다).</li>
-<li>노드 간 네트워크는 가능하면 AWS EFA를 활성화합니다.</li>
-<li>학습 잡에서는 Autoscaling을 <strong>끕니다</strong>(분산 학습은 노드 수 고정을 가정합니다).</li>
-<li>Driver는 GPU가 있는 인스턴스로 둡니다(TorchDistributor의 rank 0가 driver에서 동작합니다).</li>
-</ul>
-</section>
-<section id="참고" class="level2">
-<h2 class="anchored" data-anchor-id="참고">참고</h2>
-<p>자세한 내용은 다음 자료를 참조하세요.</p>
-<ul>
-<li><a href="https://docs.databricks.com/aws/en/machine-learning/sgc-examples/gpu-distributed-training">Databricks AI Runtime: 분산 학습 예제 인덱스</a></li>
+<li>노트북에서 <code>Trainer(num_nodes=M&gt;1)</code>를 TorchDistributor 없이 직접 호출하면 Lightning이 worker 노드에 접근할 수단이 없어 그대로 멈춥니다. Databricks 환경에서 multi-node Lightning은 반드시 <code>TorchDistributor(local_mode=False)</code>로 감싸야 합니다.</li>
+<li>반대로 <code>TorchDistributor(local_mode=True, num_processes=N)</code> 안쪽에서 <code>Trainer(num_nodes&gt;1)</code>을 주는 조합도 피해야 합니다. TorchDistributor는 driver 한 대 안에서 N개 프로세스를 띄우는데, Lightning에는 “여러 노드”라고 거짓말을 하는 셈이 되어 rendezvous가 어긋납니다.</li>
+<li>TorchDistributor의 child 프로세스는 노트북과 별개인 fresh Python에서 시작합니다. 그래서 LightningModule, DataModule, callback 같은 객체는 <code>train_fn</code> 안에서 다시 정의하거나 import해 주어야 합니다 (<a href="../docs/debug-common-pitfalls.html"><code>debug-common-pitfalls.md §2</code></a>).</li>
 </ul>
 
 
@@ -1271,13 +1258,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../00-foundations/env-databricks-environments.html" class="pagination-link" aria-label="Databricks 실행 환경">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Databricks 실행 환경</span>
+      <a href="../00-foundations/concepts-torchdistributor-internals.html" class="pagination-link" aria-label="TorchDistributor 내부 동작">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">TorchDistributor 내부 동작</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../00-foundations/env-library-management.html" class="pagination-link" aria-label="라이브러리 관리">
-        <span class="nav-page-text">라이브러리 관리</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../00-foundations/env-databricks-environments.html" class="pagination-link" aria-label="Databricks 실행 환경">
+        <span class="nav-page-text">Databricks 실행 환경</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1286,4 +1273,4 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/edit/main/00-foundations/env-cluster-recipes.md" class="toc-action"><i class="bi bi-github"></i>편집</a></li><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/blob/main/00-foundations/env-cluster-recipes.md" class="toc-action"><i class="bi empty"></i>소스코드 보기</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/edit/main/00-foundations/concepts-torchdistributor-with-lightning.md" class="toc-action"><i class="bi bi-github"></i>편집</a></li><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/blob/main/00-foundations/concepts-torchdistributor-with-lightning.md" class="toc-action"><i class="bi empty"></i>소스코드 보기</a></li></ul></div></div></div></footer></body></html>

@@ -8,7 +8,7 @@
 
 <meta name="description" content="Databricks에서 Two-Tower MLP 추천 모델을 TorchDistributor / PyTorch Lightning / HF Accelerate로 분산학습하는 패턴을 코드 조직 방식 × launcher × 토폴로지 매트릭스로 정리한 쿡북.">
 
-<title>debug-common-pitfalls – Databricks Distributed Training Cookbook</title>
+<title>ops-uc-model-registry – Databricks Distributed Training Cookbook</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -69,8 +69,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../01-notebook-based/README.html" rel="next">
-<link href="../00-foundations/ops-resume-training.html" rel="prev">
+<link href="../00-foundations/ops-resume-training.html" rel="next">
+<link href="../00-foundations/ops-mlflow-tracking.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -346,7 +346,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../00-foundations/README.html">00 · Foundations</a></li><li class="breadcrumb-item"><a href="../00-foundations/debug-common-pitfalls.html">Debug</a></li><li class="breadcrumb-item"><a href="../00-foundations/debug-common-pitfalls.html">흔한 함정</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../00-foundations/README.html">00 · Foundations</a></li><li class="breadcrumb-item"><a href="../00-foundations/ops-mlflow-tracking.html">Ops</a></li><li class="breadcrumb-item"><a href="../00-foundations/ops-uc-model-registry.html">Unity Catalog Model Registry</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -390,14 +390,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/concepts-distributed-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Distributed Training Concepts</span></a>
+  <a href="../00-foundations/concepts-torchdistributor-internals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TorchDistributor 내부 동작</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/concepts-torchdistributor-internals.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">TorchDistributor 내부 동작</span></a>
+  <a href="../00-foundations/concepts-torchdistributor-with-lightning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TorchDistributor × Lightning 조합</span></a>
   </div>
 </li>
       </ul>
@@ -415,12 +415,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="../00-foundations/env-databricks-environments.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Databricks 실행 환경</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../00-foundations/env-cluster-recipes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Cluster Recipes</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -477,25 +471,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/ops-resume-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">학습 재개 (Resume)</span></a>
+  <a href="../00-foundations/ops-uc-model-registry.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Unity Catalog Model Registry</span></a>
   </div>
 </li>
-      </ul>
-  </li>
-          <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
- <span class="menu-text">Debug</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="토글 섹션">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/debug-common-pitfalls.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">흔한 함정</span></a>
+  <a href="../00-foundations/ops-resume-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">학습 재개 (Resume)</span></a>
   </div>
 </li>
       </ul>
@@ -506,11 +489,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../01-notebook-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">01 · Notebook-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../01-notebook-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -553,11 +536,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../02-script-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">02 · Script-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -572,13 +555,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
  <span class="menu-text">TorchDistributor</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/02-launch_torch_distributor_1x1.html" class="sidebar-item-text sidebar-link">
@@ -601,13 +584,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
  <span class="menu-text">PyTorch Lightning</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/05-launch_lightning_trainer_1x1.html" class="sidebar-item-text sidebar-link">
@@ -630,13 +613,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
  <span class="menu-text">Accelerate</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/08-launch_accelerator_MxN.html" class="sidebar-item-text sidebar-link">
@@ -651,11 +634,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../03-custom-package-script-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">03 · Custom-package Script-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -670,13 +653,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true">
  <span class="menu-text">TorchDistributor</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/02-launch_torch_distributor_1x1.html" class="sidebar-item-text sidebar-link">
@@ -699,13 +682,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
  <span class="menu-text">PyTorch Lightning</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/05-launch_lightning_trainer_1x1.html" class="sidebar-item-text sidebar-link">
@@ -728,13 +711,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true">
  <span class="menu-text">Accelerate</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/08-launch_accelerator_MxN.html" class="sidebar-item-text sidebar-link">
@@ -749,15 +732,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../docs/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">참고 자료</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/official-notebooks-mirror.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Official Notebooks Mirror</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/debug-common-pitfalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">흔한 함정</span></a>
   </div>
 </li>
       </ul>
@@ -772,259 +761,88 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">목차</h2>
    
   <ul>
-  <li><a href="#흔한-함정" id="toc-흔한-함정" class="nav-link active" data-scroll-target="#흔한-함정">흔한 함정</a>
+  <li><a href="#unity-catalog-model-registry" id="toc-unity-catalog-model-registry" class="nav-link active" data-scroll-target="#unity-catalog-model-registry">Unity Catalog Model Registry</a>
   <ul class="collapse">
-  <li><a href="#진단-에러-메시지로-항목-찾기" id="toc-진단-에러-메시지로-항목-찾기" class="nav-link" data-scroll-target="#진단-에러-메시지로-항목-찾기">진단 — 에러 메시지로 항목 찾기</a></li>
-  <li><a href="#nccl-초기화-실패-타임아웃" id="toc-nccl-초기화-실패-타임아웃" class="nav-link" data-scroll-target="#nccl-초기화-실패-타임아웃">1. NCCL 초기화 실패 / 타임아웃</a></li>
-  <li><a href="#pickle-에러-torchdistributor.runfn" id="toc-pickle-에러-torchdistributor.runfn" class="nav-link" data-scroll-target="#pickle-에러-torchdistributor.runfn">2. pickle 에러 (TorchDistributor.run(fn, …))</a></li>
-  <li><a href="#child-프로세스에서-mlflow가-인증-실패" id="toc-child-프로세스에서-mlflow가-인증-실패" class="nav-link" data-scroll-target="#child-프로세스에서-mlflow가-인증-실패">2-1. child 프로세스에서 MLflow가 인증 실패</a></li>
-  <li><a href="#oom-at-first-forward" id="toc-oom-at-first-forward" class="nav-link" data-scroll-target="#oom-at-first-forward">3. OOM at first forward</a></li>
-  <li><a href="#ddp에서-학습이-멈춘-것처럼-보입니다" id="toc-ddp에서-학습이-멈춘-것처럼-보입니다" class="nav-link" data-scroll-target="#ddp에서-학습이-멈춘-것처럼-보입니다">4. DDP에서 학습이 멈춘 것처럼 보입니다</a></li>
-  <li><a href="#mlflow가-중복-로그를-만듭니다" id="toc-mlflow가-중복-로그를-만듭니다" class="nav-link" data-scroll-target="#mlflow가-중복-로그를-만듭니다">5. MLflow가 중복 로그를 만듭니다</a></li>
-  <li><a href="#uc-volume-저장이-너무-느립니다" id="toc-uc-volume-저장이-너무-느립니다" class="nav-link" data-scroll-target="#uc-volume-저장이-너무-느립니다">6. UC Volume 저장이 너무 느립니다</a></li>
-  <li><a href="#serverless-gpu에서-multi-node가-안-됩니다" id="toc-serverless-gpu에서-multi-node가-안-됩니다" class="nav-link" data-scroll-target="#serverless-gpu에서-multi-node가-안-됩니다">7. Serverless GPU에서 multi-node가 안 됩니다</a></li>
-  <li><a href="#distributed-안에서-dbutils를-못-씁니다" id="toc-distributed-안에서-dbutils를-못-씁니다" class="nav-link" data-scroll-target="#distributed-안에서-dbutils를-못-씁니다">8. <code>@distributed</code> 안에서 <code>dbutils</code>를 못 씁니다</a></li>
-  <li><a href="#mlflow가-skip-logging-gpu-metrics-만-찍고-gpu-차트가-비어-있습니다" id="toc-mlflow가-skip-logging-gpu-metrics-만-찍고-gpu-차트가-비어-있습니다" class="nav-link" data-scroll-target="#mlflow가-skip-logging-gpu-metrics-만-찍고-gpu-차트가-비어-있습니다">9. MLflow가 “Skip logging GPU metrics” 만 찍고 GPU 차트가 비어 있습니다</a></li>
-  <li><a href="#multi-node-worker의-로그를-어디서-보는가" id="toc-multi-node-worker의-로그를-어디서-보는가" class="nav-link" data-scroll-target="#multi-node-worker의-로그를-어디서-보는가">11. multi-node worker의 로그를 어디서 보는가</a>
-  <ul class="collapse">
-  <li><a href="#어디서-보는가" id="toc-어디서-보는가" class="nav-link" data-scroll-target="#어디서-보는가">어디서 보는가</a></li>
-  <li><a href="#nccl-로그-켜기" id="toc-nccl-로그-켜기" class="nav-link" data-scroll-target="#nccl-로그-켜기">NCCL 로그 켜기</a></li>
-  <li><a href="#함정" id="toc-함정" class="nav-link" data-scroll-target="#함정">함정</a></li>
-  </ul></li>
-  <li><a href="#multi-node-ddp인데-throughput이-안-올라갑니다" id="toc-multi-node-ddp인데-throughput이-안-올라갑니다" class="nav-link" data-scroll-target="#multi-node-ddp인데-throughput이-안-올라갑니다">10. multi-node DDP인데 throughput이 안 올라갑니다</a></li>
+  <li><a href="#핵심-한-줄" id="toc-핵심-한-줄" class="nav-link" data-scroll-target="#핵심-한-줄">핵심 한 줄</a></li>
+  <li><a href="#등록-흐름" id="toc-등록-흐름" class="nav-link" data-scroll-target="#등록-흐름">등록 흐름</a></li>
+  <li><a href="#best-loggedmodel-선택" id="toc-best-loggedmodel-선택" class="nav-link" data-scroll-target="#best-loggedmodel-선택">Best LoggedModel 선택</a></li>
+  <li><a href="#권한" id="toc-권한" class="nav-link" data-scroll-target="#권한">권한</a></li>
+  <li><a href="#참고" id="toc-참고" class="nav-link" data-scroll-target="#참고">참고</a></li>
   </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/edit/main/00-foundations/debug-common-pitfalls.md" class="toc-action"><i class="bi bi-github"></i>편집</a></li><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/blob/main/00-foundations/debug-common-pitfalls.md" class="toc-action"><i class="bi empty"></i>소스코드 보기</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/edit/main/00-foundations/ops-uc-model-registry.md" class="toc-action"><i class="bi bi-github"></i>편집</a></li><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/blob/main/00-foundations/ops-uc-model-registry.md" class="toc-action"><i class="bi empty"></i>소스코드 보기</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../00-foundations/README.html">00 · Foundations</a></li><li class="breadcrumb-item"><a href="../00-foundations/debug-common-pitfalls.html">Debug</a></li><li class="breadcrumb-item"><a href="../00-foundations/debug-common-pitfalls.html">흔한 함정</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../00-foundations/README.html">00 · Foundations</a></li><li class="breadcrumb-item"><a href="../00-foundations/ops-mlflow-tracking.html">Ops</a></li><li class="breadcrumb-item"><a href="../00-foundations/ops-uc-model-registry.html">Unity Catalog Model Registry</a></li></ol></nav></header>
 
 
 
 
 
-<section id="흔한-함정" class="level1">
-<h1>흔한 함정</h1>
-<p>이 문서는 분산 학습에서 자주 부딪히는 실패와 해결법을 모아 둔 곳입니다. 디버깅 중이라면 여기부터 살펴보면 됩니다.</p>
-<section id="진단-에러-메시지로-항목-찾기" class="level2">
-<h2 class="anchored" data-anchor-id="진단-에러-메시지로-항목-찾기">진단 — 에러 메시지로 항목 찾기</h2>
-<p>먼저 에러 메시지로 해당 섹션을 찾아갈 수 있도록 인덱스를 두었습니다.</p>
+<section id="unity-catalog-model-registry" class="level1">
+<h1>Unity Catalog Model Registry</h1>
+<p>학습이 끝난 모델을 Unity Catalog Model Registry에 등록하는 흐름을 정리합니다. MLflow tracking 자체와 LoggedModel 로깅 방식은 <a href="../00-foundations/ops-mlflow-tracking.html"><code>ops-mlflow-tracking.md</code></a>, 권한 진단 표는 <a href="../00-foundations/env-auth.html"><code>env-auth.md</code></a>를 참조하세요.</p>
+<section id="핵심-한-줄" class="level2">
+<h2 class="anchored" data-anchor-id="핵심-한-줄">핵심 한 줄</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mlflow.set_registry_uri(<span class="st">"databricks-uc"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>mlflow.register_model(model_uri, <span class="st">"main.distributed_cookbook.two_tower_mlp"</span>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>mlflow.set_registry_uri("databricks-uc")</code>가 UC Model Registry로 라우팅하는 핵심 호출입니다. DBR 17.3 LTS ML은 default가 UC라 호출 없이도 동작하지만, 명시는 워크스페이스 registry로 잘못 등록되는 사고를 막아주는 안전장치입니다. 워크스페이스 registry로 등록하려면 <code>"databricks"</code>로 지정합니다.</p>
+</section>
+<section id="등록-흐름" class="level2">
+<h2 class="anchored" data-anchor-id="등록-흐름">등록 흐름</h2>
+<p>등록에는 시그니처가 반드시 필요합니다. 시그니처는 학습 중 <code>mlflow.pytorch.log_model(..., signature=...)</code>로 함께 기록한 것을 그대로 사용합니다(예제는 <a href="../00-foundations/ops-mlflow-tracking.html"><code>ops-mlflow-tracking.md</code></a>의 LoggedModel 섹션).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>mlflow.set_registry_uri(<span class="st">"databricks-uc"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>uc_model_name <span class="op">=</span> <span class="st">"main.distributed_cookbook.two_tower_mlp"</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>model_uri <span class="op">=</span> <span class="ss">f"runs:/</span><span class="sc">{</span>run_id<span class="sc">}</span><span class="ss">/model"</span>           <span class="co"># 또는 best LoggedModel의 model_uri</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>registered <span class="op">=</span> mlflow.register_model(model_uri, uc_model_name)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Registered </span><span class="sc">{</span>uc_model_name<span class="sc">}</span><span class="ss"> v</span><span class="sc">{</span>registered<span class="sc">.</span>version<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="best-loggedmodel-선택" class="level2">
+<h2 class="anchored" data-anchor-id="best-loggedmodel-선택">Best LoggedModel 선택</h2>
+<p>MLflow 3.0+에서는 한 run에 epoch별로 여러 <code>LoggedModel</code>이 있습니다. 학습 종료 후 메트릭과 묶어 best를 골라 등록합니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> mlflow <span class="im">import</span> MlflowClient</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> MlflowClient()</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>run <span class="op">=</span> client.get_run(run_id)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>model_outputs <span class="op">=</span> run.outputs.model_outputs    <span class="co"># 이 run에서 로깅된 모든 LoggedModel</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ... 메트릭과 묶어 정렬 후 best 선택 ...</span></span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="권한" class="level2">
+<h2 class="anchored" data-anchor-id="권한">권한</h2>
+<p>가장 자주 막히는 부분입니다. 필요한 grant 요약은 다음과 같습니다.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>증상 / 에러 메시지</th>
-<th>섹션</th>
+<th>권한</th>
+<th>대상</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>NCCL error ... unhandled cuda error</code> 또는 첫 스텝에서 hang</td>
-<td><a href="#1-nccl-초기화-실패--타임아웃">§1</a></td>
+<td><code>USE CATALOG</code></td>
+<td>catalog (예: <code>main</code>)</td>
 </tr>
 <tr class="even">
-<td><code>Can't pickle local object</code>, <code>cannot pickle '_thread.RLock'</code></td>
-<td><a href="#2-pickle-에러-torchdistributorrunfn-">§2</a></td>
+<td><code>USE SCHEMA</code></td>
+<td>schema (예: <code>main.distributed_cookbook</code>)</td>
 </tr>
 <tr class="odd">
-<td><code>401 Unauthorized</code>, <code>Could not find experiment</code> (child)</td>
-<td><a href="#2-1-child-프로세스에서-mlflow가-인증-실패">§2-1</a></td>
-</tr>
-<tr class="even">
-<td><code>CUDA out of memory</code> at first forward</td>
-<td><a href="#3-oom-at-first-forward">§3</a></td>
-</tr>
-<tr class="odd">
-<td>DDP backward에서 일부 rank만 멈춤 / hang</td>
-<td><a href="#4-ddp에서-학습이-멈춘-것처럼-보입니다">§4</a></td>
-</tr>
-<tr class="even">
-<td>MLflow에 같은 metric이 rank 수만큼 중복</td>
-<td><a href="#5-mlflow가-중복-로그를-만듭니다">§5</a></td>
-</tr>
-<tr class="odd">
-<td>UC Volume 저장이 매우 느림</td>
-<td><a href="#6-uc-volume-저장이-너무-느립니다">§6</a></td>
-</tr>
-<tr class="even">
-<td>Multi-node <code>local_mode=False</code> 가 실패</td>
-<td><a href="#7-serverless-gpu에서-multi-node가-안-됩니다">§7</a></td>
-</tr>
-<tr class="odd">
-<td><code>@distributed</code> 안에서 <code>dbutils</code> 호출 실패</td>
-<td><a href="#8-distributed-안에서-dbutils를-못-씁니다">§8</a></td>
-</tr>
-<tr class="even">
-<td><code>Skip logging GPU metrics</code> 만 찍히고 GPU 차트 비어 있음</td>
-<td><a href="#9-mlflow가-skip-logging-gpu-metrics-만-찍고-gpu-차트가-비어-있습니다">§9</a></td>
-</tr>
-<tr class="odd">
-<td>Multi-node throughput 이 기대치보다 낮음</td>
-<td><a href="#10-multi-node-ddp인데-throughput이-안-올라갑니다">§10</a></td>
-</tr>
-<tr class="even">
-<td>Worker rank의 stderr/NCCL 로그를 어디서 보는지 모름</td>
-<td><a href="#11-multi-node-worker의-로그를-어디서-보는가">§11</a></td>
+<td><code>CREATE MODEL</code></td>
+<td>schema</td>
 </tr>
 </tbody>
 </table>
+<p>흔한 에러는 <code>PERMISSION_DENIED: User does not have CREATE MODEL on schema 'main.distributed_cookbook'</code>이며, 해결은 <code>GRANT CREATE MODEL ON SCHEMA main.distributed_cookbook TO `&lt;user-or-sp&gt;`</code> 실행입니다. PAT/사용자 vs SP 차이와 자세한 진단 표는 <a href="../00-foundations/env-auth.html"><code>env-auth.md</code></a>의 “권한 함정 — UC Model Registry” 섹션을 참조하세요.</p>
 </section>
-<section id="nccl-초기화-실패-타임아웃" class="level2">
-<h2 class="anchored" data-anchor-id="nccl-초기화-실패-타임아웃">1. NCCL 초기화 실패 / 타임아웃</h2>
-<p>증상은 <code>NCCL error ... unhandled cuda error</code>가 출력되거나 첫 스텝에서 멈추는 형태로 나타납니다.</p>
-<p>원인은 다음 중 하나입니다.</p>
+<section id="참고" class="level2">
+<h2 class="anchored" data-anchor-id="참고">참고</h2>
 <ul>
-<li>노드 간 통신 포트가 막혀 있습니다.</li>
-<li><code>MASTER_ADDR</code>/<code>MASTER_PORT</code>가 잘못 설정되어 있습니다.</li>
-<li>IB/EFA가 활성화되지 않아 default ethernet으로 fallback됩니다.</li>
-</ul>
-<p>해결책은 다음과 같습니다.</p>
-<ul>
-<li>TorchDistributor를 쓰면 위 환경변수가 자동으로 설정되므로 직접 만들지 않습니다.</li>
-<li>로그의 <code>NCCL INFO</code> 라인을 보고 어떤 transport를 쓰는지 확인합니다.</li>
-<li>필요하면 <code>NCCL_DEBUG=INFO</code>, <code>NCCL_SOCKET_IFNAME=eth0</code> 등을 조정합니다.</li>
-</ul>
-</section>
-<section id="pickle-에러-torchdistributor.runfn" class="level2">
-<h2 class="anchored" data-anchor-id="pickle-에러-torchdistributor.runfn">2. pickle 에러 (TorchDistributor.run(fn, …))</h2>
-<p>증상은 <code>Can't pickle local object</code>나 <code>cannot pickle '_thread.RLock'</code>입니다.</p>
-<p>원인은 <code>fn</code>이 closure로 driver 변수(SparkSession, MLflow client 등)를 캡처했기 때문입니다.</p>
-<p>해결책은 다음 세 가지를 함께 적용합니다.</p>
-<ul>
-<li>학습 함수는 <strong>모듈 최상위 또는 별도 <code>.py</code> 파일에 정의</strong>합니다.</li>
-<li>인자로는 primitives(str, int, list)만 넘깁니다.</li>
-<li>SparkSession은 함수 내부에서 <code>SparkSession.builder.getOrCreate()</code>로 다시 얻습니다.</li>
-</ul>
-</section>
-<section id="child-프로세스에서-mlflow가-인증-실패" class="level2">
-<h2 class="anchored" data-anchor-id="child-프로세스에서-mlflow가-인증-실패">2-1. child 프로세스에서 MLflow가 인증 실패</h2>
-<p>증상은 <code>mlflow.start_run(run_id=...)</code>이 <code>401 Unauthorized</code> 또는 <code>Could not find experiment</code>로 떨어지는 것입니다.</p>
-<p>원인은 TorchDistributor가 띄운 worker 프로세스가 driver의 Databricks 자격증명을 자동 상속하지 않기 때문입니다.</p>
-<p>해결책은 driver에서 host/token을 명시적으로 읽어 학습 함수의 인자로 넘기고, child 안에서 환경변수에 다시 설정하는 것입니다.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Driver cell</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> dbutils.notebook.entry_point.getDbutils().notebook().getContext()</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>db_host <span class="op">=</span> context.extraContext().<span class="bu">apply</span>(<span class="st">"api_url"</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>db_token <span class="op">=</span> context.apiToken().get()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>TorchDistributor(...).run(train_fn, db_host<span class="op">=</span>db_host, db_token<span class="op">=</span>db_token, ...)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train_fn(db_host, db_token, run_id, ...):</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> os</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    os.environ[<span class="st">"DATABRICKS_HOST"</span>] <span class="op">=</span> db_host</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    os.environ[<span class="st">"DATABRICKS_TOKEN"</span>] <span class="op">=</span> db_token</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 이제 mlflow가 자격증명을 찾을 수 있습니다</span></span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="oom-at-first-forward" class="level2">
-<h2 class="anchored" data-anchor-id="oom-at-first-forward">3. OOM at first forward</h2>
-<p>증상은 첫 forward에서 곧바로 OOM이 발생하는 것입니다.</p>
-<p>원인은 다음 중 하나입니다.</p>
-<ul>
-<li><code>per_device_batch_size</code>가 너무 큽니다.</li>
-<li>임베딩 테이블이 GPU 메모리에서 큰 비중을 차지하는데 배치 크기를 함께 키웠습니다.</li>
-<li>AdamW 옵티마이저 상태(파라미터의 2배)를 빼고 추산했습니다.</li>
-</ul>
-<p>해결책은 다음과 같습니다.</p>
-<ol type="1">
-<li><code>per_device_batch_size</code>를 절반으로 줄이고 점진적으로 늘립니다.</li>
-<li><code>optimizer.zero_grad(set_to_none=True)</code>로 그래디언트 메모리를 회수합니다.</li>
-<li>임베딩이 너무 크면 <code>env-cluster-recipes.md</code>에서 더 큰 GPU로 옮깁니다.</li>
-</ol>
-</section>
-<section id="ddp에서-학습이-멈춘-것처럼-보입니다" class="level2">
-<h2 class="anchored" data-anchor-id="ddp에서-학습이-멈춘-것처럼-보입니다">4. DDP에서 학습이 멈춘 것처럼 보입니다</h2>
-<p>원인은 두 가지를 의심해 볼 수 있습니다.</p>
-<ul>
-<li>rank 간 데이터 분할이 불균등해서 한쪽이 먼저 끝나면 다른 rank가 AllReduce를 기다립니다.</li>
-<li>모델에 사용되지 않은 파라미터가 있으면 DDP가 backward에서 hang합니다.</li>
-</ul>
-<p>해결책은 다음과 같습니다.</p>
-<ul>
-<li><code>DistributedSampler(..., drop_last=True)</code>로 각 rank의 step 수를 똑같이 맞춥니다.</li>
-<li><code>DistributedDataParallel(..., find_unused_parameters=True)</code>는 정말 필요한 경우에만 켜고, 가능하면 미사용 파라미터를 모델에서 제거합니다.</li>
-</ul>
-</section>
-<section id="mlflow가-중복-로그를-만듭니다" class="level2">
-<h2 class="anchored" data-anchor-id="mlflow가-중복-로그를-만듭니다">5. MLflow가 중복 로그를 만듭니다</h2>
-<p>원인은 모든 rank가 <code>mlflow.start_run</code>을 호출했기 때문입니다.</p>
-<p>해결책은 <a href="../00-foundations/ops-mlflow-tracking.html"><code>ops-mlflow-tracking.md</code></a>의 “rank 0만 로깅” 패턴을 적용하는 것입니다.</p>
-</section>
-<section id="uc-volume-저장이-너무-느립니다" class="level2">
-<h2 class="anchored" data-anchor-id="uc-volume-저장이-너무-느립니다">6. UC Volume 저장이 너무 느립니다</h2>
-<p>원인은 모든 rank가 매 save_steps마다 동시에 UC Volume에 쓰기 때문입니다.</p>
-<p>해결책은 <a href="../00-foundations/data-uc-volumes-checkpoints.html"><code>data-uc-volumes-checkpoints.md</code></a>의 “local disk + copy” 패턴을 적용하고, rank 0만 저장하도록 바꾸는 것입니다.</p>
-</section>
-<section id="serverless-gpu에서-multi-node가-안-됩니다" class="level2">
-<h2 class="anchored" data-anchor-id="serverless-gpu에서-multi-node가-안-됩니다">7. Serverless GPU에서 multi-node가 안 됩니다</h2>
-<p>원인은 Serverless GPU가 single-node 환경이라는 데 있습니다. M×N 셀은 <strong>Classic GPU 클러스터</strong>가 필요합니다.</p>
-<p>해결책은 매트릭스의 M×N 셀로 넘어갈 때 Classic 클러스터 사양으로 재배포하는 것입니다.</p>
-</section>
-<section id="distributed-안에서-dbutils를-못-씁니다" class="level2">
-<h2 class="anchored" data-anchor-id="distributed-안에서-dbutils를-못-씁니다">8. <code>@distributed</code> 안에서 <code>dbutils</code>를 못 씁니다</h2>
-<p>원인은 child 프로세스에 Databricks driver-side notebook context가 없기 때문입니다.</p>
-<p>해결책은 <code>dbutils</code> 호출을 모두 driver(노트북) 셀에서 미리 끝내는 것입니다. 학습 함수에는 결과 값(예: 경로 문자열)만 넘깁니다.</p>
-</section>
-<section id="mlflow가-skip-logging-gpu-metrics-만-찍고-gpu-차트가-비어-있습니다" class="level2">
-<h2 class="anchored" data-anchor-id="mlflow가-skip-logging-gpu-metrics-만-찍고-gpu-차트가-비어-있습니다">9. MLflow가 “Skip logging GPU metrics” 만 찍고 GPU 차트가 비어 있습니다</h2>
-<p>증상: <code>mlflow.start_run(..., log_system_metrics=True)</code>로 시작했는데 MLflow UI의 System Metrics 탭에 CPU/메모리/디스크는 보이지만 <strong>GPU utilization/memory/power 차트가 비어 있고</strong>, 로그에 다음 줄만 남습니다.</p>
-<pre><code>INFO mlflow.system_metrics.system_metrics_monitor: Skip logging GPU metrics. Set logger level to DEBUG for more details.
-INFO mlflow.system_metrics.system_metrics_monitor: Started monitoring system metrics.</code></pre>
-<p>원인: MLflow의 system metrics collector는 GPU 메트릭을 읽을 때 <code>nvidia-ml-py</code>(=<code>pynvml</code>, NVIDIA Management Library Python 바인딩)를 사용합니다. DBR 17.3 LTS ML에는 <code>torch</code>와 CUDA는 들어있지만 <code>nvidia-ml-py</code>는 사전 설치되어 있지 않습니다. 모듈 import에 실패하면 MLflow는 silently GPU 수집만 끄고 나머지(CPU·메모리·디스크)는 계속 수집합니다. 학습 자체는 GPU를 정상적으로 사용하고 있고, <strong>차트만</strong> 비어 있는 상태.</p>
-<p>해결: <code>00-setup</code>의 <code>%pip install</code> 셀에 <code>nvidia-ml-py</code>를 추가합니다.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>pip install <span class="op">--</span>quiet <span class="st">"lightning==2.5.1"</span> <span class="st">"nvidia-ml-py"</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>restart_python</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
-<p>multi-node에서의 적용 범위도 짚어 둡니다. <code>%pip install</code> + <code>%restart_python</code>은 <strong>notebook-scoped 라이브러리</strong>라서 같은 클러스터에 attach된 driver와 모든 worker에 자동 반영됩니다. TorchDistributor(<code>local_mode=False</code>)가 띄우는 worker 프로세스도 같은 클러스터 위에서 fresh Python으로 시작하지만, 이 단계에서는 이미 클러스터의 라이브러리 상태에 <code>nvidia-ml-py</code>가 포함되어 있으므로 child에서 별도 설치가 필요 없습니다. 단, <code>cluster.restart</code>를 거치면 notebook-scoped 라이브러리가 사라지므로 setup 셀은 매 세션마다 재실행해야 합니다.</p>
-<p>마지막으로 알아 두면 좋은 점이 두 가지 있습니다.</p>
-<ul>
-<li>MLflow가 인식하는 패키지 이름은 <code>nvidia-ml-py</code>(공식, 최신)와 <code>pynvml</code>(예전 별칭) 모두입니다. 새로 설치한다면 <code>nvidia-ml-py</code>를 권장합니다.</li>
-<li>같은 차트가 비어 있는 또 다른 원인은 <strong>multi-node에서 driver만 <code>log_system_metrics=True</code></strong> 인 경우입니다(driver는 학습에 참여하지 않음). 해결책은 <a href="../00-foundations/ops-mlflow-tracking.html"><code>ops-mlflow-tracking.md</code> §1</a>에 있으며, rank-0 worker가 <code>mlflow.start_run(run_id=..., log_system_metrics=True)</code>로 attach하는 패턴입니다.</li>
-</ul>
-</section>
-<section id="multi-node-worker의-로그를-어디서-보는가" class="level2">
-<h2 class="anchored" data-anchor-id="multi-node-worker의-로그를-어디서-보는가">11. multi-node worker의 로그를 어디서 보는가</h2>
-<p>증상은 다음과 같습니다. <code>local_mode=False</code> 학습이 시작은 됐는데 노트북 셀에는 driver의 코디네이션 로그만 보이고, worker rank들의 stderr를 찾지 못해 NCCL 에러나 OOM, 학습 진행 상황을 진단할 수 없습니다.</p>
-<p>원리부터 짚어 보면, TorchDistributor가 <code>local_mode=False</code>로 띄운 child는 <strong>Spark task</strong>로 실행됩니다(<a href="../00-foundations/concepts-torchdistributor-internals.html"><code>concepts-torchdistributor-internals.md</code></a>). 각 task의 stdout/stderr는 해당 worker 노드의 executor log에 쌓입니다.</p>
-<section id="어디서-보는가" class="level3">
-<h3 class="anchored" data-anchor-id="어디서-보는가">어디서 보는가</h3>
-<p>로그를 확인할 수 있는 위치는 크게 세 군데입니다.</p>
-<ol type="1">
-<li><p><strong>노트북 셀에 흘러나오는 부분.</strong> TorchDistributor가 child stdout을 driver로 stream하기 때문에 약간의 latency는 있지만 학습 함수 안의 <code>print(...)</code>가 결국 노트북 셀에 나타납니다. 모든 rank의 출력이 뒤섞여 나오므로 학습 함수에서 항상 rank prefix를 붙이는 것이 좋습니다.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"[rank=</span><span class="sc">{</span>global_rank<span class="sc">}</span><span class="ss">] epoch=</span><span class="sc">{</span>epoch<span class="sc">}</span><span class="ss"> loss=</span><span class="sc">{</span>loss<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div></li>
-<li><p><strong>Spark UI의 executor log(가장 정확).</strong> 노트북 우측 상단의 “Spark UI” → Stages 탭에서 진행 중인 <strong>barrier stage</strong>를 클릭하면 각 task의 “stderr”·“stdout” 링크가 나옵니다. rank N의 출력은 task N의 log에 해당하며, task index가 곧 global rank입니다. 학습 함수의 <code>print</code>뿐 아니라 NCCL·PyTorch warning, OOM stack trace 등이 모두 여기 있습니다.</p></li>
-<li><p><strong>Driver log + Cluster log delivery.</strong> Cluster 설정의 “Log delivery”를 활성화하면 driver와 worker 로그가 UC Volume 또는 S3에 영구 저장됩니다. 학습 종료 후 사후 분석에 유용하며, 실시간 디버깅에는 Spark UI가 더 빠릅니다.</p></li>
-</ol>
-</section>
-<section id="nccl-로그-켜기" class="level3">
-<h3 class="anchored" data-anchor-id="nccl-로그-켜기">NCCL 로그 켜기</h3>
-<p>multi-node에서 inter-node bandwidth가 의심되거나 rendezvous가 멈출 때는 NCCL 디버그 로그를 켜는 것이 가장 빠른 진단입니다.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train_fn(...):</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    os.environ[<span class="st">"NCCL_DEBUG"</span>] <span class="op">=</span> <span class="st">"INFO"</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    os.environ[<span class="st">"NCCL_DEBUG_SUBSYS"</span>] <span class="op">=</span> <span class="st">"INIT,COLL"</span>   <span class="co"># 선택 — INIT만 보고 싶으면 "INIT"</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    dist.init_process_group(<span class="st">"nccl"</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    ...</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
-<p>NCCL이 각 rank의 stderr에 사용 중인 transport(IB / EFA / SOCKET), NIC, ring topology를 출력합니다. <strong>Spark UI executor log → stderr 탭</strong>에서 확인합니다.</p>
-</section>
-<section id="함정" class="level3">
-<h3 class="anchored" data-anchor-id="함정">함정</h3>
-<p>multi-node 로그 확인에서 자주 빠지는 함정은 다음과 같습니다.</p>
-<ul>
-<li><code>local_mode=True</code>의 child stdout/stderr는 driver의 노트북 셀에 자연스럽게 나오므로 Spark UI를 볼 필요가 없습니다.</li>
-<li>worker가 죽었을 때 driver에는 <code>Py4JError</code> 또는 <code>BarrierTaskException</code>만 보고되는 경우가 많습니다. 실제 원인은 <strong>worker stderr(Spark UI)</strong>에 있으므로 노트북 셀의 에러만 보고 판단하면 안 됩니다.</li>
-<li>multi-node 학습이 영원히 hang하면 대개 NCCL init 실패입니다. <code>NCCL_DEBUG=INFO</code>로 어떤 transport에서 멈췄는지 확인합니다.</li>
-<li>Spark UI는 cluster terminate 후에도 일정 시간 접근할 수 있지만 사라질 수 있습니다. 중요한 로그는 cluster log delivery로 영구화합니다.</li>
-</ul>
-</section>
-</section>
-<section id="multi-node-ddp인데-throughput이-안-올라갑니다" class="level2">
-<h2 class="anchored" data-anchor-id="multi-node-ddp인데-throughput이-안-올라갑니다">10. multi-node DDP인데 throughput이 안 올라갑니다</h2>
-<p>원인은 다음 중 하나일 가능성이 높습니다.</p>
-<ul>
-<li>모델이 너무 작아 AllReduce 통신 비용이 compute 비중과 비슷해진 상태입니다.</li>
-<li>inter-node bandwidth(EFA 미활성)가 병목입니다.</li>
-<li>batch size가 작아 GPU가 idle 상태입니다.</li>
-</ul>
-<p>해결책은 다음 순서로 시도합니다.</p>
-<ul>
-<li><code>per_device_batch_size</code>를 GPU 메모리가 허용하는 최대까지 키웁니다.</li>
-<li><code>pin_memory=True</code>, <code>num_workers=4</code> 등 DataLoader 옵션을 점검합니다.</li>
-<li>그래도 안 오르면 단일 노드로 충분한 워크로드일 수 있음을 인정합니다. 본 쿡북의 M×N 셀은 <strong>패턴 시연</strong>이 1차 목적이라는 점도 함께 고려합니다.</li>
+<li><a href="https://docs.databricks.com/aws/en/machine-learning/manage-model-lifecycle/index">Unity Catalog Model Registry</a></li>
+<li><a href="https://mlflow.org/docs/latest/model-registry.html">MLflow Model Registry API</a></li>
 </ul>
 
 
@@ -1447,13 +1265,13 @@ INFO mlflow.system_metrics.system_metrics_monitor: Started monitoring system met
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../00-foundations/ops-resume-training.html" class="pagination-link" aria-label="학습 재개 (Resume)">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">학습 재개 (Resume)</span>
+      <a href="../00-foundations/ops-mlflow-tracking.html" class="pagination-link" aria-label="MLflow Tracking">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">MLflow Tracking</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../01-notebook-based/README.html" class="pagination-link" aria-label="01 · Notebook-based">
-        <span class="nav-page-text">01 · Notebook-based</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../00-foundations/ops-resume-training.html" class="pagination-link" aria-label="학습 재개 (Resume)">
+        <span class="nav-page-text">학습 재개 (Resume)</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1462,4 +1280,4 @@ INFO mlflow.system_metrics.system_metrics_monitor: Started monitoring system met
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/edit/main/00-foundations/debug-common-pitfalls.md" class="toc-action"><i class="bi bi-github"></i>편집</a></li><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/blob/main/00-foundations/debug-common-pitfalls.md" class="toc-action"><i class="bi empty"></i>소스코드 보기</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/edit/main/00-foundations/ops-uc-model-registry.md" class="toc-action"><i class="bi bi-github"></i>편집</a></li><li><a href="https://github.com/Aiden-Jeon/databricks-distributed-training/blob/main/00-foundations/ops-uc-model-registry.md" class="toc-action"><i class="bi empty"></i>소스코드 보기</a></li></ul></div></div></div></footer></body></html>

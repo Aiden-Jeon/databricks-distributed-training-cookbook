@@ -390,14 +390,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/concepts-distributed-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Distributed Training Concepts</span></a>
+  <a href="../00-foundations/concepts-torchdistributor-internals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TorchDistributor 내부 동작</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/concepts-torchdistributor-internals.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">TorchDistributor 내부 동작</span></a>
+  <a href="../00-foundations/concepts-torchdistributor-with-lightning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TorchDistributor × Lightning 조합</span></a>
   </div>
 </li>
       </ul>
@@ -415,12 +415,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="../00-foundations/env-databricks-environments.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Databricks 실행 환경</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../00-foundations/env-cluster-recipes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Cluster Recipes</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -477,25 +471,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/ops-resume-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">학습 재개 (Resume)</span></a>
+  <a href="../00-foundations/ops-uc-model-registry.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Unity Catalog Model Registry</span></a>
   </div>
 </li>
-      </ul>
-  </li>
-          <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
- <span class="menu-text">Debug</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="토글 섹션">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/debug-common-pitfalls.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">흔한 함정</span></a>
+  <a href="../00-foundations/ops-resume-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">학습 재개 (Resume)</span></a>
   </div>
 </li>
       </ul>
@@ -506,11 +489,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../01-notebook-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">01 · Notebook-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../01-notebook-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -553,11 +536,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../02-script-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">02 · Script-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -572,13 +555,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
  <span class="menu-text">TorchDistributor</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/02-launch_torch_distributor_1x1.html" class="sidebar-item-text sidebar-link">
@@ -601,13 +584,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
  <span class="menu-text">PyTorch Lightning</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/05-launch_lightning_trainer_1x1.html" class="sidebar-item-text sidebar-link">
@@ -630,13 +613,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
  <span class="menu-text">Accelerate</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/08-launch_accelerator_MxN.html" class="sidebar-item-text sidebar-link">
@@ -651,11 +634,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../03-custom-package-script-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">03 · Custom-package Script-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -670,13 +653,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true">
  <span class="menu-text">TorchDistributor</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/02-launch_torch_distributor_1x1.html" class="sidebar-item-text sidebar-link">
@@ -699,13 +682,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
  <span class="menu-text">PyTorch Lightning</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/05-launch_lightning_trainer_1x1.html" class="sidebar-item-text sidebar-link">
@@ -728,13 +711,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true">
  <span class="menu-text">Accelerate</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/08-launch_accelerator_MxN.html" class="sidebar-item-text sidebar-link">
@@ -749,15 +732,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../docs/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">참고 자료</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/official-notebooks-mirror.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Official Notebooks Mirror</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/debug-common-pitfalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">흔한 함정</span></a>
   </div>
 </li>
       </ul>
@@ -831,17 +820,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>두 섹션이 <strong>같은 <code>train_fn_ddp</code></strong> 를 공유합니다. 모델·데이터·<code>CONFIG</code>가 모두 동일하고 차이는 <code>num_processes</code>뿐입니다. world_size=1에서는 DDP all_reduce가 사실상 no-op으로 동작하므로, 1×1을 standard PyTorch loop 대신 TorchDistributor로 돌려도 결과는 같고 <strong>launcher·시그니처는 1×N·M×N과 일관</strong>됩니다.</p>
 <blockquote class="blockquote">
-<p><code>local_mode=True</code>는 <strong>driver 노드 안에서</strong> child 프로세스를 spawn한다는 뜻입니다 (single-node 클러스터의 driver=학습 노드). multi-node M×N에서는 <code>local_mode=False</code>로 worker 노드에 분산합니다. 상세는 <a href="../00-foundations/concepts-distributed-training.html"><code>concepts-distributed-training.md</code> — TorchDistributor <code>local_mode</code></a>를 참조합니다.</p>
+<p><code>local_mode=True</code>는 <strong>driver 노드 안에서</strong> child 프로세스를 spawn한다는 뜻입니다 (single-node 클러스터의 driver=학습 노드). multi-node M×N에서는 <code>local_mode=False</code>로 worker 노드에 분산합니다. 상세는 <a href="../00-foundations/concepts-torchdistributor-internals.html"><code>concepts-torchdistributor-internals.md</code> — <code>local_mode</code>: driver vs worker</a>를 참조합니다.</p>
 </blockquote>
 <p><strong>클러스터 (이 노트북 전체 공용)</strong>: Single node, DBR 17.3 LTS ML, Driver <code>g5.12xlarge</code> (4× A10G), Workers 0, Autoscaling off. 1×1 섹션은 GPU 1개만 사용해도 되므로 같은 클러스터에서 그대로 실행됩니다.</p>
-<p>공통 모델·데이터 정의는 <a href="../00-foundations/concepts-recommender-baseline.html"><code>concepts-recommender-baseline.md</code></a>, <a href="../00-foundations/data-pipeline.html"><code>data-pipeline.md</code></a>에, 패턴 함정은 <a href="../00-foundations/debug-common-pitfalls.html"><code>debug-common-pitfalls.md</code></a>에 정리되어 있습니다.</p>
+<p>공통 모델·데이터 정의는 <a href="../00-foundations/concepts-recommender-baseline.html"><code>concepts-recommender-baseline.md</code></a>, <a href="../00-foundations/data-pipeline.html"><code>data-pipeline.md</code></a>에, 패턴 함정은 <a href="../00-foundations/debug-common-pitfalls.md"><code>debug-common-pitfalls.md</code></a>에 정리되어 있습니다.</p>
 <div id="5147b120" class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>run .<span class="op">/</span><span class="dv">00</span><span class="op">-</span>setup</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="학습-함수-11-1n-공용" class="level2">
 <h2 class="anchored" data-anchor-id="학습-함수-11-1n-공용">학습 함수 (1×1 / 1×N 공용)</h2>
 <p>TorchDistributor child가 실행할 entrypoint입니다. 1×1·1×N 섹션이 같은 함수를 사용하고, 호출 시 <code>num_processes</code>만 달라집니다. multi-node(M×N) 노트북과도 동일한 시그니처를 유지합니다.</p>
-<p>worker 프로세스는 fresh Python으로 시작하므로 <strong>함수 내부에 import·클래스 정의를 모두 둡니다</strong>. closure로 driver 변수를 캡처하지 말고 모두 인자로 전달합니다 (<a href="../00-foundations/debug-common-pitfalls.html">debug-common-pitfalls.md §2</a>). MLflow <code>run_id</code>는 driver에서 만든 뒤 인자로 넘겨, child 안에서 <code>mlflow.start_run(run_id=...)</code>로 attach합니다.</p>
+<p>worker 프로세스는 fresh Python으로 시작하므로 <strong>함수 내부에 import·클래스 정의를 모두 둡니다</strong>. closure로 driver 변수를 캡처하지 말고 모두 인자로 전달합니다 (<a href="../00-foundations/debug-common-pitfalls.md">debug-common-pitfalls.md §2</a>). MLflow <code>run_id</code>는 driver에서 만든 뒤 인자로 넘겨, child 안에서 <code>mlflow.start_run(run_id=...)</code>로 attach합니다.</p>
 <p>DDP early stopping은 다음과 같이 동작합니다. 매 epoch 끝에 모든 rank가 val_loss(local sum/count)를 <code>dist.all_reduce(SUM)</code>으로 합쳐 동일한 <code>avg_val_loss</code>를 얻고, 같은 <code>EarlyStopping.step</code> 결과로 동시에 break합니다. world_size=1에서도 <code>all_reduce</code>는 no-op으로 통과하므로 코드 분기가 필요 없습니다.</p>
 <div id="b8803afa" class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train_fn_ddp(</span>

@@ -390,14 +390,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/concepts-distributed-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Distributed Training Concepts</span></a>
+  <a href="../00-foundations/concepts-torchdistributor-internals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TorchDistributor 내부 동작</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/concepts-torchdistributor-internals.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">TorchDistributor 내부 동작</span></a>
+  <a href="../00-foundations/concepts-torchdistributor-with-lightning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TorchDistributor × Lightning 조합</span></a>
   </div>
 </li>
       </ul>
@@ -415,12 +415,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="../00-foundations/env-databricks-environments.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Databricks 실행 환경</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../00-foundations/env-cluster-recipes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Cluster Recipes</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -477,25 +471,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/ops-resume-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">학습 재개 (Resume)</span></a>
+  <a href="../00-foundations/ops-uc-model-registry.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Unity Catalog Model Registry</span></a>
   </div>
 </li>
-      </ul>
-  </li>
-          <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
- <span class="menu-text">Debug</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="토글 섹션">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/debug-common-pitfalls.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">흔한 함정</span></a>
+  <a href="../00-foundations/ops-resume-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">학습 재개 (Resume)</span></a>
   </div>
 </li>
       </ul>
@@ -506,11 +489,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../01-notebook-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">01 · Notebook-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../01-notebook-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -553,11 +536,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../02-script-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">02 · Script-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -572,13 +555,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
  <span class="menu-text">TorchDistributor</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/02-launch_torch_distributor_1x1.html" class="sidebar-item-text sidebar-link">
@@ -601,13 +584,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
  <span class="menu-text">PyTorch Lightning</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/05-launch_lightning_trainer_1x1.html" class="sidebar-item-text sidebar-link">
@@ -630,13 +613,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
  <span class="menu-text">Accelerate</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/08-launch_accelerator_MxN.html" class="sidebar-item-text sidebar-link">
@@ -651,11 +634,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../03-custom-package-script-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">03 · Custom-package Script-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -670,13 +653,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true">
  <span class="menu-text">TorchDistributor</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/02-launch_torch_distributor_1x1.html" class="sidebar-item-text sidebar-link">
@@ -699,13 +682,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
  <span class="menu-text">PyTorch Lightning</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/05-launch_lightning_trainer_1x1.html" class="sidebar-item-text sidebar-link">
@@ -728,13 +711,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true">
  <span class="menu-text">Accelerate</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/08-launch_accelerator_MxN.html" class="sidebar-item-text sidebar-link">
@@ -749,15 +732,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../docs/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">참고 자료</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/official-notebooks-mirror.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Official Notebooks Mirror</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/debug-common-pitfalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">흔한 함정</span></a>
   </div>
 </li>
       </ul>
@@ -777,8 +766,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#본-쿡북의-기본-패턴-pat-전달" id="toc-본-쿡북의-기본-패턴-pat-전달" class="nav-link" data-scroll-target="#본-쿡북의-기본-패턴-pat-전달">본 쿡북의 기본 패턴 — PAT 전달</a></li>
   <li><a href="#왜-child가-driver의-자격증명을-자동-상속하지-않는가" id="toc-왜-child가-driver의-자격증명을-자동-상속하지-않는가" class="nav-link" data-scroll-target="#왜-child가-driver의-자격증명을-자동-상속하지-않는가">왜 child가 driver의 자격증명을 자동 상속하지 않는가</a></li>
   <li><a href="#ctx.apitoken이-반환하는-토큰의-정체" id="toc-ctx.apitoken이-반환하는-토큰의-정체" class="nav-link" data-scroll-target="#ctx.apitoken이-반환하는-토큰의-정체">ctx.apiToken()이 반환하는 토큰의 정체</a></li>
-  <li><a href="#한계-1-토큰-만료" id="toc-한계-1-토큰-만료" class="nav-link" data-scroll-target="#한계-1-토큰-만료">한계 1: 토큰 만료</a></li>
-  <li><a href="#한계-2-pat-보안" id="toc-한계-2-pat-보안" class="nav-link" data-scroll-target="#한계-2-pat-보안">한계 2: PAT 보안</a></li>
   <li><a href="#service-principal로-도는-job" id="toc-service-principal로-도는-job" class="nav-link" data-scroll-target="#service-principal로-도는-job">Service Principal로 도는 Job</a></li>
   <li><a href="#oauth-u2m-m2m" id="toc-oauth-u2m-m2m" class="nav-link" data-scroll-target="#oauth-u2m-m2m">OAuth U2M / M2M</a></li>
   <li><a href="#권한-함정-uc-model-registry" id="toc-권한-함정-uc-model-registry" class="nav-link" data-scroll-target="#권한-함정-uc-model-registry">권한 함정 — UC Model Registry</a></li>
@@ -798,7 +785,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="인증-authentication" class="level1">
 <h1>인증 (Authentication)</h1>
 <p>분산 학습에서 child 프로세스가 Databricks API(MLflow, UC, SQL warehouse 등)에 접근하려면 자격증명이 필요합니다. 본 쿡북은 <strong>PAT(Personal Access Token) 전달 패턴</strong>을 기본으로 합니다. driver에서 토큰을 한 번 읽고, TorchDistributor child에 인자로 넘겨 환경변수로 설정하는 방식입니다.</p>
-<p>이 문서는 PAT 패턴의 가정과 한계, 그리고 실제 운영(특히 service principal로 도는 Job)에서 무엇을 바꿔야 하는지를 정리합니다.</p>
+<p>이 문서는 PAT 패턴의 동작 방식, 그리고 실제 운영(특히 service principal로 도는 Job)에서 무엇을 바꿔야 하는지를 정리합니다.</p>
 <section id="본-쿡북의-기본-패턴-pat-전달" class="level2">
 <h2 class="anchored" data-anchor-id="본-쿡북의-기본-패턴-pat-전달">본 쿡북의 기본 패턴 — PAT 전달</h2>
 <p><code>01-notebook-based/00-setup.ipynb</code>에서 driver의 자격증명을 다음과 같이 추출합니다.</p>
@@ -814,12 +801,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="왜-child가-driver의-자격증명을-자동-상속하지-않는가" class="level2">
 <h2 class="anchored" data-anchor-id="왜-child가-driver의-자격증명을-자동-상속하지-않는가">왜 child가 driver의 자격증명을 자동 상속하지 않는가</h2>
-<p><a href="../00-foundations/debug-common-pitfalls.html"><code>debug-common-pitfalls.md §2-1</code></a>의 설명을 보강합니다. TorchDistributor child는 모드별로 다음과 같이 동작합니다.</p>
+<p><a href="../docs/debug-common-pitfalls.html"><code>debug-common-pitfalls.md §2-1</code></a>의 설명을 보강합니다. TorchDistributor child는 모드별로 다음과 같이 동작합니다.</p>
 <ul>
 <li><code>local_mode=True</code>는 driver의 subprocess이지만 <strong>fresh Python interpreter</strong>입니다. driver Python 프로세스의 메모리(<code>dbutils</code> 객체, MLflow tracking client)는 상속되지 않고 환경변수만 OS 레벨에서 상속됩니다.</li>
 <li><code>local_mode=False</code>는 다른 머신(worker 노드)의 executor task로 도는 형태입니다. driver와 완전히 다른 OS 프로세스라 더더욱 상속이 없습니다.</li>
 </ul>
-<p>여기에 <code>dbutils.notebook.entry_point</code>는 driver의 py4j gateway를 통해서만 접근 가능하므로 child 프로세스에서는 호출 자체가 불가능합니다(<a href="../00-foundations/debug-common-pitfalls.html"><code>debug-common-pitfalls.md §8</code></a>).</p>
+<p>여기에 <code>dbutils.notebook.entry_point</code>는 driver의 py4j gateway를 통해서만 접근 가능하므로 child 프로세스에서는 호출 자체가 불가능합니다(<a href="../docs/debug-common-pitfalls.html"><code>debug-common-pitfalls.md §8</code></a>).</p>
 <p>따라서 <strong>driver 셀에서 <code>dbutils</code>로 자격증명을 추출한 뒤 인자로 child에 명시 전달</strong>하는 것이 유일한 길입니다.</p>
 </section>
 <section id="ctx.apitoken이-반환하는-토큰의-정체" class="level2">
@@ -852,35 +839,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 <p><code>ctx.apiToken()</code> 자체는 PAT와 service principal 모두에서 동작하므로 <strong>본 쿡북 패턴은 두 경우 모두에서 그대로 작동</strong>합니다. 다만 토큰의 종류와 수명이 다르다는 점은 알아 두어야 합니다.</p>
-</section>
-<section id="한계-1-토큰-만료" class="level2">
-<h2 class="anchored" data-anchor-id="한계-1-토큰-만료">한계 1: 토큰 만료</h2>
-<p><code>ctx.apiToken()</code>으로 얻은 토큰은 <strong>단기 토큰</strong>입니다. 수명은 컨텍스트별로 다르지만 보통 수십 분에서 수 시간 정도입니다.</p>
-<ul>
-<li>학습이 토큰 수명보다 길어지면 child의 MLflow 호출이 <code>401 Unauthorized</code>로 떨어집니다.</li>
-<li>본 쿡북의 권장 budget이 15분이라 이 문제는 드물지만, 실제 워크로드에서 1시간 이상 학습은 위험합니다.</li>
-</ul>
-<p>회피책은 세 가지를 고려할 수 있습니다.</p>
-<ol type="1">
-<li><strong>장기 PAT 발급.</strong> 사용자 settings에서 90일짜리 PAT를 생성한 뒤 secret으로 등록하고, <code>dbutils.secrets.get("scope", "key")</code>로 로드합니다. 본 쿡북 패턴의 <code>ctx.apiToken()</code>만 교체하면 됩니다.</li>
-<li><strong>MLflow는 토큰 만료 시 재인증이 어렵습니다.</strong> 학습 중간에 child가 한 번 더 자격증명을 refresh할 수단이 없으므로 1번 방식이 단순합니다.</li>
-<li><strong>OAuth M2M(service principal).</strong> 토큰을 SDK가 자동으로 갱신해 줍니다. 아래의 “OAuth U2M / M2M” 섹션을 참고하세요.</li>
-</ol>
-</section>
-<section id="한계-2-pat-보안" class="level2">
-<h2 class="anchored" data-anchor-id="한계-2-pat-보안">한계 2: PAT 보안</h2>
-<p>토큰을 함수 인자로 넘기면 다음과 같은 노출 경로가 생깁니다.</p>
-<ul>
-<li>driver → child 직렬화(cloudpickle) 과정에 토큰 문자열이 들어갑니다.</li>
-<li>worker 노드 메모리에 plaintext로 존재합니다.</li>
-<li>MLflow <code>log_param</code> 등에 실수로 들어가면 로그에 평문이 그대로 노출됩니다.</li>
-</ul>
-<p>회피책은 다음과 같습니다.</p>
-<ul>
-<li><code>db_token</code>을 <strong>MLflow params/tags에 절대 로그하지 않습니다</strong>(현재 trainer는 안전한 것으로 검증되어 있습니다).</li>
-<li>worker stdout/stderr에 토큰이 찍히지 않는지 확인합니다.</li>
-<li>가장 깔끔한 방법은 service principal + OAuth M2M으로 전환해 PAT 자체를 쓰지 않는 것입니다.</li>
-</ul>
 </section>
 <section id="service-principal로-도는-job" class="level2">
 <h2 class="anchored" data-anchor-id="service-principal로-도는-job">Service Principal로 도는 Job</h2>
@@ -988,7 +946,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   → ctx.apiToken() 그대로 (본 쿡북 기본)
 
 Job, run_as = 사용자
-  → 동일. 단, 토큰 만료 위험이 있으면 PAT secret으로 교체
+  → 동일
 
 Job, run_as = service principal
   → 동일 코드, EXPERIMENT_PATH를 /Shared/... 로 교체, SP에 권한 grant
@@ -1004,7 +962,7 @@ Job, run_as = service principal
 <li><a href="https://docs.databricks.com/aws/en/dev-tools/auth/oauth-m2m">Databricks: Service principal OAuth (M2M)</a></li>
 <li><a href="https://docs.databricks.com/aws/en/security/secrets/example-secret-workflow">Databricks: <code>dbutils.secrets</code> workflow</a></li>
 <li><a href="https://docs.databricks.com/aws/en/machine-learning/manage-model-lifecycle/index">Databricks: UC Model Registry 권한</a></li>
-<li>본 쿡북의 자격증명 함정: <a href="../00-foundations/debug-common-pitfalls.html"><code>debug-common-pitfalls.md</code> §2-1</a></li>
+<li>본 쿡북의 자격증명 함정: <a href="../docs/debug-common-pitfalls.html"><code>debug-common-pitfalls.md</code> §2-1</a></li>
 </ul>
 
 

@@ -69,7 +69,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../00-foundations/ops-resume-training.html" rel="next">
+<link href="../00-foundations/ops-uc-model-registry.html" rel="next">
 <link href="../00-foundations/data-uc-volumes-checkpoints.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -390,14 +390,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/concepts-distributed-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Distributed Training Concepts</span></a>
+  <a href="../00-foundations/concepts-torchdistributor-internals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TorchDistributor 내부 동작</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/concepts-torchdistributor-internals.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">TorchDistributor 내부 동작</span></a>
+  <a href="../00-foundations/concepts-torchdistributor-with-lightning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TorchDistributor × Lightning 조합</span></a>
   </div>
 </li>
       </ul>
@@ -415,12 +415,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="../00-foundations/env-databricks-environments.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Databricks 실행 환경</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../00-foundations/env-cluster-recipes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Cluster Recipes</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -477,25 +471,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/ops-resume-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">학습 재개 (Resume)</span></a>
+  <a href="../00-foundations/ops-uc-model-registry.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Unity Catalog Model Registry</span></a>
   </div>
 </li>
-      </ul>
-  </li>
-          <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
- <span class="menu-text">Debug</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="토글 섹션">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00-foundations/debug-common-pitfalls.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">흔한 함정</span></a>
+  <a href="../00-foundations/ops-resume-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">학습 재개 (Resume)</span></a>
   </div>
 </li>
       </ul>
@@ -506,11 +489,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../01-notebook-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">01 · Notebook-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../01-notebook-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -553,11 +536,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../02-script-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">02 · Script-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -572,13 +555,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
  <span class="menu-text">TorchDistributor</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/02-launch_torch_distributor_1x1.html" class="sidebar-item-text sidebar-link">
@@ -601,13 +584,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
  <span class="menu-text">PyTorch Lightning</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/05-launch_lightning_trainer_1x1.html" class="sidebar-item-text sidebar-link">
@@ -630,13 +613,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
  <span class="menu-text">Accelerate</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02-script-based/08-launch_accelerator_MxN.html" class="sidebar-item-text sidebar-link">
@@ -651,11 +634,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../03-custom-package-script-based/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">03 · Custom-package Script-based</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/00-setup.html" class="sidebar-item-text sidebar-link">
@@ -670,13 +653,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true">
  <span class="menu-text">TorchDistributor</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/02-launch_torch_distributor_1x1.html" class="sidebar-item-text sidebar-link">
@@ -699,13 +682,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
  <span class="menu-text">PyTorch Lightning</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/05-launch_lightning_trainer_1x1.html" class="sidebar-item-text sidebar-link">
@@ -728,13 +711,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true">
  <span class="menu-text">Accelerate</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../03-custom-package-script-based/08-launch_accelerator_MxN.html" class="sidebar-item-text sidebar-link">
@@ -749,15 +732,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../docs/README.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">참고 자료</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="true" aria-label="토글 섹션">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/official-notebooks-mirror.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Official Notebooks Mirror</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/debug-common-pitfalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">흔한 함정</span></a>
   </div>
 </li>
       </ul>
@@ -774,24 +763,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#mlflow-tracking" id="toc-mlflow-tracking" class="nav-link active" data-scroll-target="#mlflow-tracking">MLflow Tracking</a>
   <ul class="collapse">
+  <li><a href="#한눈에-보기" id="toc-한눈에-보기" class="nav-link" data-scroll-target="#한눈에-보기">한눈에 보기</a></li>
   <li><a href="#기본-원칙" id="toc-기본-원칙" class="nav-link" data-scroll-target="#기본-원칙">기본 원칙</a></li>
-  <li><a href="#pytorch-루프-mlflow-직접-호출-단일-gpu" id="toc-pytorch-루프-mlflow-직접-호출-단일-gpu" class="nav-link" data-scroll-target="#pytorch-루프-mlflow-직접-호출-단일-gpu">PyTorch 루프 + MLflow 직접 호출 (단일 GPU)</a></li>
-  <li><a href="#mlflow-3.0-핵심-기능" id="toc-mlflow-3.0-핵심-기능" class="nav-link" data-scroll-target="#mlflow-3.0-핵심-기능">MLflow 3.0+ 핵심 기능</a>
+  <li><a href="#mlflow-3.0-사용-기능" id="toc-mlflow-3.0-사용-기능" class="nav-link" data-scroll-target="#mlflow-3.0-사용-기능">MLflow 3.0+ 사용 기능</a>
   <ul class="collapse">
-  <li><a href="#log_system_metricstrue" id="toc-log_system_metricstrue" class="nav-link" data-scroll-target="#log_system_metricstrue">1. <code>log_system_metrics=True</code></a></li>
-  <li><a href="#에폭별-loggedmodel-mlflow.pytorch.log_model...-step..." id="toc-에폭별-loggedmodel-mlflow.pytorch.log_model...-step..." class="nav-link" data-scroll-target="#에폭별-loggedmodel-mlflow.pytorch.log_model...-step...">2. 에폭별 <code>LoggedModel</code> (<code>mlflow.pytorch.log_model(..., step=...)</code>)</a></li>
-  <li><a href="#dataset-linking-mlflow.data.from_pandas" id="toc-dataset-linking-mlflow.data.from_pandas" class="nav-link" data-scroll-target="#dataset-linking-mlflow.data.from_pandas">3. Dataset linking (<code>mlflow.data.from_pandas</code>)</a></li>
+  <li><a href="#시스템-메트릭-log_system_metrics" id="toc-시스템-메트릭-log_system_metrics" class="nav-link" data-scroll-target="#시스템-메트릭-log_system_metrics">시스템 메트릭 (<code>log_system_metrics</code>)</a></li>
+  <li><a href="#에폭별-체크포인트-loggedmodel" id="toc-에폭별-체크포인트-loggedmodel" class="nav-link" data-scroll-target="#에폭별-체크포인트-loggedmodel">에폭별 체크포인트 (<code>LoggedModel</code>)</a></li>
+  <li><a href="#데이터셋-연결-mlflow.data" id="toc-데이터셋-연결-mlflow.data" class="nav-link" data-scroll-target="#데이터셋-연결-mlflow.data">데이터셋 연결 (<code>mlflow.data</code>)</a></li>
   </ul></li>
-  <li><a href="#torchdistributor-distributed-사용-시" id="toc-torchdistributor-distributed-사용-시" class="nav-link" data-scroll-target="#torchdistributor-distributed-사용-시">TorchDistributor / <code>@distributed</code> 사용 시</a></li>
-  <li><a href="#lightning-mlflow" id="toc-lightning-mlflow" class="nav-link" data-scroll-target="#lightning-mlflow">Lightning + MLflow</a></li>
-  <li><a href="#unity-catalog-모델-등록" id="toc-unity-catalog-모델-등록" class="nav-link" data-scroll-target="#unity-catalog-모델-등록">Unity Catalog 모델 등록</a></li>
-  <li><a href="#databricks-환경에서의-특수성" id="toc-databricks-환경에서의-특수성" class="nav-link" data-scroll-target="#databricks-환경에서의-특수성">Databricks 환경에서의 특수성</a>
+  <li><a href="#패턴별-코드" id="toc-패턴별-코드" class="nav-link" data-scroll-target="#패턴별-코드">패턴별 코드</a>
   <ul class="collapse">
-  <li><a href="#tracking_uridatabricks가-자동인-이유" id="toc-tracking_uridatabricks가-자동인-이유" class="nav-link" data-scroll-target="#tracking_uridatabricks가-자동인-이유"><code>tracking_uri="databricks"</code>가 자동인 이유</a></li>
-  <li><a href="#driver의-with-block이-빠지면-어떻게-attach가-가능한가" id="toc-driver의-with-block이-빠지면-어떻게-attach가-가능한가" class="nav-link" data-scroll-target="#driver의-with-block이-빠지면-어떻게-attach가-가능한가">Driver의 with-block이 빠지면 어떻게 attach가 가능한가</a></li>
-  <li><a href="#unity-catalog-model-registry-권한" id="toc-unity-catalog-model-registry-권한" class="nav-link" data-scroll-target="#unity-catalog-model-registry-권한">Unity Catalog Model Registry 권한</a></li>
+  <li><a href="#단일-gpu-pytorch-루프-직접" id="toc-단일-gpu-pytorch-루프-직접" class="nav-link" data-scroll-target="#단일-gpu-pytorch-루프-직접">1. 단일 GPU (PyTorch 루프 직접)</a></li>
+  <li><a href="#torchdistributor-local_modetrue-11-1n" id="toc-torchdistributor-local_modetrue-11-1n" class="nav-link" data-scroll-target="#torchdistributor-local_modetrue-11-1n">2. TorchDistributor <code>local_mode=True</code> (1×1 / 1×N)</a></li>
+  <li><a href="#torchdistributor-local_modefalse-mn" id="toc-torchdistributor-local_modefalse-mn" class="nav-link" data-scroll-target="#torchdistributor-local_modefalse-mn">3. TorchDistributor <code>local_mode=False</code> (M×N)</a></li>
+  <li><a href="#lightning-직접-실행-11-1n" id="toc-lightning-직접-실행-11-1n" class="nav-link" data-scroll-target="#lightning-직접-실행-11-1n">4. Lightning 직접 실행 (1×1 / 1×N)</a></li>
+  <li><a href="#lightning-torchdistributor-mn" id="toc-lightning-torchdistributor-mn" class="nav-link" data-scroll-target="#lightning-torchdistributor-mn">5. Lightning + TorchDistributor (M×N)</a></li>
+  <li><a href="#accelerate-accelerate-launch" id="toc-accelerate-accelerate-launch" class="nav-link" data-scroll-target="#accelerate-accelerate-launch">6. Accelerate (<code>accelerate launch</code>)</a></li>
+  </ul></li>
+  <li><a href="#databricks-자동-처리" id="toc-databricks-자동-처리" class="nav-link" data-scroll-target="#databricks-자동-처리">Databricks 자동 처리</a>
+  <ul class="collapse">
+  <li><a href="#tracking_uridatabricks-자동-라우팅" id="toc-tracking_uridatabricks-자동-라우팅" class="nav-link" data-scroll-target="#tracking_uridatabricks-자동-라우팅"><code>tracking_uri="databricks"</code> 자동 라우팅</a></li>
+  <li><a href="#with-block을-빠져나와도-attach-가능" id="toc-with-block을-빠져나와도-attach-가능" class="nav-link" data-scroll-target="#with-block을-빠져나와도-attach-가능">with-block을 빠져나와도 attach 가능</a></li>
+  </ul></li>
   <li><a href="#experiment-경로-사용자-vs-sp" id="toc-experiment-경로-사용자-vs-sp" class="nav-link" data-scroll-target="#experiment-경로-사용자-vs-sp">Experiment 경로 — 사용자 vs SP</a></li>
-  </ul></li>
   <li><a href="#참고" id="toc-참고" class="nav-link" data-scroll-target="#참고">참고</a></li>
   </ul></li>
   </ul>
@@ -806,7 +800,64 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="mlflow-tracking" class="level1">
 <h1>MLflow Tracking</h1>
-<p>분산 학습에서 MLflow를 사용하는 패턴을 정리합니다. 본 쿡북은 <strong>MLflow 3.0+</strong> 기능(system metrics, per-epoch <code>LoggedModel</code>, dataset linking)을 명시적으로 사용합니다.</p>
+<p>분산 학습에서 MLflow를 사용하는 패턴을 정리합니다. 본 쿡북은 <strong>MLflow 3.0+</strong> 기능(system metrics, per-epoch <code>LoggedModel</code>, dataset linking)을 명시적으로 사용합니다. 학습 후 Unity Catalog Model Registry에 등록하는 흐름은 <a href="../00-foundations/ops-uc-model-registry.html"><code>ops-uc-model-registry.md</code></a>에 분리되어 있습니다.</p>
+<section id="한눈에-보기" class="level2">
+<h2 class="anchored" data-anchor-id="한눈에-보기">한눈에 보기</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 25%">
+<col style="width: 51%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>패턴</th>
+<th>rank 0 가드</th>
+<th><code>log_system_metrics</code> 위치</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>단일 GPU (PyTorch 루프 직접)</td>
+<td>단일 프로세스라 불필요</td>
+<td>driver의 <code>start_run</code></td>
+<td>가장 단순</td>
+</tr>
+<tr class="even">
+<td>TorchDistributor <code>local_mode=True</code> (1×1 / 1×N)</td>
+<td>명시 필요 (<code>RANK == 0</code>)</td>
+<td>driver의 <code>start_run</code> (with-block이 <code>.run()</code>을 감싸 둠)</td>
+<td>driver=worker 동일 머신</td>
+</tr>
+<tr class="odd">
+<td>TorchDistributor <code>local_mode=False</code> (M×N)</td>
+<td>명시 필요 (<code>RANK == 0</code>)</td>
+<td>rank-0 <strong>worker</strong>의 <code>start_run(run_id=...)</code></td>
+<td>driver는 학습 미참여</td>
+</tr>
+<tr class="even">
+<td>Lightning 직접 실행 (1×1 / 1×N)</td>
+<td>자동 (<code>MLFlowLogger</code>)</td>
+<td>driver의 <code>start_run</code> (logger와 별도 호출)</td>
+<td>logger에 옵션 없음</td>
+</tr>
+<tr class="odd">
+<td>Lightning + TorchDistributor (M×N)</td>
+<td>자동 (<code>MLFlowLogger</code>)</td>
+<td>rank-0 <strong>worker</strong>의 <code>start_run(run_id=...)</code></td>
+<td>logger + 별도 attach</td>
+</tr>
+<tr class="even">
+<td>Accelerate (<code>accelerate launch</code>)</td>
+<td>명시 필요 (<code>RANK == 0</code>)</td>
+<td>rank-0 <strong>worker</strong>의 <code>start_run(run_id=...)</code></td>
+<td>subprocess, env vars 명시 전달</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="기본-원칙" class="level2">
 <h2 class="anchored" data-anchor-id="기본-원칙">기본 원칙</h2>
 <p>분산 학습에서 MLflow를 안전하게 쓰려면 다음 세 가지를 지키면 됩니다.</p>
@@ -816,188 +867,234 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Lightning <code>Trainer</code>의 <code>MLFlowLogger</code>는 자동으로 rank 0에서만 기록되므로 별도 가드가 필요 없습니다. 직접 PyTorch 루프를 쓰는 경우에는 가드를 명시합니다.</li>
 </ul>
 </section>
-<section id="pytorch-루프-mlflow-직접-호출-단일-gpu" class="level2">
-<h2 class="anchored" data-anchor-id="pytorch-루프-mlflow-직접-호출-단일-gpu">PyTorch 루프 + MLflow 직접 호출 (단일 GPU)</h2>
-<p>가장 단순한 형태입니다. 시스템 메트릭(CPU/GPU/메모리/네트워크/디스크)을 자동 수집하고 모든 epoch을 하나의 run에 묶습니다.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>mlflow.set_experiment(<span class="st">"/Users/&lt;email&gt;/recommender-1x1"</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run(</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    run_name<span class="op">=</span><span class="st">"recommender-1x1"</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    log_system_metrics<span class="op">=</span><span class="va">True</span>,                <span class="co"># MLflow 3.0+: 시스템 메트릭 자동 수집</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>) <span class="im">as</span> run:</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    run_id <span class="op">=</span> run.info.run_id</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 하이퍼파라미터</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    mlflow.log_params({</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"n_users"</span>: N_USERS,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"n_items"</span>: N_ITEMS,</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"emb_dim"</span>: EMB_DIM,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">"batch_size"</span>: BATCH_SIZE,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"lr"</span>: LR,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(NUM_EPOCHS):</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        train_loss <span class="op">=</span> train_one_epoch(model, optimizer, train_loader, device)</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        val_loss, val_auc <span class="op">=</span> evaluate(model, val_loader, device)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 에폭별 메트릭</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        mlflow.log_metric(<span class="st">"train/loss"</span>, train_loss, step<span class="op">=</span>epoch)</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        mlflow.log_metric(<span class="st">"val/loss"</span>, val_loss, step<span class="op">=</span>epoch)</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        mlflow.log_metric(<span class="st">"val/auc"</span>, val_auc, step<span class="op">=</span>epoch)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>mlflow.pytorch.autolog()</code>를 호출하면 옵티마이저 step, learning rate, 모델 그래프 등을 자동으로 기록합니다. 반드시 <strong>rank 0에서만</strong> 호출해야 합니다.</p>
+<section id="mlflow-3.0-사용-기능" class="level2">
+<h2 class="anchored" data-anchor-id="mlflow-3.0-사용-기능">MLflow 3.0+ 사용 기능</h2>
+<section id="시스템-메트릭-log_system_metrics" class="level3">
+<h3 class="anchored" data-anchor-id="시스템-메트릭-log_system_metrics">시스템 메트릭 (<code>log_system_metrics</code>)</h3>
+<p><code>mlflow.start_run(..., log_system_metrics=True)</code>로 시스템 메트릭(CPU/GPU/메모리/네트워크/디스크)이 자동 수집됩니다. MLflow UI의 System Metrics 탭에서 GPU 활용도, 데이터 로더 병목, 네트워크 사용량을 볼 수 있습니다.</p>
+<p>Multi-node TorchDistributor(<code>local_mode=False</code>)에서는 driver-side만 켜면 idle driver 메트릭만 잡힙니다. 학습 노드 메트릭을 보려면 <strong>rank-0 worker가 <code>start_run(run_id=..., log_system_metrics=True)</code>로 attach할 때 함께 켜야 합니다</strong>(아래 패턴 3, 5, 6 참조). Single-node(<code>local_mode=True</code>)는 driver와 worker가 같은 머신이라 host 메트릭이 동일하므로 driver-side <code>start_run(..., log_system_metrics=True)</code>의 with-block으로 <code>.run()</code>을 감싸 두면 충분합니다(패턴 2). Lightning은 <code>MLFlowLogger</code>에 <code>log_system_metrics</code> 옵션이 없으므로 <code>MLFlowLogger(run_id=...)</code>와 <strong>별도로</strong> <code>mlflow.start_run(run_id=..., log_system_metrics=True)</code>를 호출해 메트릭 스레드를 띄워야 합니다(패턴 4, 5).</p>
 </section>
-<section id="mlflow-3.0-핵심-기능" class="level2">
-<h2 class="anchored" data-anchor-id="mlflow-3.0-핵심-기능">MLflow 3.0+ 핵심 기능</h2>
-<section id="log_system_metricstrue" class="level3">
-<h3 class="anchored" data-anchor-id="log_system_metricstrue">1. <code>log_system_metrics=True</code></h3>
-<p><code>mlflow.start_run(..., log_system_metrics=True)</code>로 시스템 메트릭이 자동 수집됩니다. MLflow UI의 System Metrics 탭에서 GPU 활용도, 메모리, 네트워크, 디스크 I/O를 볼 수 있습니다. 분산 학습에서 GPU가 idle 상태인지(데이터 로더 병목) 진단할 때 핵심 도구입니다.</p>
-<p>Multi-node TorchDistributor에는 함정이 하나 있습니다. <code>local_mode=False</code>에서는 학습이 worker 노드에서만 실행되고 driver는 코디네이션만 담당합니다. 따라서 driver-side <code>log_system_metrics=True</code>만으론 idle driver의 메트릭만 잡히고 실제 GPU 사용률은 비어 버립니다. 실제 학습 노드의 메트릭을 보려면 <strong>rank-0 worker가 <code>mlflow.start_run(run_id=..., log_system_metrics=True)</code>로 attach할 때 함께 켜야</strong> 합니다. single-node(<code>local_mode=True</code>)는 driver와 worker가 같은 머신이라 driver-side만으로 충분합니다. Lightning을 쓰는 경우 <code>MLFlowLogger</code>에는 <code>log_system_metrics</code> 옵션이 없으므로, worker 함수 안에서 <code>MLFlowLogger(run_id=...)</code>와 별도로 <code>mlflow.start_run(run_id=..., log_system_metrics=True)</code>를 호출해 메트릭 스레드를 띄워야 합니다(아래 TorchDistributor 섹션 예제 참고).</p>
-</section>
-<section id="에폭별-loggedmodel-mlflow.pytorch.log_model...-step..." class="level3">
-<h3 class="anchored" data-anchor-id="에폭별-loggedmodel-mlflow.pytorch.log_model...-step...">2. 에폭별 <code>LoggedModel</code> (<code>mlflow.pytorch.log_model(..., step=...)</code>)</h3>
+<section id="에폭별-체크포인트-loggedmodel" class="level3">
+<h3 class="anchored" data-anchor-id="에폭별-체크포인트-loggedmodel">에폭별 체크포인트 (<code>LoggedModel</code>)</h3>
 <p>기존 MLflow에서는 <code>log_model</code>을 여러 번 호출하면 artifact가 중복됐습니다. MLflow 3.0+는 <strong>하나의 run 안에 여러 LoggedModel</strong>을 가질 수 있어, 각 epoch의 checkpoint를 모두 보존하고 학습 종료 후 가장 좋은 것을 선택할 수 있습니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 시그니처 생성 (UC 등록을 위해 필수)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>sample_input <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(train_loader))[<span class="dv">0</span>][:<span class="dv">5</span>].cpu().numpy()</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>model.<span class="bu">eval</span>()</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.no_grad():</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    sample_output <span class="op">=</span> model(<span class="op">*</span>[torch.tensor(x).to(device) <span class="cf">for</span> x <span class="kw">in</span> sample_input]).cpu().numpy()</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>signature <span class="op">=</span> mlflow.models.infer_signature(sample_input, sample_output)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(NUM_EPOCHS):</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... 학습 / 검증 ...</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    model_info <span class="op">=</span> mlflow.pytorch.log_model(</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        pytorch_model<span class="op">=</span>model,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span><span class="ss">f"recommender-epoch-</span><span class="sc">{</span>epoch<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        params<span class="op">=</span>{<span class="st">"epoch"</span>: epoch <span class="op">+</span> <span class="dv">1</span>, <span class="st">"architecture"</span>: <span class="st">"TwoTowerMLP"</span>},</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        step<span class="op">=</span>epoch,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        signature<span class="op">=</span>signature,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        input_example<span class="op">=</span>sample_input,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 메트릭을 이 LoggedModel과 dataset에 연결</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    mlflow.log_metric(</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"val/auc"</span>, val_auc,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>        step<span class="op">=</span>epoch,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        model_id<span class="op">=</span>model_info.model_id,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        dataset<span class="op">=</span>val_mlflow_dataset,                  <span class="co"># 아래 "데이터셋 연결" 참고</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<p>학습 종료 후 best LoggedModel을 골라 UC에 등록하는 흐름은 <a href="../00-foundations/ops-uc-model-registry.html"><code>ops-uc-model-registry.md</code></a>를 참조하세요.</p>
+</section>
+<section id="데이터셋-연결-mlflow.data" class="level3">
+<h3 class="anchored" data-anchor-id="데이터셋-연결-mlflow.data">데이터셋 연결 (<code>mlflow.data</code>)</h3>
+<p>학습 데이터를 MLflow dataset 객체로 등록하면, 메트릭이 어느 데이터셋에서 측정됐는지 추적할 수 있습니다.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 시그니처 생성 (Unity Catalog 등록을 위해 필수)</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>sample_input <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(train_loader))[<span class="dv">0</span>][:<span class="dv">5</span>].cpu().numpy()</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>model.<span class="bu">eval</span>()</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.no_grad():</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    sample_output <span class="op">=</span> model(<span class="op">*</span>[torch.tensor(x).to(device) <span class="cf">for</span> x <span class="kw">in</span> sample_input]).cpu().numpy()</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>signature <span class="op">=</span> mlflow.models.infer_signature(sample_input, sample_output)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(NUM_EPOCHS):</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... 학습 / 검증 ...</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    model_info <span class="op">=</span> mlflow.pytorch.log_model(</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        pytorch_model<span class="op">=</span>model,</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span><span class="ss">f"recommender-epoch-</span><span class="sc">{</span>epoch<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">"</span>,</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        params<span class="op">=</span>{<span class="st">"epoch"</span>: epoch <span class="op">+</span> <span class="dv">1</span>, <span class="st">"architecture"</span>: <span class="st">"TwoTowerMLP"</span>},</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        step<span class="op">=</span>epoch,</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        signature<span class="op">=</span>signature,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        input_example<span class="op">=</span>sample_input,</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 메트릭을 이 LoggedModel과 dataset에 연결</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    mlflow.log_metric(</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"val/auc"</span>, val_auc,</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        step<span class="op">=</span>epoch,</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        model_id<span class="op">=</span>model_info.model_id,</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        dataset<span class="op">=</span>val_mlflow_dataset,                  <span class="co"># 아래 #3 참고</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
-<p>학습 종료 후 best 모델을 찾는 방법은 다음과 같습니다.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> mlflow <span class="im">import</span> MlflowClient</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> MlflowClient()</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>run <span class="op">=</span> client.get_run(run_id)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>model_outputs <span class="op">=</span> run.outputs.model_outputs  <span class="co"># 모든 LoggedModel</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ... 메트릭과 묶어 정렬 ...</span></span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="dataset-linking-mlflow.data.from_pandas" class="level3">
-<h3 class="anchored" data-anchor-id="dataset-linking-mlflow.data.from_pandas">3. Dataset linking (<code>mlflow.data.from_pandas</code>)</h3>
-<p>학습 데이터를 MLflow dataset 객체로 등록하면, 메트릭이 어느 데이터셋에서 측정됐는지 추적할 수 있습니다.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>train_dataset <span class="op">=</span> mlflow.data.from_pandas(train_pd, name<span class="op">=</span><span class="st">"train"</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>val_dataset <span class="op">=</span> mlflow.data.from_pandas(val_pd, name<span class="op">=</span><span class="st">"validation"</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># log_metric 호출 시 dataset 인자로 연결</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>mlflow.log_metric(<span class="st">"train/loss"</span>, loss, step<span class="op">=</span>epoch, dataset<span class="op">=</span>train_dataset)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>train_dataset <span class="op">=</span> mlflow.data.from_pandas(train_pd, name<span class="op">=</span><span class="st">"train"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>val_dataset <span class="op">=</span> mlflow.data.from_pandas(val_pd, name<span class="op">=</span><span class="st">"validation"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>mlflow.log_metric(<span class="st">"train/loss"</span>, loss, step<span class="op">=</span>epoch, dataset<span class="op">=</span>train_dataset)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </section>
-<section id="torchdistributor-distributed-사용-시" class="level2">
-<h2 class="anchored" data-anchor-id="torchdistributor-distributed-사용-시">TorchDistributor / <code>@distributed</code> 사용 시</h2>
-<p>함수 안에서 새로 <code>mlflow.start_run</code>을 하지 말고, <strong>driver에서 run_id를 넘긴 뒤 child에서 <code>mlflow.start_run(run_id=run_id)</code>로 attach</strong>합니다.</p>
-<p>또한 child 프로세스는 driver의 Databricks 자격증명을 자동 상속하지 않으므로, <code>DATABRICKS_HOST</code>와 <code>DATABRICKS_TOKEN</code>을 명시적으로 전달해야 합니다.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Driver (notebook cell)</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> dbutils.notebook.entry_point.getDbutils().notebook().getContext()</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>db_host <span class="op">=</span> context.extraContext().<span class="bu">apply</span>(<span class="st">"api_url"</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>db_token <span class="op">=</span> context.apiToken().get()</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run(run_name<span class="op">=</span><span class="st">"recommender-mxn"</span>, log_system_metrics<span class="op">=</span><span class="va">True</span>) <span class="im">as</span> run:</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    run_id <span class="op">=</span> run.info.run_id</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># with-block을 빠져나가면 driver-side run은 FINISHED 상태가 되지만, run_id로 child에서 metric을 계속 append할 수 있습니다.</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>TorchDistributor(num_processes<span class="op">=</span><span class="dv">8</span>, local_mode<span class="op">=</span><span class="va">False</span>, use_gpu<span class="op">=</span><span class="va">True</span>).run(</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    train_fn,</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    run_id<span class="op">=</span>run_id,</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    db_host<span class="op">=</span>db_host,</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    db_token<span class="op">=</span>db_token,</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... 기타 학습 인자 ...</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># train_fn (모듈 최상위 또는 별도 .py)</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train_fn(run_id, db_host, db_token, ...):</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> os, mlflow</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    os.environ[<span class="st">"DATABRICKS_HOST"</span>] <span class="op">=</span> db_host</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    os.environ[<span class="st">"DATABRICKS_TOKEN"</span>] <span class="op">=</span> db_token</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    rank <span class="op">=</span> <span class="bu">int</span>(os.environ[<span class="st">"RANK"</span>])</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rank <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># multi-node(local_mode=False)에서는 driver가 학습에 참여하지 않으므로</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 실제 GPU 메트릭을 잡으려면 worker 측 attach 시점에 log_system_metrics를 켭니다.</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        mlflow.start_run(run_id<span class="op">=</span>run_id, log_system_metrics<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... DDP 학습 ...</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rank <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        mlflow.end_run()</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="패턴별-코드" class="level2">
+<h2 class="anchored" data-anchor-id="패턴별-코드">패턴별 코드</h2>
+<p>표의 6개 패턴을 1:1로 풀어 둡니다. 모든 패턴은 동일한 헬퍼 가정(<code>set_experiment(...)</code>, <code>db_host</code>/<code>db_token</code>은 <code>dbutils</code> 컨텍스트에서 추출)으로 시작합니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 모든 패턴에서 공통</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>mlflow.set_experiment(<span class="st">"/Users/&lt;email&gt;/recommender"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 분산 패턴(2~6)에서는 child에 전달할 자격증명을 driver에서 추출</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> dbutils.notebook.entry_point.getDbutils().notebook().getContext()</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>db_host <span class="op">=</span> context.extraContext().<span class="bu">apply</span>(<span class="st">"api_url"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>db_token <span class="op">=</span> context.apiToken().get()</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="단일-gpu-pytorch-루프-직접" class="level3">
+<h3 class="anchored" data-anchor-id="단일-gpu-pytorch-루프-직접">1. 단일 GPU (PyTorch 루프 직접)</h3>
+<p>launcher 없이 driver에서 단일 프로세스로 학습. rank 가드 불필요, 시스템 메트릭은 driver 한 군데에서만 켜면 충분합니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run(run_name<span class="op">=</span><span class="st">"recommender-1x1"</span>, log_system_metrics<span class="op">=</span><span class="va">True</span>) <span class="im">as</span> run:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    run_id <span class="op">=</span> run.info.run_id</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    mlflow.log_params({</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"n_users"</span>: N_USERS, <span class="st">"n_items"</span>: N_ITEMS, <span class="st">"emb_dim"</span>: EMB_DIM,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"batch_size"</span>: BATCH_SIZE, <span class="st">"lr"</span>: LR,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(NUM_EPOCHS):</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        train_loss <span class="op">=</span> train_one_epoch(model, optimizer, train_loader, device)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        val_loss, val_auc <span class="op">=</span> evaluate(model, val_loader, device)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        mlflow.log_metric(<span class="st">"train/loss"</span>, train_loss, step<span class="op">=</span>epoch)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        mlflow.log_metric(<span class="st">"val/loss"</span>, val_loss, step<span class="op">=</span>epoch)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        mlflow.log_metric(<span class="st">"val/auc"</span>, val_auc, step<span class="op">=</span>epoch)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>mlflow.pytorch.autolog()</code>를 호출하면 옵티마이저 step, learning rate, 모델 그래프 등을 자동으로 기록합니다. 분산 패턴에서는 반드시 <strong>rank 0에서만</strong> 호출해야 합니다.</p>
 </section>
-<section id="lightning-mlflow" class="level2">
-<h2 class="anchored" data-anchor-id="lightning-mlflow">Lightning + MLflow</h2>
-<p><code>MLFlowLogger</code>를 <code>Trainer(logger=...)</code>로 명시 주입합니다. rank-0 가드는 Lightning이 알아서 처리해 줍니다.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lightning.pytorch.loggers <span class="im">import</span> MLFlowLogger</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>logger <span class="op">=</span> MLFlowLogger(</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    experiment_name<span class="op">=</span><span class="st">"/Users/&lt;email&gt;/recommender-lightning"</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    run_name<span class="op">=</span><span class="st">"recommender-1xn"</span>,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    tracking_uri<span class="op">=</span><span class="st">"databricks"</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    log_model<span class="op">=</span><span class="va">True</span>,                          <span class="co"># epoch별 checkpoint 자동 등록</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>trainer <span class="op">=</span> pl.Trainer(logger<span class="op">=</span>logger, ...)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="torchdistributor-local_modetrue-11-1n" class="level3">
+<h3 class="anchored" data-anchor-id="torchdistributor-local_modetrue-11-1n">2. TorchDistributor <code>local_mode=True</code> (1×1 / 1×N)</h3>
+<p>Single-node. driver 머신 안에서 <code>num_processes</code>개 child가 학습하므로 host 메트릭은 driver-side에서 잡아도 동일합니다. <strong>driver의 with-block이 <code>.run()</code>을 감싸도록 두면</strong> system metrics 스레드가 학습 기간 내내 살아 있습니다. child는 fresh interpreter이므로 <code>DATABRICKS_HOST/TOKEN</code>은 명시적으로 전달합니다(<a href="../00-foundations/env-auth.html"><code>env-auth.md</code></a>).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># train_fn (모듈 최상위 또는 별도 .py)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train_fn(run_id, db_host, db_token, ...):</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> os, mlflow</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    os.environ[<span class="st">"DATABRICKS_HOST"</span>] <span class="op">=</span> db_host</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    os.environ[<span class="st">"DATABRICKS_TOKEN"</span>] <span class="op">=</span> db_token</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    rank <span class="op">=</span> <span class="bu">int</span>(os.environ[<span class="st">"RANK"</span>])</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rank <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        mlflow.start_run(run_id<span class="op">=</span>run_id)        <span class="co"># driver-side system metrics 스레드가 host 메트릭을 잡고 있음</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... DDP 학습 ...</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rank <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        mlflow.end_run()</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Driver (notebook cell)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.ml.torch.distributor <span class="im">import</span> TorchDistributor</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run(run_name<span class="op">=</span><span class="st">"recommender-1xN"</span>, log_system_metrics<span class="op">=</span><span class="va">True</span>) <span class="im">as</span> run:</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    run_id <span class="op">=</span> run.info.run_id</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    TorchDistributor(num_processes<span class="op">=</span><span class="dv">4</span>, local_mode<span class="op">=</span><span class="va">True</span>, use_gpu<span class="op">=</span><span class="va">True</span>).run(</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        train_fn, run_id<span class="op">=</span>run_id, db_host<span class="op">=</span>db_host, db_token<span class="op">=</span>db_token,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... 기타 학습 인자 ...</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="unity-catalog-모델-등록" class="level2">
-<h2 class="anchored" data-anchor-id="unity-catalog-모델-등록">Unity Catalog 모델 등록</h2>
-<p>학습 후 best checkpoint를 UC Model Registry에 등록합니다. 등록에는 시그니처가 반드시 필요합니다(위 #2 참고).</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>uc_model_name <span class="op">=</span> <span class="st">"main.distributed_cookbook.two_tower_mlp"</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>model_uri <span class="op">=</span> <span class="ss">f"runs:/</span><span class="sc">{</span>run_id<span class="sc">}</span><span class="ss">/model"</span>          <span class="co"># 또는 best LoggedModel의 model_uri</span></span>
+<section id="torchdistributor-local_modefalse-mn" class="level3">
+<h3 class="anchored" data-anchor-id="torchdistributor-local_modefalse-mn">3. TorchDistributor <code>local_mode=False</code> (M×N)</h3>
+<p>Multi-node. driver는 학습에 참여하지 않으므로 system metrics는 <strong>rank-0 worker가 attach할 때 함께 켜야</strong> 학습 노드 GPU 사용률이 잡힙니다. driver의 with-block은 <code>.run()</code> <strong>전에 빠져나와도</strong> 됩니다(<code>start_run(run_id=...)</code>은 종료된 run에도 append 가능; 아래 “Databricks 자동 처리” 참조).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># train_fn (모듈 최상위 또는 별도 .py)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train_fn(run_id, db_host, db_token, ...):</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> os, mlflow</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    os.environ[<span class="st">"DATABRICKS_HOST"</span>] <span class="op">=</span> db_host</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    os.environ[<span class="st">"DATABRICKS_TOKEN"</span>] <span class="op">=</span> db_token</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    rank <span class="op">=</span> <span class="bu">int</span>(os.environ[<span class="st">"RANK"</span>])</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rank <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># multi-node는 driver가 학습 미참여 → worker 측 attach 시점에 log_system_metrics를 켬</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        mlflow.start_run(run_id<span class="op">=</span>run_id, log_system_metrics<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... DDP 학습 ...</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rank <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        mlflow.end_run()</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Driver (notebook cell)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.ml.torch.distributor <span class="im">import</span> TorchDistributor</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>registered <span class="op">=</span> mlflow.register_model(model_uri, uc_model_name)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Registered </span><span class="sc">{</span>uc_model_name<span class="sc">}</span><span class="ss"> v</span><span class="sc">{</span>registered<span class="sc">.</span>version<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
-<p>이 단계는 각 셀의 <code>eval_and_register</code> 노트북에서 처리합니다.</p>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run(run_name<span class="op">=</span><span class="st">"recommender-mxn"</span>) <span class="im">as</span> run:</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    run_id <span class="op">=</span> run.info.run_id</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>TorchDistributor(num_processes<span class="op">=</span><span class="dv">8</span>, local_mode<span class="op">=</span><span class="va">False</span>, use_gpu<span class="op">=</span><span class="va">True</span>).run(</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    train_fn, run_id<span class="op">=</span>run_id, db_host<span class="op">=</span>db_host, db_token<span class="op">=</span>db_token,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... 기타 학습 인자 ...</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="databricks-환경에서의-특수성" class="level2">
-<h2 class="anchored" data-anchor-id="databricks-환경에서의-특수성">Databricks 환경에서의 특수성</h2>
-<p>위 패턴은 모두 일반 MLflow와 동일하지만, Databricks 위에서는 몇 가지 부분이 자동·특수 처리됩니다. 분산 학습에서 자주 헷갈리는 지점만 정리해 두겠습니다.</p>
-<section id="tracking_uridatabricks가-자동인-이유" class="level3">
-<h3 class="anchored" data-anchor-id="tracking_uridatabricks가-자동인-이유"><code>tracking_uri="databricks"</code>가 자동인 이유</h3>
-<p>Databricks 노트북이나 Job에서 시작된 Python은 환경변수 <code>MLFLOW_TRACKING_URI=databricks</code>가 미리 세팅되어 있습니다. 그래서 별다른 설정 없이도 워크스페이스 MLflow로 라우팅됩니다.</p>
-<ul>
-<li><code>mlflow.start_run(...)</code>만 호출해도 자동으로 워크스페이스 MLflow에 기록됩니다.</li>
-<li><code>MLFlowLogger(tracking_uri="databricks")</code>의 명시는 redundant하지만 child 프로세스 안전성 차원에서 권장합니다(child가 환경변수를 못 받는 시나리오 대비).</li>
-</ul>
-<p>TorchDistributor child는 fresh interpreter이지만 환경변수는 상속하므로 <code>MLFLOW_TRACKING_URI</code>도 자동 전달됩니다. 그럼에도 child가 인증에 실패한다면 원인은 URI가 아니라 토큰입니다(<a href="../00-foundations/env-auth.html"><code>env-auth.md</code></a>).</p>
+<section id="lightning-직접-실행-11-1n" class="level3">
+<h3 class="anchored" data-anchor-id="lightning-직접-실행-11-1n">4. Lightning 직접 실행 (1×1 / 1×N)</h3>
+<p>Single-node. driver에서 <code>Trainer.fit()</code>을 직접 호출. <code>MLFlowLogger</code>가 rank-0 가드를 자동 처리합니다. <code>MLFlowLogger</code>에는 <code>log_system_metrics</code> 옵션이 없으므로 driver에서 <strong>별도로</strong> <code>mlflow.start_run(..., log_system_metrics=True)</code>를 띄우고 logger를 <code>run_id</code>로 같은 run에 attach합니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> lightning.pytorch <span class="im">as</span> pl</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lightning.pytorch.loggers <span class="im">import</span> MLFlowLogger</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run(run_name<span class="op">=</span><span class="st">"recommender-lightning-1xN"</span>, log_system_metrics<span class="op">=</span><span class="va">True</span>) <span class="im">as</span> run:</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    run_id <span class="op">=</span> run.info.run_id</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    logger <span class="op">=</span> MLFlowLogger(</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        run_id<span class="op">=</span>run_id,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        tracking_uri<span class="op">=</span><span class="st">"databricks"</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        log_model<span class="op">=</span><span class="va">True</span>,                          <span class="co"># epoch별 checkpoint 자동 등록</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    trainer <span class="op">=</span> pl.Trainer(devices<span class="op">=</span><span class="dv">4</span>, num_nodes<span class="op">=</span><span class="dv">1</span>, strategy<span class="op">=</span><span class="st">"ddp"</span>, logger<span class="op">=</span>logger, ...)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    trainer.fit(model, train_loader, val_loader)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="driver의-with-block이-빠지면-어떻게-attach가-가능한가" class="level3">
-<h3 class="anchored" data-anchor-id="driver의-with-block이-빠지면-어떻게-attach가-가능한가">Driver의 with-block이 빠지면 어떻게 attach가 가능한가</h3>
-<p><code>ops-mlflow-tracking.md</code>의 multi-node 패턴은 직관에 반하는 부분이 있습니다.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run(...) <span class="im">as</span> run:</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    run_id <span class="op">=</span> run.info.run_id</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># with-block을 빠져나옴 → driver-side run은 FINISHED 상태</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 그런데 child에서 attach가 가능</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>TorchDistributor(...).run(train_fn, run_id<span class="op">=</span>run_id)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
-<p>원리는 단순합니다. MLflow의 <code>start_run(run_id=...)</code>은 <strong>이미 종료된 run에도 metric을 추가로 append할 수 있게</strong> 설계됐습니다(MLflow 1.x 이래의 동작). UI는 latest metric까지 그대로 보여 줍니다. driver의 <code>end_run</code>은 “현재 thread의 active run을 닫는다”는 의미일 뿐, run 객체 자체는 서버에 남아 있습니다.</p>
-<p>MLflow 3.0+에서도 동작은 같습니다. 다만 system_metrics는 child에서 별도로 켜야 한다는 점만 다릅니다(<a href="../00-foundations/ops-mlflow-tracking.html"><code>ops-mlflow-tracking.md</code> §1</a>의 multi-node 함정).</p>
+<section id="lightning-torchdistributor-mn" class="level3">
+<h3 class="anchored" data-anchor-id="lightning-torchdistributor-mn">5. Lightning + TorchDistributor (M×N)</h3>
+<p>Multi-node. Lightning Trainer를 train_fn 안에서 띄우고 TorchDistributor가 worker에 분산합니다. rank-0 worker가 별도 <code>start_run(run_id=..., log_system_metrics=True)</code>로 attach하고, <code>MLFlowLogger(run_id=...)</code>로 logger도 같은 run에 연결합니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train_fn(run_id, db_host, db_token, ...):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> os, mlflow</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> lightning.pytorch <span class="im">as</span> pl</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> lightning.pytorch.loggers <span class="im">import</span> MLFlowLogger</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    os.environ[<span class="st">"DATABRICKS_HOST"</span>] <span class="op">=</span> db_host</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    os.environ[<span class="st">"DATABRICKS_TOKEN"</span>] <span class="op">=</span> db_token</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    rank <span class="op">=</span> <span class="bu">int</span>(os.environ[<span class="st">"RANK"</span>])</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rank <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># logger와 별개로 system metrics 스레드를 띄움</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        mlflow.start_run(run_id<span class="op">=</span>run_id, log_system_metrics<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    logger <span class="op">=</span> MLFlowLogger(run_id<span class="op">=</span>run_id, tracking_uri<span class="op">=</span><span class="st">"databricks"</span>, log_model<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    trainer <span class="op">=</span> pl.Trainer(devices<span class="op">=</span>N, num_nodes<span class="op">=</span>M, strategy<span class="op">=</span><span class="st">"ddp"</span>, logger<span class="op">=</span>logger, ...)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    trainer.fit(model, train_loader, val_loader)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rank <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        mlflow.end_run()</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Driver (notebook cell)</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.ml.torch.distributor <span class="im">import</span> TorchDistributor</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run(run_name<span class="op">=</span><span class="st">"recommender-lightning-mxn"</span>) <span class="im">as</span> run:</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    run_id <span class="op">=</span> run.info.run_id</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>TorchDistributor(num_processes<span class="op">=</span>M<span class="op">*</span>N, local_mode<span class="op">=</span><span class="va">False</span>, use_gpu<span class="op">=</span><span class="va">True</span>).run(</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    train_fn, run_id<span class="op">=</span>run_id, db_host<span class="op">=</span>db_host, db_token<span class="op">=</span>db_token,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... 기타 학습 인자 ...</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="unity-catalog-model-registry-권한" class="level3">
-<h3 class="anchored" data-anchor-id="unity-catalog-model-registry-권한">Unity Catalog Model Registry 권한</h3>
-<p>학습 종료 후 <code>mlflow.register_model(uri, "main.distributed_cookbook.two_tower_mlp")</code>가 막히는 흔한 이유는 권한입니다. 필요한 grant는 다음과 같습니다.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">USE</span> CATALOG <span class="kw">ON</span> CATALOG main <span class="kw">TO</span> `<span class="op">&lt;</span><span class="fu">user</span><span class="op">-</span><span class="kw">or</span><span class="op">-</span>sp<span class="op">&gt;</span>`;</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">USE</span> <span class="kw">SCHEMA</span> <span class="kw">ON</span> <span class="kw">SCHEMA</span> main.distributed_cookbook <span class="kw">TO</span> `<span class="op">&lt;</span><span class="fu">user</span><span class="op">-</span><span class="kw">or</span><span class="op">-</span>sp<span class="op">&gt;</span>`;</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">CREATE</span> MODEL <span class="kw">ON</span> <span class="kw">SCHEMA</span> main.distributed_cookbook <span class="kw">TO</span> `<span class="op">&lt;</span><span class="fu">user</span><span class="op">-</span><span class="kw">or</span><span class="op">-</span>sp<span class="op">&gt;</span>`;</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
-<p>흔히 보는 에러는 <code>PERMISSION_DENIED: User does not have CREATE MODEL on schema</code>입니다. 자세한 권한 모델은 <a href="../00-foundations/env-auth.html"><code>env-auth.md</code></a>의 “권한 함정” 섹션을 참조하세요.</p>
-<p><code>mlflow.set_registry_uri("databricks-uc")</code>가 UC Model Registry로 라우팅하는 핵심 호출입니다(DBR 17.3 LTS ML은 default가 UC). 워크스페이스 registry로 등록하려면 <code>"databricks"</code>로 명시해야 합니다. 본 쿡북은 UC 등록을 가정합니다.</p>
+<section id="accelerate-accelerate-launch" class="level3">
+<h3 class="anchored" data-anchor-id="accelerate-accelerate-launch">6. Accelerate (<code>accelerate launch</code>)</h3>
+<p><code>accelerate launch script.py</code> 형태. subprocess라 driver Python 메모리는 상속되지 않고 env vars만 OS 레벨로 전달됩니다. TD M×N과 동일한 attach 패턴을 적용합니다 — driver에서 run을 만들고 <code>run_id</code>/자격증명을 env var로 넘긴 뒤, script 안에서 <code>RANK == 0</code>일 때 <code>start_run(run_id=..., log_system_metrics=True)</code>로 attach합니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Driver (notebook cell)</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os, subprocess</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run(run_name<span class="op">=</span><span class="st">"recommender-accelerate"</span>) <span class="im">as</span> run:</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    run_id <span class="op">=</span> run.info.run_id</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>env <span class="op">=</span> os.environ.copy()</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>env.update({</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"MLFLOW_RUN_ID"</span>: run_id,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"DATABRICKS_HOST"</span>: db_host,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"DATABRICKS_TOKEN"</span>: db_token,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>subprocess.run([<span class="st">"accelerate"</span>, <span class="st">"launch"</span>, <span class="st">"train.py"</span>], env<span class="op">=</span>env, check<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># train.py (script)</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os, mlflow</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>rank <span class="op">=</span> <span class="bu">int</span>(os.environ[<span class="st">"RANK"</span>])</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> rank <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    mlflow.start_run(run_id<span class="op">=</span>os.environ[<span class="st">"MLFLOW_RUN_ID"</span>], log_system_metrics<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ... Accelerator() + 학습 루프 ...</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> rank <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    mlflow.end_run()</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="experiment-경로-사용자-vs-sp" class="level3">
-<h3 class="anchored" data-anchor-id="experiment-경로-사용자-vs-sp">Experiment 경로 — 사용자 vs SP</h3>
+</section>
+<section id="databricks-자동-처리" class="level2">
+<h2 class="anchored" data-anchor-id="databricks-자동-처리">Databricks 자동 처리</h2>
+<p>위 패턴은 일반 MLflow와 동일하지만, Databricks 위에서는 두 가지가 자동·특수 처리됩니다.</p>
+<section id="tracking_uridatabricks-자동-라우팅" class="level3">
+<h3 class="anchored" data-anchor-id="tracking_uridatabricks-자동-라우팅"><code>tracking_uri="databricks"</code> 자동 라우팅</h3>
+<p>Databricks 노트북이나 Job에서 시작된 Python은 환경변수 <code>MLFLOW_TRACKING_URI=databricks</code>가 미리 세팅되어 있어, 별도 설정 없이도 워크스페이스 MLflow로 라우팅됩니다. <code>MLFlowLogger(tracking_uri="databricks")</code>의 명시는 redundant하지만 child가 환경변수를 못 받는 시나리오 대비로 권장합니다. TorchDistributor child도 환경변수는 상속하므로 <code>MLFLOW_TRACKING_URI</code>는 자동 전달됩니다 — child가 인증에 실패한다면 원인은 URI가 아니라 토큰입니다(<a href="../00-foundations/env-auth.html"><code>env-auth.md</code></a>).</p>
+</section>
+<section id="with-block을-빠져나와도-attach-가능" class="level3">
+<h3 class="anchored" data-anchor-id="with-block을-빠져나와도-attach-가능">with-block을 빠져나와도 attach 가능</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run(...) <span class="im">as</span> run:</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    run_id <span class="op">=</span> run.info.run_id</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 빠져나옴 → driver-side run은 FINISHED. 그런데 child에서 attach가 가능</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>TorchDistributor(...).run(train_fn, run_id<span class="op">=</span>run_id)</span></code></pre></div><button title="클립보드 복사" class="code-copy-button"><i class="bi"></i></button></div>
+<p>MLflow의 <code>start_run(run_id=...)</code>은 <strong>이미 종료된 run에도 metric을 추가로 append할 수 있게</strong> 설계됐습니다. UI는 latest metric까지 그대로 보여 줍니다. driver의 <code>end_run</code>은 “현재 thread의 active run을 닫는다”는 의미일 뿐, run 객체 자체는 서버에 남아 있습니다.</p>
+</section>
+</section>
+<section id="experiment-경로-사용자-vs-sp" class="level2">
+<h2 class="anchored" data-anchor-id="experiment-경로-사용자-vs-sp">Experiment 경로 — 사용자 vs SP</h2>
 <p>실행 주체에 따라 experiment 경로를 어디에 두어야 하는지 정리하면 다음과 같습니다.</p>
 <table class="caption-top table">
 <colgroup>
@@ -1027,16 +1124,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>본 쿡북의 <code>EXPERIMENT_PATH = f"/Users/{USERNAME}/..."</code>는 사용자 기준입니다. SP로 돌릴 때는 setup 노트북의 경로를 교체합니다. 자세한 내용은 <a href="../00-foundations/env-auth.html"><code>env-auth.md</code></a>를 참조하세요.</p>
 </section>
-</section>
 <section id="참고" class="level2">
 <h2 class="anchored" data-anchor-id="참고">참고</h2>
-<p>자세한 내용은 다음 자료를 참조하세요.</p>
 <ul>
 <li><a href="https://docs.databricks.com/aws/en/machine-learning/train-model/huggingface/">HF Transformers on Databricks</a></li>
 <li><a href="https://mlflow.org/docs/latest/tracking/autolog.html">MLflow autolog</a></li>
 <li><a href="https://mlflow.org/docs/latest/model">MLflow 3.0 LoggedModel</a></li>
 <li><a href="https://mlflow.org/docs/latest/system-metrics">MLflow system metrics</a></li>
-<li><a href="https://docs.databricks.com/aws/en/machine-learning/manage-model-lifecycle/index">Unity Catalog Model Registry</a></li>
 </ul>
 
 
@@ -1464,8 +1558,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../00-foundations/ops-resume-training.html" class="pagination-link" aria-label="학습 재개 (Resume)">
-        <span class="nav-page-text">학습 재개 (Resume)</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../00-foundations/ops-uc-model-registry.html" class="pagination-link" aria-label="Unity Catalog Model Registry">
+        <span class="nav-page-text">Unity Catalog Model Registry</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
